@@ -1,3 +1,6 @@
+import React from 'react';
+import QRCode from 'react-qr-code'; // react-qr-code paketinden import et
+
 const CouponCard = ({ coupon, email, onEmailChange, onBuy, isLoggedIn }) => {
   // Potansiyel kazancı hesapla (indirim hep yüzde olduğu için)
   const potentialSavings = (coupon.price * coupon.discount / 100).toFixed(2);
@@ -22,6 +25,14 @@ const CouponCard = ({ coupon, email, onEmailChange, onBuy, isLoggedIn }) => {
       )}
 
       <button onClick={() => onBuy(coupon._id)}>Satın Al</button>
+
+      {/* Kupon kodu varsa QR göster */}
+      {coupon.code && (
+        <div style={{ marginTop: '1rem' }}>
+          <p><strong>Kupon Kodu:</strong> {coupon.code}</p>
+          <QRCode value={coupon.code} size={128} />
+        </div>
+      )}
     </div>
   );
 };

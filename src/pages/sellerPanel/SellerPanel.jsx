@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import API from '../../services/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginSuccess, logout } from '../../redux/slices/sellerSlice'; // sellerSlice.js yolunu ayarla
+import { loginSuccess } from '../../redux/slices/sellerSlice';
+import QrScanner from '../../components/qrScanner/QrScanner';
 
 const SellerPanel = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const SellerPanel = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [mode, setMode] = useState('login');
+  const [scanning, setScanning] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -38,7 +40,36 @@ const SellerPanel = () => {
     }
   };
 
-  const handleScan = async () => {
+  const handleQrScan = async (scannedCode) => {
+    setCode(scannedCode);
+    setMessage(`📷 Tarandı: ${scannedCode}, kupon doğrulanıyor...`);
+    setScanning(false);
+
+    try {
+      const res = await API.post(`/coupons/use-coupon/${scannedCode}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setMessage(`✅ Kupon kullanıldı: ${res.data.coupon.title}`);
+      setCode('');
+    } catch (err) {
+      setMessage(err.response?.data?.message || '🚫 Kupon işlemi başarısız');
+    }
+  };
+
+  const handleQrError = (error) => {
+    console.warn('QR scan error:', error);
+    setMessage(`🚫 Kamera erişimi başarısız: ${error}`);
+    setScanning(false);
+  };
+
+  const handleManualScan = async () => {
+    if (!code.trim()) {
+      setMessage('🚫 Lütfen geçerli bir kupon kodu girin.');
+      return;
+    }
+
     try {
       const res = await API.post(`/coupons/use-coupon/${code}`, {}, {
         headers: {
@@ -106,6 +137,7 @@ const SellerPanel = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <h2>Kupon Kullan</h2>
+
       <input
         value={code}
         onChange={e => setCode(e.target.value)}
@@ -113,7 +145,21 @@ const SellerPanel = () => {
         style={{ marginBottom: '0.5rem' }}
       />
       <br />
-      <button onClick={handleScan}>Kuponu Kullan</button>
+      <button onClick={handleManualScan} disabled={!code.trim()}>Kuponu Kullan</button>
+
+      <hr style={{ margin: '1.5rem 0' }} />
+
+      {!scanning ? (
+        <button onClick={() => setScanning(true)}>📷 QR Kod Tara</button>
+      ) : (
+        <div>
+          <QrScanner onScan={handleQrScan} onError={handleQrError} />
+          <button onClick={() => setScanning(false)} style={{ marginTop: '1rem' }}>
+            ❌ Tarama İptal
+          </button>
+        </div>
+      )}
+
       {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
     </div>
   );
