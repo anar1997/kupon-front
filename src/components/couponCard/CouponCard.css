@@ -1,0 +1,61 @@
+/* src/components/CouponCard.css */
+
+.coupon-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.coupon-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.coupon-card h3 {
+  margin: 0 0 0.5rem;
+  color: #222;
+}
+
+.coupon-card .description {
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.coupon-card .price {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.discount {
+  color: green;
+  font-weight: bold;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.form-group button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.form-group button:hover {
+  background-color: #0056b3;
+}
