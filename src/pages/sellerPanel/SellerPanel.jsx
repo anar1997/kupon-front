@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import API from '../../services/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginSuccess } from '../../redux/slices/sellerSlice';
+import { loginSuccess, logout } from '../../redux/slices/sellerSlice'; // ✅ logout import edildi
 import QrScanner from '../../components/qrScanner/QrScanner';
 
 const SellerPanel = () => {
@@ -83,6 +83,10 @@ const SellerPanel = () => {
     }
   };
 
+  const handleLogout = () => {
+    dispatch(logout()); // ✅ Hem Redux state'i hem localStorage temizlenir
+  };
+
   if (!token) {
     return (
       <div style={{ padding: '2rem' }}>
@@ -145,7 +149,9 @@ const SellerPanel = () => {
         style={{ marginBottom: '0.5rem' }}
       />
       <br />
-      <button onClick={handleManualScan} disabled={!code.trim()}>Kuponu Kullan</button>
+      <button onClick={handleManualScan} disabled={!code.trim()}>
+        Kuponu Kullan
+      </button>
 
       <hr style={{ margin: '1.5rem 0' }} />
 
@@ -161,6 +167,21 @@ const SellerPanel = () => {
       )}
 
       {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
+
+      {/* ✅ ÇIKIŞ YAP BUTONU */}
+      <button
+        onClick={handleLogout}
+        style={{
+          marginTop: '2rem',
+          backgroundColor: 'tomato',
+          color: 'white',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        Çıkış Yap
+      </button>
     </div>
   );
 };

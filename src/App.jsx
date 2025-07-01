@@ -11,6 +11,8 @@ import ForgotPassword from './components/Password/ForgotPassword';
 import ResetPassword from './components/Password/ReseetPassword';
 import SellerPanel from './pages/sellerPanel/SellerPanel';
 import SellerCoupons from './components/sellerCoupons/SellerCoupons';
+import PaymentPage from './components/paymentPage/PaymentPage';
+import SuccessPage from './components/successPage/SuccessPage';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path='/reset-password/:token' element={<ResetPassword />} /> {/* ✅ yeni */}
         <Route path="/seller" element={<SellerPanel />} />
         <Route path="/seller-coupons" element={<SellerCoupons />} />
+        <Route path="/payment/:couponId" element={<PaymentPage />} />
+        <Route path="/success/:couponId" element={<SuccessPage />} />
       </Routes>
     </Router>
   );

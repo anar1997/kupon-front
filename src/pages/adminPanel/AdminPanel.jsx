@@ -8,9 +8,10 @@ const AdminPanel = () => {
     title: '',
     description: '',
     discount: '',
-    price: ''
+    price: '',
+    category: '' // ✅ kategori form state'e eklendi
   });
-
+  const [categories, setCategories] = useState([]); // ✅ kategorileri tutmak için state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
@@ -24,9 +25,19 @@ const AdminPanel = () => {
     }
   };
 
+  const fetchCategories = async () => { // ✅ kategorileri çek
+    try {
+      const res = await API.get('/categories');
+      setCategories(res.data);
+    } catch (err) {
+      console.error('Kategoriler alınamadı:', err);
+    }
+  };
+
   useEffect(() => {
     if (token) {
       fetchCoupons();
+      fetchCategories(); // ✅ token varsa kategorileri de getir
     }
   }, [token]);
 
@@ -34,18 +45,15 @@ const AdminPanel = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Potansial kazancı hesapla
   const calculatePotentialSavings = (coupon) => {
-    // İndirim hep yüzde olduğundan direkt hesapla
     return (coupon.price * coupon.discount / 100).toFixed(2);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // discountType kaldırıldığı için göndermiyoruz
-      await API.post('/coupons/create', form);
-      setForm({ title: '', description: '', discount: '', price: '' });
+      await API.post('/coupons/create', form); // ✅ category gönderiliyor
+      setForm({ title: '', description: '', discount: '', price: '', category: '' }); // ✅ sıfırla
       fetchCoupons();
     } catch (error) {
       alert(error.response?.data?.message || 'Kupon oluşturulamadı');
@@ -143,6 +151,20 @@ const AdminPanel = () => {
           required
           min="0"
         />
+
+        {/* ✅ Kategori Seçimi */}
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Kategori Seçin</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>{cat.name}</option>
+          ))}
+        </select>
+
         <button type="submit">Kupon Əlavə et</button>
       </form>
 
@@ -155,9 +177,7 @@ const AdminPanel = () => {
             .filter(c => !c.isUsed)
             .map((coupon) => (
               <li key={coupon._id}>
-                <strong>{coupon.title}</strong> –
-                %{coupon.discount} –
-                {coupon.price} ₼ –
+                <strong>{coupon.title}</strong> – %{coupon.discount} – {coupon.price} ₼ –
                 Potensial Qazanc: {calculatePotentialSavings(coupon)} ₼
                 <button onClick={() => handleDelete(coupon._id)} style={{ marginLeft: '1rem' }}>Sil</button>
               </li>
@@ -186,6 +206,7 @@ const AdminPanel = () => {
             ))}
         </ul>
       )}
+
       <button onClick={handleLogout} style={{ marginBottom: '2rem' }}>Çıkış Yap</button>
     </div>
   );
