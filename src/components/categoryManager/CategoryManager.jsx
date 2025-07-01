@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import API from '../../services/api';
 
-const CategoryManager = () => {
+const CategoryManager = ({ onCategoryAdded }) => { // <-- onCategoryAdded prop'u eklendi
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
     const [message, setMessage] = useState('');
 
-    // ✅ Token'ı doğrudan localStorage'tan al (adminToken olarak)
     const token = localStorage.getItem('adminToken');
 
-    // Kategorileri çek
     const fetchCategories = async () => {
         try {
             const res = await API.get('/categories');
@@ -23,7 +21,6 @@ const CategoryManager = () => {
         fetchCategories();
     }, []);
 
-    // Yeni kategori ekle
     const handleAddCategory = async () => {
         if (!newCategory.trim()) return;
 
@@ -31,11 +28,16 @@ const CategoryManager = () => {
             await API.post(
                 '/categories',
                 { name: newCategory },
-                { headers: { Authorization: `Bearer ${token}` } } // ✅ Admin token eklendi
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setMessage('Kategori eklendi!');
             setNewCategory('');
             fetchCategories();
+
+            // Yeni kategori eklendiğini parent'a bildir
+            if (onCategoryAdded) {
+                onCategoryAdded();
+            }
         } catch (err) {
             setMessage(err.response?.data?.message || 'Kategori eklenemedi');
         }

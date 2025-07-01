@@ -9,9 +9,9 @@ const AdminPanel = () => {
     description: '',
     discount: '',
     price: '',
-    category: '' // ✅ kategori form state'e eklendi
+    category: ''
   });
-  const [categories, setCategories] = useState([]); // ✅ kategorileri tutmak için state
+  const [categories, setCategories] = useState([]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
@@ -25,7 +25,7 @@ const AdminPanel = () => {
     }
   };
 
-  const fetchCategories = async () => { // ✅ kategorileri çek
+  const fetchCategories = async () => {
     try {
       const res = await API.get('/categories');
       setCategories(res.data);
@@ -37,7 +37,7 @@ const AdminPanel = () => {
   useEffect(() => {
     if (token) {
       fetchCoupons();
-      fetchCategories(); // ✅ token varsa kategorileri de getir
+      fetchCategories();
     }
   }, [token]);
 
@@ -52,8 +52,8 @@ const AdminPanel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/coupons/create', form); // ✅ category gönderiliyor
-      setForm({ title: '', description: '', discount: '', price: '', category: '' }); // ✅ sıfırla
+      await API.post('/coupons/create', form);
+      setForm({ title: '', description: '', discount: '', price: '', category: '' });
       fetchCoupons();
     } catch (error) {
       alert(error.response?.data?.message || 'Kupon oluşturulamadı');
@@ -113,7 +113,8 @@ const AdminPanel = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <h2>Admin Panel</h2>
-      <CategoryManager />
+      {/* onCategoryAdded propunu veriyoruz */}
+      <CategoryManager onCategoryAdded={fetchCategories} />
 
       <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
         <input
@@ -152,7 +153,6 @@ const AdminPanel = () => {
           min="0"
         />
 
-        {/* ✅ Kategori Seçimi */}
         <select
           name="category"
           value={form.category}
