@@ -21,7 +21,7 @@ const AdminPanel = () => {
       const res = await API.get('/coupons');
       setCoupons(res.data);
     } catch (error) {
-      alert('Kuponlar alınamadı.');
+      alert('Kuponlar alınmadı.');
     }
   };
 
@@ -30,7 +30,7 @@ const AdminPanel = () => {
       const res = await API.get('/categories');
       setCategories(res.data);
     } catch (err) {
-      console.error('Kategoriler alınamadı:', err);
+      console.error('Kategoriyalar alınmadı:', err);
     }
   };
 
@@ -100,12 +100,12 @@ const AdminPanel = () => {
         />
         <input
           type="password"
-          placeholder="Şifre"
+          placeholder="Şifrə"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{ display: 'block', marginBottom: '1rem' }}
         />
-        <button onClick={handleLogin}>Giriş Yap</button>
+        <button onClick={handleLogin}>Daxil olun</button>
       </div>
     );
   }
@@ -120,7 +120,7 @@ const AdminPanel = () => {
         <input
           type="text"
           name="title"
-          placeholder="Başlık"
+          placeholder="Başlıq"
           value={form.title}
           onChange={handleChange}
           required
@@ -128,7 +128,7 @@ const AdminPanel = () => {
         <input
           type="text"
           name="description"
-          placeholder="Açıklama"
+          placeholder="Açıqlama"
           value={form.description}
           onChange={handleChange}
           required
@@ -146,7 +146,7 @@ const AdminPanel = () => {
         <input
           type="number"
           name="price"
-          placeholder="Fiyat (₼)"
+          placeholder="Qiymət (₼)"
           value={form.price}
           onChange={handleChange}
           required
@@ -159,7 +159,7 @@ const AdminPanel = () => {
           onChange={handleChange}
           required
         >
-          <option value="">Kategori Seçin</option>
+          <option value="">Kategoriya Seçin</option>
           {categories.map((cat) => (
             <option key={cat._id} value={cat._id}>{cat.name}</option>
           ))}
@@ -170,7 +170,7 @@ const AdminPanel = () => {
 
       <h3>🔹 Satılmamış Kuponlar</h3>
       {coupons.filter(c => !c.isUsed).length === 0 ? (
-        <p>Satılmamış kupon yok</p>
+        <p>Satılmamış kupon yoxdur</p>
       ) : (
         <ul>
           {coupons
@@ -187,7 +187,7 @@ const AdminPanel = () => {
 
       <h3 style={{ marginTop: '3rem' }}>✅ Satılan Kuponlar</h3>
       {coupons.filter(c => c.isUsed).length === 0 ? (
-        <p>Henüz satılan kupon yok.</p>
+        <p>Hələ ki, heç bir kupon satılmayıb.</p>
       ) : (
         <ul>
           {coupons
@@ -195,9 +195,9 @@ const AdminPanel = () => {
             .map((coupon) => (
               <li key={coupon._id} style={{ marginBottom: '1rem' }}>
                 <strong>{coupon.title}</strong> – Kod: <code>{coupon.code}</code><br />
-                Satın Alan: {coupon.buyerEmail} – Fiyat: {coupon.price} ₼<br />
+                Satın Alan: {coupon.buyerEmail} – Qiymət: {coupon.price} ₼<br />
                 <p>
-                  İndirim: %{coupon.discount}<br />
+                  Endirim: %{coupon.discount}<br />
                   Potensial Qazanc: {calculatePotentialSavings(coupon)} ₼
                 </p>
                 <br />
@@ -207,7 +207,7 @@ const AdminPanel = () => {
         </ul>
       )}
 
-      <button onClick={handleLogout} style={{ marginBottom: '2rem' }}>Çıkış Yap</button>
+      <button onClick={handleLogout} style={{ marginBottom: '2rem' }}>Sistemdən çıxın</button>
     </div>
   );
 };

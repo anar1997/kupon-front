@@ -19,13 +19,13 @@ const CustomerLogin = () => {
             setMessage('Giriş başarılı!');
             navigate('/my-coupons');
         } catch (err) {
-            setMessage(err.response?.data?.message || 'Giriş başarısız');
+            setMessage(err.response?.data?.message || 'Giriş mümkün olmadı');
         }
     };
 
     return (
         <div style={{ padding: '2rem' }}>
-            <h2>Müşteri Giriş</h2>
+            <h2>Müştəri Giriş</h2>
             {message && <p>{message}</p>}
             <input
                 type="email"
@@ -36,16 +36,16 @@ const CustomerLogin = () => {
             />
             <input
                 type="password"
-                placeholder="Şifre"
+                placeholder="Şifrə"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
             />
-            <button onClick={handleLogin}>Giriş Yap</button>
+            <button onClick={handleLogin}>Daxil olun</button>
 
             {/* ✅ Şifremi unuttum linki */}
             <p>
-                <a href="/forgot-password">Şifreni mi unuttun?</a>
+                <a href="/forgot-password">Şifrəni unutmusan?</a>
             </p>
         </div>
     );

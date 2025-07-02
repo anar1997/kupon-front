@@ -19,23 +19,23 @@ const CustomerRegister = () => {
     e.preventDefault();
     try {
       await API.post('/auth/customer-register', form);
-      setMessage('Kayıt başarılı! Giriş yapabilirsiniz.');
+      setMessage('Qeydiyyat tamamlandı! Daxil ola bilərsiniz.');
       setForm({ name: '', email: '', password: '', referralCode: '' });
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Kayıt başarısız');
+      setMessage(err.response?.data?.message || 'Qeydiyyat baş tutmadı');
     }
   };
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Müşteri Kayıt</h2>
+      <h2>Müştəri Qeydiyyatı</h2>
       {message && <p>{message}</p>}
       <form onSubmit={handleRegister}>
         <input name="name" placeholder="Adınız" value={form.name} onChange={handleChange} required />
         <input name="email" type="email" placeholder="E-posta" value={form.email} onChange={handleChange} required />
         <input name="password" type="password" placeholder="Şifre" value={form.password} onChange={handleChange} required />
         <input name="referralCode" placeholder="Davet Kodu (varsa)" value={form.referralCode} onChange={handleChange} />
-        <button type="submit">Kayıt Ol</button>
+        <button type="submit">Qeydiyyatdan keç</button>
       </form>
     </div>
   );

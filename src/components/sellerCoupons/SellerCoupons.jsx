@@ -34,7 +34,21 @@ const SellerCoupons = () => {
 
     return (
         <div style={{ padding: '2rem' }}>
-            <h2>Taradığım Kuponlar</h2>
+            <button
+                onClick={() => navigate('/seller')}
+                style={{
+                    marginTop: '2rem',
+                    marginRight: '1rem',
+                    backgroundColor: '#444',
+                    color: '#fff',
+                    padding: '0.5rem 1rem',
+                    border: 'none',
+                    cursor: 'pointer'
+                }}
+            >
+                Skan səhifəsinə geri dön
+            </button>
+            <h2>Skan etdiyim kuponlar</h2>
             {usedCoupons.length === 0 ? (
                 <p>Henüz kullandığınız kupon yok.</p>
             ) : (

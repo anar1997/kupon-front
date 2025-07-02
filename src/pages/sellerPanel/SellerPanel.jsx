@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import API from '../../services/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginSuccess, logout } from '../../redux/slices/sellerSlice'; // ✅ logout import edildi
+import { loginSuccess, logout } from '../../redux/slices/sellerSlice';
 import QrScanner from '../../components/qrScanner/QrScanner';
+import { useNavigate } from 'react-router-dom'; // ✅ yönlendirme için eklendi
 
 const SellerPanel = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // ✅ yönlendirme fonksiyonu
   const token = useSelector(state => state.seller.token);
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
@@ -21,28 +23,28 @@ const SellerPanel = () => {
       dispatch(loginSuccess(res.data.token));
       setEmail('');
       setPassword('');
-      setMessage('✅ Giriş başarılı');
+      setMessage('✅ Giriş tamamlandı');
     } catch (err) {
-      setMessage(err.response?.data?.message || '🚫 Giriş başarısız');
+      setMessage(err.response?.data?.message || '🚫 Giriş baş tutmadı');
     }
   };
 
   const handleRegister = async () => {
     try {
       await API.post('/auth/seller-register', { name, email, password });
-      setMessage('✅ Kayıt başarılı. Şimdi giriş yapabilirsiniz.');
+      setMessage('✅ Qeydiyyat tamamlandı. Artıq daxil ola bilərsiniz.');
       setMode('login');
       setName('');
       setEmail('');
       setPassword('');
     } catch (err) {
-      setMessage(err.response?.data?.message || '🚫 Kayıt başarısız');
+      setMessage(err.response?.data?.message || '🚫 Qeydiyyat baş tutmadı');
     }
   };
 
   const handleQrScan = async (scannedCode) => {
     setCode(scannedCode);
-    setMessage(`📷 Tarandı: ${scannedCode}, kupon doğrulanıyor...`);
+    setMessage(`📷 Skan edildi: ${scannedCode}, kupon doğrulanır...`);
     setScanning(false);
 
     try {
@@ -51,22 +53,22 @@ const SellerPanel = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setMessage(`✅ Kupon kullanıldı: ${res.data.coupon.title}`);
+      setMessage(`✅ Kupon istifadə edildi: ${res.data.coupon.title}`);
       setCode('');
     } catch (err) {
-      setMessage(err.response?.data?.message || '🚫 Kupon işlemi başarısız');
+      setMessage(err.response?.data?.message || '🚫 Kupon əməliyyatı baş tutmadı');
     }
   };
 
   const handleQrError = (error) => {
     console.warn('QR scan error:', error);
-    setMessage(`🚫 Kamera erişimi başarısız: ${error}`);
+    setMessage(`🚫 Kamera əlaqəsi baş tutmadı: ${error}`);
     setScanning(false);
   };
 
   const handleManualScan = async () => {
     if (!code.trim()) {
-      setMessage('🚫 Lütfen geçerli bir kupon kodu girin.');
+      setMessage('🚫 Yanlışlıq var. Kupon kodunu doğru yazın.');
       return;
     }
 
@@ -76,21 +78,21 @@ const SellerPanel = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setMessage(`✅ Kupon kullanıldı: ${res.data.coupon.title}`);
+      setMessage(`✅ Kupon istifadə edildi: ${res.data.coupon.title}`);
       setCode('');
     } catch (err) {
-      setMessage(err.response?.data?.message || '🚫 Kupon işlemi başarısız');
+      setMessage(err.response?.data?.message || '🚫 Kupon əməliyyatı baş tutmadı');
     }
   };
 
   const handleLogout = () => {
-    dispatch(logout()); // ✅ Hem Redux state'i hem localStorage temizlenir
+    dispatch(logout());
   };
 
   if (!token) {
     return (
       <div style={{ padding: '2rem' }}>
-        <h2>{mode === 'login' ? 'Satıcı Giriş' : 'Satıcı Kayıt'}</h2>
+        <h2>{mode === 'login' ? 'Satıcı Giriş' : 'Satıcı Qeydiyyatı'}</h2>
 
         {mode === 'register' && (
           <input
@@ -111,24 +113,24 @@ const SellerPanel = () => {
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="Şifre"
+          placeholder="Şifrə"
           style={{ display: 'block', marginBottom: '0.5rem' }}
         />
 
         {mode === 'login' ? (
           <>
-            <button onClick={handleLogin}>Giriş Yap</button>
+            <button onClick={handleLogin}>Daxil olun</button>
             <p style={{ marginTop: '1rem' }}>
-              Hesabınız yok mu?{' '}
-              <button onClick={() => setMode('register')}>Kayıt Ol</button>
+              Hesabınız yoxdur?{' '}
+              <button onClick={() => setMode('register')}>Qeydiyyatdan keç</button>
             </p>
           </>
         ) : (
           <>
-            <button onClick={handleRegister}>Kayıt Ol</button>
+            <button onClick={handleRegister}>Qeydiyyatdan keç</button>
             <p style={{ marginTop: '1rem' }}>
-              Zaten hesabınız var mı?{' '}
-              <button onClick={() => setMode('login')}>Giriş Yap</button>
+              hesabınız var?{' '}
+              <button onClick={() => setMode('login')}>Daxil olun</button>
             </p>
           </>
         )}
@@ -140,7 +142,7 @@ const SellerPanel = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Kupon Kullan</h2>
+      <h2>Kupon istifadə et</h2>
 
       <input
         value={code}
@@ -150,23 +152,39 @@ const SellerPanel = () => {
       />
       <br />
       <button onClick={handleManualScan} disabled={!code.trim()}>
-        Kuponu Kullan
+        Kupon istifadə et
       </button>
 
       <hr style={{ margin: '1.5rem 0' }} />
 
       {!scanning ? (
-        <button onClick={() => setScanning(true)}>📷 QR Kod Tara</button>
+        <button onClick={() => setScanning(true)}>📷 QR Kod Skan et</button>
       ) : (
         <div>
           <QrScanner onScan={handleQrScan} onError={handleQrError} />
           <button onClick={() => setScanning(false)} style={{ marginTop: '1rem' }}>
-            ❌ Tarama İptal
+            ❌ Scan ləğv
           </button>
         </div>
       )}
 
       {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
+
+      {/* ✅ Kullanılan Kuponlar Sayfası Butonu */}
+      <button
+        onClick={() => navigate('/seller-coupons')}
+        style={{
+          marginTop: '2rem',
+          marginRight: '1rem',
+          backgroundColor: '#444',
+          color: '#fff',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        İstifadə olunan Kuponlarım
+      </button>
 
       {/* ✅ ÇIKIŞ YAP BUTONU */}
       <button
@@ -180,7 +198,7 @@ const SellerPanel = () => {
           cursor: 'pointer'
         }}
       >
-        Çıkış Yap
+        Sistemdən çıx
       </button>
     </div>
   );

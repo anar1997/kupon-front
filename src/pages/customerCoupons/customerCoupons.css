@@ -1,0 +1,81 @@
+.customerCoupons-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn-group {
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  margin-right: 1rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+}
+
+.btn.primary {
+  background-color: #4f46e5; /* Indigo */
+  color: white;
+}
+
+.btn.primary:hover {
+  background-color: #4338ca;
+}
+
+.btn.secondary {
+  background-color: #e0e7ff; /* Light Indigo */
+  color: #4338ca;
+}
+
+.btn.secondary:hover {
+  background-color: #c7d2fe;
+}
+
+/* Success mesajı */
+.success-message {
+  color: #15803d;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background-color: #d1fae5;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #a7f3d0;
+}
+
+/* Kupon listesi */
+.coupon-list {
+  list-style: none;
+  padding: 0;
+}
+
+/* Spinner */
+.spinner {
+  margin: 2rem auto;
+  border: 5px solid #e5e7eb; /* light gray */
+  border-top: 5px solid #4f46e5; /* indigo */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+.welcome-message {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

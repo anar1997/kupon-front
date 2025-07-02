@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-
 import AdminPanel from './pages/adminPanel/AdminPanel';
 import CustomerCoupons from './pages/customerCoupons/CustomerCoupons';
 import CustomerRegister from './pages/customerRegister/CustomerRegister';

@@ -30,7 +30,7 @@ const CategoryManager = ({ onCategoryAdded }) => { // <-- onCategoryAdded prop'u
                 { name: newCategory },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setMessage('Kategori eklendi!');
+            setMessage('Kategoriya əlavə edildi!');
             setNewCategory('');
             fetchCategories();
 
@@ -39,27 +39,27 @@ const CategoryManager = ({ onCategoryAdded }) => { // <-- onCategoryAdded prop'u
                 onCategoryAdded();
             }
         } catch (err) {
-            setMessage(err.response?.data?.message || 'Kategori eklenemedi');
+            setMessage(err.response?.data?.message || 'Kategoriya əlavə edilmədi');
         }
     };
 
     return (
         <div>
-            <h3>Kategori Yönetimi</h3>
+            <h3>Kategoriya bölməsi</h3>
 
             <input
                 type="text"
-                placeholder="Yeni kategori adı"
+                placeholder="Yeni kategoriya adı"
                 value={newCategory}
                 onChange={e => setNewCategory(e.target.value)}
             />
-            <button onClick={handleAddCategory}>Ekle</button>
+            <button onClick={handleAddCategory}>Əlavə et</button>
 
             {message && <p>{message}</p>}
 
-            <h4>Mevcut Kategoriler</h4>
+            <h4>Mövcud Kategoriyalar</h4>
             <ul>
-                {categories.length === 0 && <li>Kategori yok</li>}
+                {categories.length === 0 && <li>Kategoriya yoxdur</li>}
                 {categories.map(cat => (
                     <li key={cat._id}>{cat.name}</li>
                 ))}

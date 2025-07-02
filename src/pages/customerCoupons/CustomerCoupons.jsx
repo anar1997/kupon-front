@@ -33,7 +33,7 @@ const CustomerCoupons = () => {
     const email = emailInputs[couponId];
 
     if (!isLoggedIn && !email) {
-      return alert('Lütfen e-posta adresinizi girin.');
+      return alert('Xahiş olunur e-posta adresinizi yazın.');
     }
 
     try {
@@ -54,11 +54,11 @@ const CustomerCoupons = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Mevcut Kuponlar</h2>
+      <h2>Mövcud Kuponlar</h2>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
       {coupons.length === 0 ? (
-        <p>Hiç kupon bulunamadı.</p>
+        <p>Heç bir kupon tapılmadı.</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {coupons.map((coupon) => (
