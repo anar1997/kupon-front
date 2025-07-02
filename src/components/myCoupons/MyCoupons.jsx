@@ -77,6 +77,20 @@ const MyCoupons = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          marginTop: '2rem',
+          marginRight: '1rem',
+          backgroundColor: '#444',
+          color: '#fff',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        Əsas Səhifə
+      </button>
       <h2>Aldığım Kuponlar</h2>
 
       <p><strong>Toplam Kupon:</strong> {stats.totalCoupons}</p>

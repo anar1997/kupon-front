@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import CouponCard from '../../components/couponCard/CouponCard';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerCoupons = () => {
   const [coupons, setCoupons] = useState([]);
   const [emailInputs, setEmailInputs] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
-
+  const navigate = useNavigate()
   const customerToken = useSelector(state => state.user.token);
 
   const isLoggedIn = !!customerToken; // ✅ Giriş yapılıp yapılmadığını kontrol et
@@ -54,6 +55,34 @@ const CustomerCoupons = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
+      <button
+        onClick={() => navigate('/my-coupons')}
+        style={{
+          marginTop: '2rem',
+          marginRight: '1rem',
+          backgroundColor: '#444',
+          color: '#fff',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        Səbətim
+      </button>
+      <button
+        onClick={() => navigate('/profile')}
+        style={{
+          marginTop: '2rem',
+          marginRight: '1rem',
+          backgroundColor: '#444',
+          color: '#fff',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        Profilim
+      </button>
       <h2>Mövcud Kuponlar</h2>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 

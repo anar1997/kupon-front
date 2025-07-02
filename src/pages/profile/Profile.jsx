@@ -17,6 +17,20 @@ const Profile = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          marginTop: '2rem',
+          marginRight: '1rem',
+          backgroundColor: '#444',
+          color: '#fff',
+          padding: '0.5rem 1rem',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        Əsas səhifə
+      </button>
       <h2>Profil</h2>
       <p><strong>E-posta:</strong> {payload?.email}</p>
       <p><strong>Rol:</strong> {payload?.role}</p>
