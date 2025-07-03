@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getRemainingTime } from '../../utils/dateUtils'; // ✅ Ortak fonksiyon import edildi
+import { getRemainingTime } from '../../utils/dateUtils';
 
 const MyCoupons = () => {
-  const [stats, setStats] = useState({ totalCoupons: 0, totalSpent: 0, totalSaved: 0 });
+  const [stats, setStats] = useState({ totalCoupons: 0, totalSpent: 0 });
   const [activeCoupons, setActiveCoupons] = useState([]);
   const [passiveCoupons, setPassiveCoupons] = useState([]);
   const [allCoupons, setAllCoupons] = useState([]);
@@ -22,7 +22,10 @@ const MyCoupons = () => {
     const fetchMyCoupons = async () => {
       try {
         const res = await API.get('/coupons/my');
-        setStats(res.data.stats);
+        setStats({
+          totalCoupons: res.data.stats.totalCoupons,
+          totalSpent: res.data.stats.totalSpent
+        });
         setActiveCoupons(res.data.activeCoupons);
         setPassiveCoupons(res.data.passiveCoupons);
         setAllCoupons(res.data.allCoupons);
@@ -59,6 +62,12 @@ const MyCoupons = () => {
     (a, b) => new Date(a.expiresAt) - new Date(b.expiresAt)
   );
 
+  // ✅ Sadece kullanılan kuponlardan toplam kazancı hesapla
+  const totalSaved = passiveCoupons
+    .filter(coupon => coupon.usedAt)
+    .reduce((sum, coupon) => sum + (coupon.price * coupon.discount / 100), 0)
+    .toFixed(2);
+
   return (
     <div style={{ padding: '2rem' }}>
       <button
@@ -79,7 +88,7 @@ const MyCoupons = () => {
 
       <p><strong>Toplam Kupon:</strong> {stats.totalCoupons}</p>
       <p><strong>Toplam Xərc:</strong> {stats.totalSpent} ₼</p>
-      <p><strong>Toplam Qazanc:</strong> {stats.totalSaved} ₼</p>
+      <p><strong>Toplam Qazanc:</strong> {totalSaved} ₼</p>
 
       <h3>Aktiv Kuponlar</h3>
       {sortedActiveCoupons.length === 0 ? (
@@ -128,7 +137,6 @@ const MyCoupons = () => {
           );
         })
       )}
-
 
       <h3>Bütün Kuponlar (Alınma Tarixinə Görə)</h3>
       {allCoupons.map(coupon => (

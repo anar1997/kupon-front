@@ -174,12 +174,11 @@ const AdminPanel = () => {
                 Endirim: %{coupon.discount}<br />
                 Potensial Qazanc: {calculatePotentialSavings(coupon)} ₼<br />
                 Son istifadə tarixi: {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString('tr-TR') : '—'}<br />
-                Qalan müddət: {coupon.usedAt ? 'İstifadə edildi' : (remainingTimes[coupon._id] || getRemainingTime(coupon.expiresAt))}
+                Kalan müddət: {coupon.usedAt ? 'İstifadə edildi' : (remainingTimes[coupon._id] || getRemainingTime(coupon.expiresAt))}
               </p>
               Tarix: {new Date(coupon.updatedAt).toLocaleString('tr-TR')}
             </li>
           ))}
-
         </ul>
       )}
 

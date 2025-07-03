@@ -16,7 +16,7 @@ const CouponCard = ({ coupon }) => {
       )}
 
       <p>
-        İndirim: %{coupon.discount} | Fiyat: {coupon.price} ₼ | Potensial Qazanc: {potentialSavings} ₼
+        Endirim: %{coupon.discount} | Qiymət: {coupon.price} ₼ | Potensial Qazanc: {potentialSavings} ₼
       </p>
 
       <button onClick={() => navigate(`/payment/${coupon._id}`)}>Satın Al</button>
