@@ -1,15 +1,15 @@
 import React from 'react';
 import QRCode from 'react-qr-code';
 import { useNavigate } from 'react-router-dom';
+import './CouponCard.css';  // <-- CSS importu
 
 const CouponCard = ({ coupon }) => {
   const navigate = useNavigate();
   const potentialSavings = ((coupon.price * coupon.discount) / 100).toFixed(2);
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 mb-6 shadow-sm bg-white
-                    flex flex-col sm:flex-row sm:justify-between sm:items-center
-                    gap-4">
+    <div className="coupon-card border border-gray-300 rounded-lg mb-6 shadow-sm
+                flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div className="flex-1">
         <h4 className="text-lg font-semibold mb-1">{coupon.title}</h4>
         <p className="text-gray-700 mb-2">{coupon.description}</p>
@@ -21,20 +21,19 @@ const CouponCard = ({ coupon }) => {
         )}
 
         <p className="text-sm font-medium">
-          Endirim: <span className="text-red-600">%{coupon.discount}</span> | 
-          Qiymət: <span className="text-gray-800">{coupon.price} ₼</span> | 
+          Endirim: <span className="text-red-600">%{coupon.discount}</span> |
+          Qiymət: <span className="text-gray-800">{coupon.price} ₼</span> |
           Potensial Qazanc: <span className="text-green-600">{potentialSavings} ₼</span>
         </p>
 
         <button
           onClick={() => navigate(`/payment/${coupon._id}`)}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
-                     transition"
+          className="buy-btn"
           aria-label={`Satın al ${coupon.title}`}
         >
           Satın Al
         </button>
+
       </div>
 
       {coupon.code && (

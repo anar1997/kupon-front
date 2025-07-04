@@ -1,61 +1,43 @@
-/* src/components/CouponCard.css */
-
 .coupon-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: 0.3s ease;
-  margin-bottom: 2rem;
+  background-color: #f1ca0b;
+  /* Açık sarı */
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 1rem;
+  /* Daha yuvarlak köşeler: 16px */
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .coupon-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
 }
 
-.coupon-card h3 {
-  margin: 0 0 0.5rem;
-  color: #222;
-}
-
-.coupon-card .description {
-  color: #555;
-  margin-bottom: 0.5rem;
-}
-
-.coupon-card .price {
-  margin-bottom: 1rem;
-  font-size: 1rem;
-}
-
-.discount {
-  color: green;
-  font-weight: bold;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-group input {
-  padding: 0.5rem;
-  border: 1px solid #aaa;
-  border-radius: 6px;
-}
-
-.form-group button {
-  background-color: #007bff;
+.buy-btn {
+  box-shadow: 0 3px 6px rgba(59, 130, 246, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #2563eb;
+  /* Tailwind bg-blue-600 */
   color: white;
-  padding: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  /* Tailwind rounded */
   border: none;
-  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.2s ease;
 }
 
-.form-group button:hover {
-  background-color: #0056b3;
+.buy-btn:hover {
+  background-color: #1d4ed8;
+  /* Tailwind hover:bg-blue-700 */
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.6);
+}
+
+.buy-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
