@@ -79,7 +79,7 @@ const CustomerCoupons = () => {
       {coupons.length === 0 ? (
         <p className="text-center text-gray-600">Heç bir kupon tapılmadı.</p>
       ) : (
-        <ul className="space-y-6">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {coupons.map((coupon) => (
             <li key={coupon._id}>
               <CouponCard

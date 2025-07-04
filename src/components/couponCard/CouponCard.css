@@ -20,7 +20,7 @@
 .buy-btn {
   box-shadow: 0 3px 6px rgba(59, 130, 246, 0.4);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  background-color: #2563eb;
+  background-color: #0b0e13;
   /* Tailwind bg-blue-600 */
   color: white;
   padding: 0.5rem 1rem;
@@ -29,10 +29,11 @@
   border: none;
   font-weight: 500;
   cursor: pointer;
+  margin-top: 10px ;
 }
 
 .buy-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #7c0993;
   /* Tailwind hover:bg-blue-700 */
   box-shadow: 0 6px 12px rgba(37, 99, 235, 0.6);
 }

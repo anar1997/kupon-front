@@ -15,15 +15,15 @@ const CouponCard = ({ coupon }) => {
         <p className="text-gray-700 mb-2">{coupon.description}</p>
 
         {coupon.category?.name && (
-          <p className="text-sm text-gray-600 mb-2">
-            <strong>Kategori:</strong> {coupon.category.name}
+          <p className="text-sm text-gray-800 mb-2">
+            <strong>Kategoriya:</strong> {coupon.category.name}
           </p>
         )}
 
         <p className="text-sm font-medium">
-          Endirim: <span className="text-red-600">%{coupon.discount}</span> |
+          Endirim: <span className="text-red-700">%{coupon.discount}</span> |
           Qiymət: <span className="text-gray-800">{coupon.price} ₼</span> |
-          Potensial Qazanc: <span className="text-green-600">{potentialSavings} ₼</span>
+          Potensial Qazanc: <span className="text-green-800">{potentialSavings} ₼</span>
         </p>
 
         <button
