@@ -15,18 +15,26 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Şifremi Unuttum</h2>
-      {message && <p>{message}</p>}
-      <input
-        type="email"
-        placeholder="E-posta"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+    <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Şifremi Unuttum</h2>
+
+      {message && (
+        <p className="mb-4 text-center text-green-600 font-medium">
+          {message}
+        </p>
+      )}
+
+      <input type="email" placeholder="E-posta" value={email} onChange={(e) => setEmail(e.target.value)}
+        className="w-full px-4 py-3 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button onClick={handleSubmit}>Şifre Sıfırlama Bağlantısı Gönder</button>
+
+      <button onClick={handleSubmit}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition"
+      >
+        Şifre Sıfırlama Bağlantısı Gönder
+      </button>
     </div>
   );
 };
 
-export default ForgotPassword;
+export default ForgotPassword; 

@@ -4,27 +4,47 @@ import { useNavigate } from 'react-router-dom';
 
 const CouponCard = ({ coupon }) => {
   const navigate = useNavigate();
-  const potentialSavings = (coupon.price * coupon.discount / 100).toFixed(2);
+  const potentialSavings = ((coupon.price * coupon.discount) / 100).toFixed(2);
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: '1rem', marginBottom: '1rem' }}>
-      <h4>{coupon.title}</h4>
-      <p>{coupon.description}</p>
+    <div className="border border-gray-300 rounded-lg p-4 mb-6 shadow-sm bg-white
+                    flex flex-col sm:flex-row sm:justify-between sm:items-center
+                    gap-4">
+      <div className="flex-1">
+        <h4 className="text-lg font-semibold mb-1">{coupon.title}</h4>
+        <p className="text-gray-700 mb-2">{coupon.description}</p>
 
-      {coupon.category?.name && (
-        <p><strong>Kategori:</strong> {coupon.category.name}</p>
-      )}
+        {coupon.category?.name && (
+          <p className="text-sm text-gray-600 mb-2">
+            <strong>Kategori:</strong> {coupon.category.name}
+          </p>
+        )}
 
-      <p>
-        Endirim: %{coupon.discount} | Qiymət: {coupon.price} ₼ | Potensial Qazanc: {potentialSavings} ₼
-      </p>
+        <p className="text-sm font-medium">
+          Endirim: <span className="text-red-600">%{coupon.discount}</span> | 
+          Qiymət: <span className="text-gray-800">{coupon.price} ₼</span> | 
+          Potensial Qazanc: <span className="text-green-600">{potentialSavings} ₼</span>
+        </p>
 
-      <button onClick={() => navigate(`/payment/${coupon._id}`)}>Satın Al</button>
+        <button
+          onClick={() => navigate(`/payment/${coupon._id}`)}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+                     transition"
+          aria-label={`Satın al ${coupon.title}`}
+        >
+          Satın Al
+        </button>
+      </div>
 
       {coupon.code && (
-        <div style={{ marginTop: '1rem' }}>
-          <p><strong>Kupon Kodu:</strong> {coupon.code}</p>
-          <QRCode value={coupon.code} size={128} />
+        <div className="flex flex-col items-center sm:items-end">
+          <p className="font-semibold mb-2 break-all text-center sm:text-right">
+            Kupon Kodu: <span className="text-indigo-600">{coupon.code}</span>
+          </p>
+          <div className="w-32 h-32 sm:w-40 sm:h-40">
+            <QRCode value={coupon.code} size={128} />
+          </div>
         </div>
       )}
     </div>

@@ -19,16 +19,24 @@ const ResetPassword = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Yeni Şifre Belirle</h2>
-      {message && <p>{message}</p>}
-      <input
-        type="password"
-        placeholder="Yeni Şifre"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+    <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Yeni Şifre Belirle</h2>
+
+      {message && (
+        <p className="mb-4 text-center text-green-600 font-medium">
+          {message}
+        </p>
+      )}
+
+      <input type="password" placeholder="Yeni Şifre" value={password} onChange={(e) => setPassword(e.target.value)}
+        className="w-full px-4 py-3 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button onClick={handleReset}>Şifreyi Güncelle</button>
+
+      <button onClick={handleReset}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition"
+      >
+        Şifreyi Güncelle
+      </button>
     </div>
   );
 };

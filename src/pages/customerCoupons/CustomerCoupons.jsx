@@ -8,10 +8,10 @@ const CustomerCoupons = () => {
   const [coupons, setCoupons] = useState([]);
   const [emailInputs, setEmailInputs] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const customerToken = useSelector(state => state.user.token);
 
-  const isLoggedIn = !!customerToken; // ✅ Giriş yapılıp yapılmadığını kontrol et
+  const isLoggedIn = !!customerToken;
 
   const fetchCoupons = async () => {
     try {
@@ -54,42 +54,32 @@ const CustomerCoupons = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <button
-        onClick={() => navigate('/my-coupons')}
-        style={{
-          marginTop: '2rem',
-          marginRight: '1rem',
-          backgroundColor: '#444',
-          color: '#fff',
-          padding: '0.5rem 1rem',
-          border: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        Səbətim
-      </button>
-      <button
-        onClick={() => navigate('/profile')}
-        style={{
-          marginTop: '2rem',
-          marginRight: '1rem',
-          backgroundColor: '#444',
-          color: '#fff',
-          padding: '0.5rem 1rem',
-          border: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        Profilim
-      </button>
-      <h2>Mövcud Kuponlar</h2>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+    <div className="max-w-3xl mx-auto p-4 sm:p-6">
+      <div className="flex flex-wrap gap-3 mb-6 justify-center sm:justify-start">
+        <button
+          onClick={() => navigate('/my-coupons')}
+          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition focus:outline-none focus:ring-2 focus:ring-gray-500"
+        >
+          Səbətim
+        </button>
+        <button
+          onClick={() => navigate('/profile')}
+          className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition focus:outline-none focus:ring-2 focus:ring-gray-500"
+        >
+          Profilim
+        </button>
+      </div>
+
+      <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">Mövcud Kuponlar</h2>
+
+      {successMessage && (
+        <p className="mb-4 text-green-600 font-medium text-center">{successMessage}</p>
+      )}
 
       {coupons.length === 0 ? (
-        <p>Heç bir kupon tapılmadı.</p>
+        <p className="text-center text-gray-600">Heç bir kupon tapılmadı.</p>
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul className="space-y-6">
           {coupons.map((coupon) => (
             <li key={coupon._id}>
               <CouponCard
@@ -97,7 +87,7 @@ const CustomerCoupons = () => {
                 email={emailInputs[coupon._id] || ''}
                 onEmailChange={handleEmailChange}
                 onBuy={handleBuy}
-                isLoggedIn={isLoggedIn} // ✅ Bilgiyi kupon kartına ilet
+                isLoggedIn={isLoggedIn}
               />
             </li>
           ))}

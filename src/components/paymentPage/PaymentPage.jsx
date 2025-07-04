@@ -42,31 +42,41 @@ const PaymentPage = () => {
     }
   };
 
-  if (loading) return <p>Yüklənir...</p>;
-  if (!coupon) return <p>Kupon tapılmadı</p>;
+  if (loading)
+    return <p className="p-4 text-center text-gray-600">Yüklənir...</p>;
+
+  if (!coupon)
+    return <p className="p-4 text-center text-red-600">Kupon tapılmadı</p>;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Ödəmə Səhifəsi</h2>
-      <p><strong>Kupon:</strong> {coupon.title}</p>
-      <p><strong>Qiymət:</strong> {coupon.price} ₼</p>
+    <div className="p-6 max-w-md mx-auto">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Ödəmə Səhifəsi</h2>
+
+      <p className="mb-2">
+        <strong>Kupon:</strong> {coupon.title}
+      </p>
+      <p className="mb-4">
+        <strong>Qiymət:</strong> {coupon.price} ₼
+      </p>
 
       {!isLoggedIn && (
-        <div style={{ margin: '1rem 0' }}>
-          <label>
+        <div className="mb-6">
+          <label className="block mb-2 font-medium" htmlFor="email">
             E-posta adresiniz:
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              style={{ marginLeft: '0.5rem' }}
-            />
           </label>
+          <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required
+            className="w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="example@mail.com"
+          />
         </div>
       )}
 
-      <button onClick={handlePayment} disabled={!isLoggedIn && !email.trim()}>
+      <button onClick={handlePayment} disabled={!isLoggedIn && !email.trim()}
+        className={`w-full py-3 rounded-md font-semibold text-white transition ${
+          (!isLoggedIn && !email.trim())
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-blue-600 hover:bg-blue-700'
+        }`}
+      >
         Ödəniş edin
       </button>
     </div>
