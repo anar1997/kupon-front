@@ -1,0 +1,29 @@
+/* servicesList.css */
+.services-scroll-container {
+  background-color: #f1f5f9; /* slate-100 */
+  overflow-x: auto;
+  display: flex;
+  gap: 0.5rem; /* Tailwind'deki gap-2'ye karşılık gelir */
+  padding: 1rem; /* p-4 */
+
+  scrollbar-width: thin;
+  scrollbar-color: black #e2e8f0; /* thumb black, track slate-200 */
+}
+
+.services-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.services-scroll-container::-webkit-scrollbar-track {
+  background: #e2e8f0; /* slate-200 */
+}
+
+.services-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border-radius: 4px;
+}
+
+/* Karte Hover */
+.group:hover .group-hover\:max-h-24 {
+  max-height: 6rem; /* Butonlar açıldığında yükseklik */
+}

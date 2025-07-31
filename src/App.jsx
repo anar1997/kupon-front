@@ -1,35 +1,28 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import AdminPanel from './pages/adminPanel/AdminPanel';
 import CustomerCoupons from './pages/customerCoupons/CustomerCoupons';
-import CustomerRegister from './pages/customerRegister/CustomerRegister';
-import CustomerLogin from './pages/customerLogin/CustomerLogin';
-import MyCoupons from './components/myCoupons/MyCoupons';
+import Footer from './components/footer/Footer';
+import ServiceDetail from './pages/serviceDetail/ServiceDetail';
+import CartPage from './pages/cartPage/CartPage';
+import AuthPage from './pages/auth/AuthPage';
+import Layout from './components/Header/Layout';
+import ServicePaginationPage from './pages/ServicePaginationPage/ServicePaginationPage';
 import Profile from './pages/profile/Profile';
-import ForgotPassword from './components/Password/ForgotPassword';
-import ResetPassword from './components/Password/ReseetPassword';
-import SellerPanel from './pages/sellerPanel/SellerPanel';
-import SellerCoupons from './components/sellerCoupons/SellerCoupons';
-import PaymentPage from './components/paymentPage/PaymentPage';
-import SuccessPage from './components/successPage/SuccessPage';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path='/admin' element={<AdminPanel />} />
-        <Route path='/' element={<CustomerCoupons />} />
-        <Route path='/register' element={<CustomerRegister />} />
-        <Route path='/login' element={<CustomerLogin />} />
-        <Route path='/my-coupons' element={<MyCoupons />} />
-        <Route path='/profile' element={<Profile />} /> {/* ✅ yeni */}
-        <Route path='/forgot-password' element={<ForgotPassword />} /> {/* ✅ yeni */}
-        <Route path='/reset-password/:token' element={<ResetPassword />} /> {/* ✅ yeni */}
-        <Route path="/seller" element={<SellerPanel />} />
-        <Route path="/seller-coupons" element={<SellerCoupons />} />
-        <Route path="/payment/:couponId" element={<PaymentPage />} />
-        <Route path="/success/:couponId" element={<SuccessPage />} />
-      </Routes>
+      <div className="bg-slate-100 min-h-screen">
+        {/* AuthPage dışında Header ve Footer'ı göster */}
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} /> {/* AuthPage'de Header ve Footer gösterilmez */}
+          <Route path="/" element={<><Layout /><CustomerCoupons /><Footer /></>} />
+          <Route path="/service/:id" element={<><Layout /><ServiceDetail /><Footer /></>} />
+          <Route path="/my-cart" element={<><Layout /><CartPage /><Footer /></>} />
+          <Route path="/services/:serviceName" element={<><Layout /><ServicePaginationPage /><Footer /></>} /> {/* ✅ */}
+          <Route path='/profile' element={<><Layout /><Profile /><Footer /></>}/>
+        </Routes>
+      </div>
     </Router>
   );
 }
