@@ -1,51 +1,78 @@
-// components/Footer.jsx
 import React from "react";
-import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedin } from "react-icons/fa";
+import TikTok from '../images/newFolder/Tik-Tok.jpg';
+import Nstagram from '../images/newFolder/Nstagram.jpg';  
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-200 text-gray-700 mt-20">
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-        {/* Şirket Hakkında */}
+    <footer className="bg-white border-t border-gray-200 text-gray-700">
+      <div className="max-w-7xl mx-24 py-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Logo ve Açıklama */}
         <div>
-          <h3 className="text-lg font-bold mb-2">Biz Kimik?</h3>
-          <p className="text-sm">
-            Müştərilər üçün ən yaxşı xidmətləri təqdim etməyə çalışırıq. Etibarlı və sürətli həllər üçün buradayıq.
+          <div className="flex items-center mb-2">
+            <span className="bg-yellow-300 text-black font-bold rounded-full w-10 h-10 flex items-center justify-center text-xl mr-3">K</span>
+            <div>
+              <div className="font-bold text-xl text-yellow-400">Kuponum</div>
+              <div className="text-xs font-thin text-gray-500">Bakının ən yaxşı kuponları</div>
+            </div>
+          </div>
+          <p className="text-sm font-thin mt-2 mb-4 text-gray-500">
+            Bakı şəhərinin ən yaxşı kupon və endirimlərini bir araya gətirən platform. Minlərlə müəssisədən ən sərfəli təklifləri tapın.
           </p>
-        </div>
-
-        {/* Navigasiya */}
-        <div>
-          <h3 className="text-lg font-bold mb-2">Menyular</h3>
-          <ul className="space-y-1 text-sm">
-            <li><a href="#" className="hover:underline">Ana Səhifə</a></li>
-            <li><a href="#" className="hover:underline">Xidmətlər</a></li>
-            <li><a href="#" className="hover:underline">Əlaqə</a></li>
-            <li><a href="#" className="hover:underline">Haqqımızda</a></li>
-          </ul>
-        </div>
-
-        {/* Əlaqə */}
-        <div>
-          <h3 className="text-lg font-bold mb-2">Əlaqə</h3>
-          <p className="text-sm">Email: info@example.com</p>
-          <p className="text-sm">Telefon: +994 50 123 45 67</p>
-        </div>
-
-        {/* Sosial Media */}
-        <div>
-          <h3 className="text-lg font-bold mb-2">Bizi izləyin</h3>
-          <div className="flex gap-4 mt-2">
-            <a href="#"><FaFacebookF className="hover:text-blue-600" /></a>
-            <a href="#"><FaInstagram className="hover:text-pink-500" /></a>
-            <a href="#"><FaTwitter className="hover:text-sky-500" /></a>
-            <a href="#"><FaLinkedin className="hover:text-blue-700" /></a>
+          <div className="flex gap-1">
+            <Link to="#"><img src={TikTok} className="w-8 h-8" alt="TikTok" /></Link>
+            <Link to="#"><img src={TikTok} className="w-8 h-8" alt="TikTok" /></Link>
+            <Link to="#"><img src={Nstagram} className="w-8 h-8" alt="Nstagram" /></Link>
           </div>
         </div>
+        {/* Kateqoriyalar */}
+        <div>
+          <h3 className="font-bold text-sm mb-4">Kateqoriyalar</h3>
+          <ul className="space-y-2 text-sm  font-thin text-gray-500">
+            <li>Sağlamlıq</li>
+            <li>Gözəllik</li>
+            <li>Yemək</li>
+            <li>Əyləncə</li>
+            <li>Alış-veriş</li>
+            <li>Təhsil</li>
+          </ul>
+        </div>
+        {/* Şirkət */}
+        <div>
+          <h3 className="font-bold text-sm mb-4">Şirkət</h3>
+          <ul className="space-y-2 text-sm font-thin text-gray-500">
+            <li>Haqqımızda</li>
+            <li>Karyera</li>
+            <li>Tərəfdaşlar</li>
+            <li>Əlaqə</li>
+            <li>Blog</li>
+            <li>Press</li>
+          </ul>
+        </div>
+        {/* Dəstək */}
+        <div>
+          <h3 className="font-bold text-sm mb-4">Dəstək</h3>
+          <ul className="space-y-2 text-sm font-thin mb-5 text-gray-500">
+            <li>Yardım Mərkəzi</li>
+            <li>FAQ</li>
+            <li>İstifadə Şərtləri</li>
+            <li>Məxfilik Siyasəti</li>
+            <li>Geri Qaytarma</li>
+          </ul>
+          <div className="font-bold text-sm mb-3">Müştəri Xidməti</div>
+          <div className="text-sm text-gray-500  font-thin">+994 12 555 55 55</div>
+          <div className="text-sm text-gray-500 font-thin">info@kuponum.az</div>
+        </div>
       </div>
-
-      <div className="text-center text-sm text-gray-500 border-t border-gray-100 py-4">
-        © {new Date().getFullYear()} Kuponum.az
+      <div className="border-t border-gray-300 mx-24 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+          <div>© 2024 Kuponum. Bütün hüquqlar qorunur.</div>
+          <div className="flex gap-6 mt-2 md:mt-0">
+            <a href="#">Qaydalar</a>
+            <a href="#">Şərtlər</a>
+            <a href="#">Cookie Siyasəti</a>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -38,8 +38,8 @@ const PartnerIconsBanner = () => {
     }, [width, controls]);
 
     return (
-        <div className="w-full  overflow-hidden"> {/* justify-center kaldırıldı */}
-            <div className="w-full bg-white shadow-md rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="overflow-hidden"> {/* justify-center kaldırıldı */}
+            <div className="mx-24 bg-white shadow-md rounded-2xl border border-gray-200 overflow-hidden">
                 <motion.div
                     className="flex gap-10 py-3 px-4 whitespace-nowrap"
                     ref={containerRef}
@@ -54,7 +54,7 @@ const PartnerIconsBanner = () => {
                             key={idx}
                             className="flex flex-col items-center text-center min-w-[100px]"
                         >
-                            <div className="bg-white rounded-full p-3 shadow">{item.icon}</div>
+                            <div className="bg-white rounded-full shadow">{item.icon}</div>
                             <span className="text-sm mt-2 font-medium">{item.name}</span>
                         </div>
                     ))}

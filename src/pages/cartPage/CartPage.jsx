@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import mobile from "../../components/images/mobile.webp"; // sahte resim
-import { FiPlus, FiMinus } from "react-icons/fi";
+import { FiPlus, FiMinus, FiTag } from "react-icons/fi";
 
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([
@@ -55,8 +55,10 @@ const CartPage = () => {
         0
     );
 
+    const userBalance = 150;
+
     return (
-        <div className="bg-slate-100 p-4 min-h-screen">
+        <div className="bg-slate-100 px-24 p-4 min-h-screen">
             {/* Breadcrumb */}
             <div className="text-sm text-gray-600 mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt; <span className="font-semibold text-black">Səbət</span>
@@ -137,27 +139,58 @@ const CartPage = () => {
                         })}
                     </div>
 
-                    {/* Sağ Kısım */}
-                    <div className="bg-white p-4 rounded-xl shadow h-fit">
-                        <h3 className="text-lg font-semibold mb-4">Xİdmətlər: {totalServices} xidmət</h3>
-                        <ul className="text-sm space-y-2 mb-4">
-                            {cartItems.map((item) => (
-                                <li key={item.id}>
-                                    {item.name} ({item.quantity}x) –
-                                    <span className="text-green-700 font-semibold ml-1">
-                                        {(item.couponPrice * item.quantity).toFixed(2)} ₼
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                        <hr className="my-3" />
-                        <div className="flex justify-between text-md font-semibold">
-                            <span>Ümumi Kupon Qiyməti:</span>
-                            <span>{totalCouponPrice.toFixed(2)} ₼</span>
+                    {/* Sağ Kısım - c-1.png dizaynı */}
+                    <div className="bg-white p-6 rounded-2xl shadow h-fit border">
+                        <h3 className="text-lg font-semibold mb-4">Sifariş Xülasəsi</h3>
+                        {/* Promo kod */}
+                        <div className="flex gap-2 mb-4">
+                            <input
+                                type="text"
+                                placeholder="Promo kod daxil edin"
+                                className="flex-1 border rounded-lg px-3 py-2 bg-gray-50 outline-none"
+                            />
+                            <button className="flex items-center gap-1 border px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700">
+                                <FiTag /> Təsdiq
+                            </button>
                         </div>
-                        <button className="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
-                            Al
+                        <hr className="my-3" />
+                        {/* Alt cəmi və endirim */}
+                        <div className="flex justify-between mb-2 text-gray-700">
+                            <span>Alt cəmi</span>
+                            <span>
+                                {(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)).toFixed(2)} ₼
+                            </span>
+                        </div>
+                        <div className="flex justify-between mb-2 text-green-600">
+                            <span>Kupon endirimi</span>
+                            <span>
+                                -{(cartItems.reduce((sum, item) => sum + (item.price - ((item.price * (100 - item.discountPercent)) / 100)) * item.quantity, 0)).toFixed(2)} ₼
+                            </span>
+                        </div>
+                        <hr className="my-3" />
+                        {/* Cəmi */}
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="font-bold text-2xl">CƏMİ</span>
+                            <span className="font-bold text-2xl text-[#FFEB3B]">
+                                {(cartItems.reduce((sum, item) => sum + ((item.price * (100 - item.discountPercent)) / 100) * item.quantity, 0)).toFixed(2)} ₼
+                            </span>
+                        </div>
+                        <hr className="my-3" />
+                        {/* Balans istifadəsi */}
+                        <div className="flex justify-between items-center mb-2 text-sm">
+                            <span className="text-gray-700">Balans istifadəsi</span>
+                            <span className="text-[#FFEB3B] font-semibold">Mövcud: {userBalance} ₼</span>
+                        </div>
+                        <button className="w-full border rounded-lg py-2 mb-4 bg-white hover:bg-gray-100 transition font-semibold">
+                            Bütün balansı istifadə et
                         </button>
+                        {/* Sifarişi tamamla */}
+                        <button className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-base mb-2">
+                            Sifarişi Tamamla
+                        </button>
+                        <div className="text-center text-xs text-gray-400 mt-2">
+                            Ödəniş təhlükəsiz şəkildə həyata keçirilir
+                        </div>
                     </div>
                 </div>
             )}

@@ -39,7 +39,7 @@ const ServiceDetail = () => {
     };
 
     return (
-        <div className="bg-slate-100 p-4 min-h-screen">
+        <div className="bg-slate-100 px-24 p-4 min-h-screen">
             {/* Breadcrumb */}
             <div className="text-sm text-gray-600 mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}

@@ -3,36 +3,41 @@ import PartnerIconsBanner from "../../components/banner/PartnerIconsBanner";
 import ServicesList from "../../components/servicesList/ServicesList";
 import AutoSlider from "../../components/banner/AutoSLider";
 import PremiumBannerSlider from "../../components/banner/PremiumBanner";
+import AllServices from "../../components/servicesList/AllServices";
+import StaticKatalog from "../../components/katalog/StaticKatalog";
+import categoryData from "../../components/data/CategoryData";
 
 
 const CustomerCoupons = () => {
 
   return (
-    <div className="bg-slate-100">
-      <div className="sticky top-0 z-50 bg-white">
-
-      </div>
-
+    <div className="bg-[#F9FAFB]">
       {/* İçerik Alanı */}
-      <div className="flex flex-col md:flex-row px-4 md:px-16 py-10 gap-12">
+      <div className="flex flex-col xl:mx-24 mx-10 lg:flex-row xl:flex-row items-start justify-between pt-5 pb-3 gap-5">
         {/* Sol Kısım - Banner (AutoSlider) */}
-        <div className="md:w-7/12 w-full relative z-10">
+        <div className='relative z-10 hidden xl:block xl:w-[20%]'>
+          <StaticKatalog categoryData={categoryData} />
+        </div>
+        
+        {/* Orta Kısım - Banner (AutoSlider) */}
+        <div className="relative w-full md:w-full lg:w-[70%] xl:w-[55%]">
           <AutoSlider />
         </div>
 
         {/* Sağ Kısım - Premium Banner (PremiumBannerSlider) */}
-        <div className="md:w-5/12 w-full relative z-10">
+        <div className="relative w-full md:w-full lg:w-[30%] xl:w-[25%]">
           <PremiumBannerSlider />
         </div>
       </div>
 
-      {/* Partner Hizmet İkonları Banner */}
-      <div className="px-4">
-        <PartnerIconsBanner />
+      <div id="customer-coupons" className="">
+        {/* <ServicesList /> */}
+        <AllServices/>
       </div>
 
-      <div className="mt-12">
-        <ServicesList />
+      {/* Partner Hizmet İkonları Banner */}
+      <div className="pt-2 pb-14">
+        <PartnerIconsBanner />
       </div>
     </div>
   );

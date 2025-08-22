@@ -30,7 +30,7 @@ const AutoSlider = () => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg shadow-lg">
+    <div className="relative overflow-hidden rounded-lg shadow-lg">
       <div
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -40,7 +40,7 @@ const AutoSlider = () => {
             <img
               src={banner}
               alt={`Slider Banner ${index + 1}`}
-              className="w-full h-[450px]"
+              className="w-full lg:h-[650px]"
             />
           </div>
         ))}
@@ -51,7 +51,7 @@ const AutoSlider = () => {
         onClick={handlePrevClick}
         className="absolute top-1/2 left-2 transform -translate-y-1/2  text-white p-2 rounded-full"
       >
-        <FaChevronLeft size={24} />
+        <FaChevronLeft size={12} />
       </button>
 
       {/* Sağ ok */}
@@ -59,7 +59,7 @@ const AutoSlider = () => {
         onClick={handleNextClick}
         className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white p-2 rounded-full"
       >
-        <FaChevronRight size={24} />
+        <FaChevronRight size={12} />
       </button>
     </div>
   );

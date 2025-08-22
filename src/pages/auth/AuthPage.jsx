@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./AuthPage.css"; // CSS'i import ettik
+import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaRegEyeSlash } from "react-icons/fa";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
   // Mavi panelin sağa ve sola kayması için active state'i
   const toggleAuth = () => {
@@ -14,14 +17,40 @@ const AuthPage = () => {
       {/* Login Box */}
       <div className="form-box login">
         <form action="#">
-          <h1>Daxil ol</h1>
-          <div className="input-box">
-            <input type="text" placeholder="İstifadəçi adı" required />
-            <i className="bx bxs-user"></i>
+          <div className="flex flex-col items-center justify-center mb-6">
+            <h1>Xoş gəlmisiniz!</h1>
+            <p className="text-gray-500">Hesabınıza daxil olun</p>
           </div>
-          <div className="input-box">
-            <input type="password" placeholder="Parol" required />
-            <i className="bx bxs-lock-alt"></i>
+          <div className="mb-5">
+            <label className="block text-xs font-medium text-gray-700 text-left">Email</label>
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="email@example.com"
+                required
+                className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaEnvelope className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+            </div>
+          </div>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Şifrə</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••"
+                required
+                autoComplete="new-password"
+                className="w-full py-1.5 pl-8 pr-8 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaLock className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+              <span
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-base text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? <FaRegEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </div>
           <div className="forgot-link">
             <a href="#">Parolu unutmusunuz?</a>
@@ -40,29 +69,107 @@ const AuthPage = () => {
       </div>
 
       {/* Register Box */}
-      <div className="form-box register">
-        <form action="#">
-          <h1>Qeydiyyat</h1>
-          <div className="input-box">
-            <input type="text" placeholder="İstifadəçi adı" required />
-            <i className="bx bxs-user"></i>
+      <div className="form-box register flex items-center justify-center">
+        <form className="w-full max-w-xs mx-auto bg-white" action="#">
+          <h1 className="text-lg font-bold mb-4 text-center">Qeydiyyat</h1>
+          <div className="flex gap-2 mb-2 mt-10">
+            <div className="w-1/2">
+              <label className="block text-xs font-medium text-gray-700 text-left">Ad</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Adınız"
+                  required
+                  className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
+                />
+                <FaUser className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+              </div>
+            </div>
+            <div className="w-1/2">
+              <label className="block text-xs font-medium text-gray-700 text-left">Soyad</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Soyadınız"
+                  required
+                  className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
+                />
+                <FaUser className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+              </div>
+            </div>
           </div>
-          <div className="input-box">
-            <input type="email" placeholder="Email" required />
-            <i className="bx bxs-envelope"></i>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Email</label>
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="email@example.com"
+                required
+                className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaEnvelope className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+            </div>
           </div>
-          <div className="input-box">
-            <input type="password" placeholder="Parol" required />
-            <i className="bx bxs-lock-alt"></i>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Telefon (istəyə bağlı)</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="+994 50 123 45 67"
+                className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaPhone className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+            </div>
           </div>
-          <button className="btn">Qeydiyyatdan keç</button>
-          <p>Digər sosial şəbəkə səhifələrimiz</p>
-          <div className="social-icons">
-            <a href="#"><i className="bx bxl-google"></i></a>
-            <a href="#"><i className="bx bxl-facebook"></i></a>
-            <a href="#"><i className="bx bxl-github"></i></a>
-            <a href="#"><i className="bx bxl-linkedin"></i></a>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Şifrə</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••"
+                required
+                autoComplete="new-password"
+                className="w-full py-1.5 pl-8 pr-8 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaLock className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+              <span
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-base text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? <FaRegEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </div>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Şifrəni Təkrarla</label>
+            <div className="relative">
+              <input
+                type={showRepeatPassword ? "text" : "password"}
+                placeholder="••••••"
+                required
+                autoComplete="new-password"
+                className="w-full py-1.5 pl-8 pr-8 rounded bg-gray-100 text-sm border-none outline-none"
+              />
+              <FaLock className="absolute left-2 top-1/2 -translate-y-1/2 text-base text-gray-400" />
+              <span
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-base text-gray-400 cursor-pointer"
+                onClick={() => setShowRepeatPassword((v) => !v)}
+              >
+                {showRepeatPassword ? <FaRegEyeSlash /> : <FaEye />}
+              </span>
+            </div>
+          </div>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-gray-700 text-left">Referal Kod (istəyə bağlı)</label>
+            <input
+              type="text"
+              placeholder="FRIEND2024"
+              className="w-full py-1.5 pl-4 pr-2 rounded bg-gray-100 text-sm border-none outline-none text-gray-400"
+            />
+          </div>
+          <button className="w-full h-10 bg-[#ffcc00] rounded font-semibold text-sm text-black mt-4 transition hover:bg-yellow-400">
+            Qeydiyyatdan keç
+          </button>
         </form>
       </div>
 

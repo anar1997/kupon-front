@@ -9,11 +9,11 @@
 
 
 .container {
-    position: absolute; /* Konumlandırmayı sabitle */
-    top: 50%; /* Yükseklik ortalama */
-    left: 50%; /* Genişlik ortalama */
-    transform: translate(-50%, -50%); /* Gerçek ortalama işlemi */
-    width: 850px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 850px;
     height: 550px;
     background: #fff;
     border-radius: 30px;
@@ -24,7 +24,7 @@
 
 .container h1 {
     font-size: 36px;
-    margin: -10px 0;
+    margin: -16px 0;
 }
 
 .container p {
@@ -169,6 +169,7 @@
 .container.active .toggle-panel.toggle-right {
     right: 0;
 }
+
 @media (max-width: 768px) {
     .container h1 {
         font-size: 28px;

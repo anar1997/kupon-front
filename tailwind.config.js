@@ -4,7 +4,11 @@ export default {
     "./src/**/*.{html,js,jsx,ts,tsx}", // Tüm JSX ve diğer dosyaları kapsar
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        '532': '532px', // 532px'lik özel bir breakpoint tanımla
+      },
+    },
   },
   plugins: [],
 }
