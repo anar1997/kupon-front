@@ -1,0 +1,17 @@
+.thin-scrollbar {
+  scrollbar-width: thin;           /* Firefox */
+  scrollbar-color: #d1d5db #f3f4f6; /* thumb ve track renkleri (Tailwind slate-300 ve slate-100) */
+}
+
+/* Chrome, Edge, Safari için */
+.thin-scrollbar::-webkit-scrollbar {
+  height: 2px;      /* yatay scrollbar için */
+  width: 6px;       /* dikey scrollbar için */
+  background: #f3f4f6;
+  border-radius: 2px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}

@@ -39,7 +39,7 @@ const PartnerIconsBanner = () => {
 
     return (
         <div className="overflow-hidden"> {/* justify-center kaldırıldı */}
-            <div className="mx-24 bg-white shadow-md rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="xl:mx-24 sm:mx-10 mx-6 bg-white shadow-md rounded-2xl border border-gray-200 overflow-hidden">
                 <motion.div
                     className="flex gap-10 py-3 px-4 whitespace-nowrap"
                     ref={containerRef}

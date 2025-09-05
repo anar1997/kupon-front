@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import CardElement from '../serviceCard/CardElement'
 import banner3 from "../images/banner-3.webp";
 import { IoFilterOutline } from "react-icons/io5";
 import { CiFilter } from "react-icons/ci";
+import { useDispatch, useSelector } from 'react-redux';
+import { getCouponsAsync } from '../../redux/slices/couponSlice';
 
 const categoryOptions = [
     "Bütün kateqoriyalar",
@@ -263,12 +265,19 @@ const services = [
 ]
 
 const AllServices = () => {
+    const dispatch = useDispatch();
+    const {coupons, isLoading, error} = useSelector(state => state.coupon);
+
     const [selectedCategory, setSelectedCategory] = useState(categoryOptions[0]);
     const [selectedRegion, setSelectedRegion] = useState(regionOptions[0]);
     const [selectedSort, setSelectedSort] = useState(sortOptions[0]);
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 12;
 
+    useEffect(() => {
+        dispatch(getCouponsAsync());
+    }, [dispatch]);
+    
     // Filter
     let filtered = services.filter(s =>
         (selectedCategory === "Bütün kateqoriyalar" || s.category === selectedCategory) &&
@@ -298,92 +307,92 @@ const AllServices = () => {
     }, [selectedCategory, selectedRegion, selectedSort]);
 
     return (
-        <div className="w-full min-h-screen bg-[#FAFBFC] py-4">
-            {/* Filter Bar */}
-            <div className="mx-24 mb-6">
-                <div className="flex items-center justify-between bg-white rounded-xl px-6 py-4 shadow border border-gray-100">
-                    <div className="flex items-center gap-2">
-                        <CiFilter size={22} className='text-[#FAD800]'/>
-                        <span className="font-semibold text-base text-gray-700">Filterlər:</span>
-                        <select
-                            className="ml-4 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
-                            value={selectedCategory}
-                            onChange={e => setSelectedCategory(e.target.value)}
-                        >
-                            {categoryOptions.map(opt => (
-                                <option key={opt}>{opt}</option>
-                            ))}
-                        </select>
-                        <select
-                            className="ml-2 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
-                            value={selectedRegion}
-                            onChange={e => setSelectedRegion(e.target.value)}
-                        >
-                            {regionOptions.map(opt => (
-                                <option key={opt}>{opt}</option>
-                            ))}
-                        </select>
-                        <select
-                            className="ml-2 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
-                            value={selectedSort}
-                            onChange={e => setSelectedSort(e.target.value)}
-                        >
-                            {sortOptions.map(opt => (
-                                <option key={opt}>{opt}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <button className="border border-[#FFF283] text-[#FAD800] hover:text-black text-xs font-medium rounded-lg px-5 py-2 bg-white hover:bg-[#FFF283] transition flex items-center gap-2">
-                        <IoFilterOutline size={20} />
-                        Ətraflı Filterlər
-                    </button>
-                </div>
-            </div>
-
-            {/* All Services Title */}
-            <div className="mx-24 bg-white rounded-2xl px-8 py-6 shadow border">
-                <div className="mb-6">
-                    <div className="text-xl font-black mb-1">Bütün Kuponlar</div>
-                    <div className="text-gray-400 text-sm mb-2">{filtered.length} nəticə tapıldı</div>
-                </div>
-
-                {/* Card List */}
-                <div className="border-t-2 pt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {paginated.map((service) => (
-                        <CardElement key={service.id} {...service} />
+       <div className="w-full min-h-screen bg-[#FAFBFC] py-2 sm:py-4">
+    {/* Filter Bar */}
+    <div className="xl:mx-24 sm:mx-10 mx-6 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white rounded-xl px-2 sm:px-6 py-2 sm:py-4 shadow border border-gray-100 gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+                <CiFilter size={22} className='text-[#FAD800]'/>
+                <span className="font-semibold text-base sm:text-lg text-gray-700">Filterlər:</span>
+                <select
+                    className="ml-2 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
+                    value={selectedCategory}
+                    onChange={e => setSelectedCategory(e.target.value)}
+                >
+                    {categoryOptions.map(opt => (
+                        <option key={opt}>{opt}</option>
                     ))}
-                </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center mt-8 gap-2">
-                        <button
-                            className="px-3 py-1 rounded border bg-white disabled:opacity-50"
-                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                            disabled={currentPage === 1}
-                        >
-                            &lt;
-                        </button>
-                        {Array.from({ length: totalPages }).map((_, idx) => (
-                            <button
-                                key={idx}
-                                className={`px-3 py-1 rounded border ${currentPage === idx + 1 ? 'bg-yellow-200 font-bold' : 'bg-white'}`}
-                                onClick={() => setCurrentPage(idx + 1)}
-                            >
-                                {idx + 1}
-                            </button>
-                        ))}
-                        <button
-                            className="px-3 py-1 rounded border bg-white disabled:opacity-50"
-                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                            disabled={currentPage === totalPages}
-                        >
-                            &gt;
-                        </button>
-                    </div>
-                )}
+                </select>
+                <select
+                    className="ml-2 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
+                    value={selectedRegion}
+                    onChange={e => setSelectedRegion(e.target.value)}
+                >
+                    {regionOptions.map(opt => (
+                        <option key={opt}>{opt}</option>
+                    ))}
+                </select>
+                <select
+                    className="ml-2 px-2 py-2 text-xs rounded-lg border border-yellow-100 bg-[#F8F8F8] text-gray-700 font-medium focus:outline-none"
+                    value={selectedSort}
+                    onChange={e => setSelectedSort(e.target.value)}
+                >
+                    {sortOptions.map(opt => (
+                        <option key={opt}>{opt}</option>
+                    ))}
+                </select>
             </div>
+            <button className="border border-[#FFF283] text-[#FAD800] hover:text-black text-xs font-medium rounded-lg px-3 sm:px-5 py-2 bg-white hover:bg-[#FFF283] transition flex items-center gap-2 mt-2 sm:mt-0">
+                <IoFilterOutline size={20} />
+                Ətraflı Filterlər
+            </button>
         </div>
+    </div>
+
+    {/* All Services Title */}
+    <div className="xl:mx-24 sm:mx-10 mx-6 bg-white rounded-2xl px-2 sm:px-4 md:px-8 py-4 sm:py-6 shadow border">
+        <div className="mb-4 sm:mb-6">
+            <div className="text-lg sm:text-xl font-black mb-1">Bütün Kuponlar</div>
+            <div className="text-gray-400 text-xs sm:text-sm mb-2">{filtered.length} nəticə tapıldı</div>
+        </div>
+
+        {/* Card List */}
+        <div className="border-t-2 pt-4 sm:pt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {paginated.map((service) => (
+                <CardElement key={service.id} {...service} />
+            ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+            <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
+                <button
+                    className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                >
+                    &lt;
+                </button>
+                {Array.from({ length: totalPages }).map((_, idx) => (
+                    <button
+                        key={idx}
+                        className={`px-2 sm:px-3 py-1 rounded border text-xs sm:text-sm ${currentPage === idx + 1 ? 'bg-yellow-200 font-bold' : 'bg-white'}`}
+                        onClick={() => setCurrentPage(idx + 1)}
+                    >
+                        {idx + 1}
+                    </button>
+                ))}
+                <button
+                    className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                >
+                    &gt;
+                </button>
+            </div>
+        )}
+    </div>
+</div>
     )
 }
 

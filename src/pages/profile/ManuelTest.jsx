@@ -10,25 +10,26 @@ const ManuelTest = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col px-24 gap-8 items-center w-full my-8">
+        <div className="flex flex-col xl:px-24 sm:px-10 px-6 gap-8 items-center w-full my-8">
             {/* Breadcrumb */}
             <div className="w-full">
-                <div className="text-sm text-gray-600 mb-4">
+                <div className="text-sm text-gray-600">
                     <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}
                     <span className="font-semibold text-black">Profilim</span>
                 </div>
             </div>
 
             {/* Profile Card */}
-            <div className="w-full bg-gradient-to-r from-[#F9F9F4] to-[#FAF9EE] rounded-xl flex items-center px-8 py-6 shadow">  {/* Avatar */}
-                <div className="w-20 h-20 rounded-full bg-[#FFF176] flex items-center justify-center text-black text-3xl font-bold mr-6">
+            <div className="w-full bg-gradient-to-r from-[#F9F9F4] to-[#FAF9EE] rounded-xl flex flex-col sm:flex-row items-center px-4 sm:px-8 py-4 sm:py-6 shadow gap-4 sm:gap-0">
+                {/* Avatar */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FFF176] flex items-center justify-center text-black text-2xl sm:text-3xl font-bold mb-4 sm:mb-0 sm:mr-6">
                     A
                 </div>
                 {/* Info */}
-                <div className="flex-1">
-                    <div className="text-xl font-semibold">Anar Quliyev</div>
-                    <div className="text-gray-500 text-xs">abbasquliyev111@gmail.com</div>
-                    <div className="flex items-center gap-3 mt-2">
+                <div className="flex-1 text-center sm:text-left">
+                    <div className="text-lg sm:text-xl font-semibold">Anar Quliyev</div>
+                    <div className="text-gray-500 text-xs sm:text-xs">abbasquliyev111@gmail.com</div>
+                    <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 mt-2 justify-center sm:justify-start">
                         <span className="bg-[#FAD800] text-black text-xs px-2 py-1 rounded">Premium Üzv</span>
                         <span className="flex items-center gap-1 font-semibold text-[#FAD800] text-sm">
                             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><text x="12" y="16" textAnchor="middle" fontSize="12" fill="currentColor">₼</text></svg>
@@ -37,15 +38,15 @@ const ManuelTest = () => {
                     </div>
                 </div>
                 {/* Actions */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 justify-center sm:justify-end">
                     <button
-                        className="bg-white border border-gray-300 rounded px-4 py-1 text-sm font-medium"
+                        className="bg-white border border-gray-300 rounded px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium"
                         onClick={() => navigate('/coupons')}
                     >
                         Kuponlarım
                     </button>
                     <button
-                        className="bg-[#FAD800] text-black rounded px-4 py-1 text-sm font-medium flex items-center gap-1"
+                        className="bg-[#FAD800] text-black rounded px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium flex items-center gap-1"
                         onClick={() => navigate('/increase-balans')}
                     >
                         <span className="text-lg font-bold">+</span> Balans
@@ -53,7 +54,7 @@ const ManuelTest = () => {
                 </div>
             </div>
             {/* Stats */}
-            <div className="w-full flex justify-between gap-6">
+            <div className="w-full flex flex-col 367:flex-row justify-between gap-6">
                 <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
                     <div className="text-xl text-[#FAD800] font-bold">12</div>
                     <div className="text-gray-500 text-xs mt-2">Alınmış Kupon</div>

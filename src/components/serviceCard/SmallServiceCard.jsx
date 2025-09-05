@@ -39,7 +39,7 @@ const SmallServiceCard = ({
                 )}
                 {discountPercent > 0 ? (
                     <div className="text-xs mb-2">
-                        <p className="text-red-600 font-bold">{discountedPrice.toFixed(2)} ₼</p>
+                        <p className="text-[#FAD800] font-bold">{discountedPrice.toFixed(2)} ₼</p>
                         <p className="line-through text-gray-500">{price.toFixed(2)} ₼</p>
                         <p className="text-green-600 font-semibold">-{discountPercent}%</p>
                     </div>
@@ -54,7 +54,7 @@ const SmallServiceCard = ({
                         e.stopPropagation(); // ✅ tıklamayı kartın üst divine bulaştırmaz
                         onAddToCart();
                     }}
-                    className="flex-1 bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 transition flex items-center justify-center gap-1"
+                    className="flex-1 bg-[#FAD800] text-black text-xs px-2 py-1 rounded hover:bg-[#ac9709] transition flex items-center justify-center gap-1"
                 >
                     <FiShoppingCart size={14} />
                     Səbət

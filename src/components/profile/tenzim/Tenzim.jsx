@@ -22,7 +22,7 @@ const Tenzim = () => {
       {/* Hesab Hərəkətləri */}
       <div className="bg-white rounded-2xl px-8 pt-5 flex flex-col gap-4">
         <div className="text-sm font-semibold">Hesab Hərəkətləri</div>
-        <div className="bg-red-100 rounded px-4 py-4">
+        <div className="bg-red-100 mb-12 rounded px-4 py-4">
           <div className="text-red-600 font-semibold text-sm mb-2">Diqqət</div>
           <div className="text-red-600 text-xs mb-4">Bu hərəkətlər geri qaytarıla bilməz</div>
           <button className="bg-red-600 text-xs text-white rounded px-4 py-2 font-medium flex items-center gap-2 w-full justify-center">

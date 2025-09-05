@@ -58,7 +58,7 @@ const CartPage = () => {
     const userBalance = 150;
 
     return (
-        <div className="bg-slate-100 px-24 p-4 min-h-screen">
+        <div className="bg-slate-100 xl:px-24 sm:px-10 px-6 py-4 min-h-screen">
             {/* Breadcrumb */}
             <div className="text-sm text-gray-600 mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt; <span className="font-semibold text-black">Səbət</span>
@@ -140,28 +140,28 @@ const CartPage = () => {
                     </div>
 
                     {/* Sağ Kısım - c-1.png dizaynı */}
-                    <div className="bg-white p-6 rounded-2xl shadow h-fit border">
-                        <h3 className="text-lg font-semibold mb-4">Sifariş Xülasəsi</h3>
+                    <div className="bg-white p-4 sm:p-6 rounded-2xl shadow h-fit border">
+                        <h3 className="text-base sm:text-lg font-semibold mb-4">Sifariş Xülasəsi</h3>
                         {/* Promo kod */}
-                        <div className="flex gap-2 mb-4">
+                        <div className="flex flex-col xl:flex-row gap-2 mb-4">
                             <input
                                 type="text"
                                 placeholder="Promo kod daxil edin"
-                                className="flex-1 border rounded-lg px-3 py-2 bg-gray-50 outline-none"
+                                className="flex-1 border rounded-lg px-3 py-2 bg-gray-50 outline-none text-xs sm:text-sm"
                             />
-                            <button className="flex items-center gap-1 border px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700">
+                            <button className="flex items-center gap-1 border px-3 sm:px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700 text-xs sm:text-sm">
                                 <FiTag /> Təsdiq
                             </button>
                         </div>
                         <hr className="my-3" />
                         {/* Alt cəmi və endirim */}
-                        <div className="flex justify-between mb-2 text-gray-700">
+                        <div className="flex justify-between mb-2 text-gray-700 text-xs lg:text-base">
                             <span>Alt cəmi</span>
                             <span>
                                 {(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)).toFixed(2)} ₼
                             </span>
                         </div>
-                        <div className="flex justify-between mb-2 text-green-600">
+                        <div className="flex justify-between mb-2 text-green-600 text-xs lg:text-base">
                             <span>Kupon endirimi</span>
                             <span>
                                 -{(cartItems.reduce((sum, item) => sum + (item.price - ((item.price * (100 - item.discountPercent)) / 100)) * item.quantity, 0)).toFixed(2)} ₼
@@ -170,22 +170,22 @@ const CartPage = () => {
                         <hr className="my-3" />
                         {/* Cəmi */}
                         <div className="flex justify-between items-center mb-2">
-                            <span className="font-bold text-2xl">CƏMİ</span>
-                            <span className="font-bold text-2xl text-[#FFEB3B]">
+                            <span className="font-bold text-lg lg:text-2xl">CƏMİ</span>
+                            <span className="font-bold text-lg lg:text-2xl text-[#FFEB3B]">
                                 {(cartItems.reduce((sum, item) => sum + ((item.price * (100 - item.discountPercent)) / 100) * item.quantity, 0)).toFixed(2)} ₼
                             </span>
                         </div>
                         <hr className="my-3" />
                         {/* Balans istifadəsi */}
-                        <div className="flex justify-between items-center mb-2 text-sm">
+                        <div className="flex justify-between items-center mb-2 text-xs lg:text-sm">
                             <span className="text-gray-700">Balans istifadəsi</span>
                             <span className="text-[#FFEB3B] font-semibold">Mövcud: {userBalance} ₼</span>
                         </div>
-                        <button className="w-full border rounded-lg py-2 mb-4 bg-white hover:bg-gray-100 transition font-semibold">
+                        <button className="w-full border rounded-lg py-2 mb-4 bg-white hover:bg-gray-100 transition font-semibold text-xs lg:text-base">
                             Bütün balansı istifadə et
                         </button>
                         {/* Sifarişi tamamla */}
-                        <button className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-base mb-2">
+                        <button className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2">
                             Sifarişi Tamamla
                         </button>
                         <div className="text-center text-xs text-gray-400 mt-2">

@@ -15,7 +15,7 @@ const Connection = () => {
     };
 
     return (
-        <div className="bg-[#FAFBFC] px-24 min-h-screen py-8">
+        <div className="bg-[#FAFBFC] xl:px-24 sm:px-10 px-6 min-h-screen py-8">
              {/* Breadcrumb */}
             <div className="w-full">
                 <div className="text-sm text-gray-600 mb-4">

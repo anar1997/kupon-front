@@ -59,7 +59,7 @@ const Referal = () => {
             <div className="text-green-600 font-semibold">+25 ₼</div>
           </div>
         </div>
-        <button className="bg-[#FFF283] text-black rounded px-4 py-2 mt-4 font-semibold w-40 mx-auto text-xs flex items-center gap-2 justify-center">
+        <button className="bg-[#FFF283] mb-12 text-black rounded px-4 py-2 mt-4 font-semibold w-40 mx-auto text-xs flex items-center gap-2 justify-center">
           <span>🔗</span> Dostları Dəvət Et
         </button>
       </div>

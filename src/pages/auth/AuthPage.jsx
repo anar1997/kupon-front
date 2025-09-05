@@ -1,11 +1,31 @@
 import React, { useState } from "react";
 import "./AuthPage.css"; // CSS'i import ettik
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash, FaRegEyeSlash } from "react-icons/fa";
+import { useFormik } from "formik";
+import { useDispatch } from "react-redux";
+import { postLoginAsync } from "../../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: ""
+    },
+    onSubmit: (values) => {
+      dispatch(postLoginAsync(values)).then(() => {
+        navigate("/");
+        window.location.reload();
+      });
+    }
+  })
 
   // Mavi panelin sağa ve sola kayması için active state'i
   const toggleAuth = () => {
@@ -16,7 +36,7 @@ const AuthPage = () => {
     <div className={`container ${!isLogin ? 'active' : ''}`}>
       {/* Login Box */}
       <div className="form-box login">
-        <form action="#">
+        <form action="#" onSubmit={formik.handleSubmit}>
           <div className="flex flex-col items-center justify-center mb-6">
             <h1>Xoş gəlmisiniz!</h1>
             <p className="text-gray-500">Hesabınıza daxil olun</p>
@@ -27,6 +47,12 @@ const AuthPage = () => {
               <input
                 type="email"
                 placeholder="email@example.com"
+                id="email"
+                name="email"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.email}
+                value={formik.values.email}
                 required
                 className="w-full py-1.5 pl-8 pr-2 rounded bg-gray-100 text-sm border-none outline-none"
               />
@@ -39,6 +65,12 @@ const AuthPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••"
+                id="password"
+                name="password"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.password}
+                value={formik.values.password}
                 required
                 autoComplete="new-password"
                 className="w-full py-1.5 pl-8 pr-8 rounded bg-gray-100 text-sm border-none outline-none"
