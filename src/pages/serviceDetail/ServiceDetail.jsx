@@ -1,34 +1,113 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
-import mobile from "../../components/images/mobile.webp";
-import tree from "../../components/images/tree.jpg";
-import ServiceCard from "../../components/serviceCard/ServiceCard";
-import SmallServiceCard from "../../components/serviceCard/SmallServiceCard";
-
-const fakeService = {
-    id: 1,
-    name: "Stomatoloq Xidməti",
-    category: "Səhiyyə",
-    subcategory: "Diş müalicəsi",
-    images: [mobile, mobile, tree],
-    price: 100,
-    discountPercent: 20,
-    couponPrice: 8,
-    duration: "30 gün",
-};
-
-const similarServices = [
-    { id: 2, name: "Ortodont", image: mobile, price: 120, discountPercent: 10, duration: "30 gün", },
-    { id: 3, name: "İmplantasiya", image: mobile, price: 200, discountPercent: 15, duration: "30 gün", },
-];
+import banner3 from "../../components/images/banner-3.webp";
+import CardElement from "../../components/serviceCard/CardElement"; // ✅ Eklendi
+import { useDispatch, useSelector } from "react-redux";
+import { getCouponBySlugAsync, getCouponsAsync } from "../../redux/slices/couponSlice";
 
 const ServiceDetail = () => {
-    const { id } = useParams();
-    const [mainImage, setMainImage] = useState(fakeService.images[0]);
+    const dispatch = useDispatch();
+    const { selectedCoupon, isLoading, coupons, error, count } = useSelector(state => state.coupon);
 
-    const discountedPrice =
-        (fakeService.price * (100 - fakeService.discountPercent)) / 100;
+    const { slug } = useParams();
+    const [mainImage, setMainImage] = useState(banner3);
+
+    // Alternatif hizmetler pagination
+    const [similarPage, setSimilarPage] = useState(1);
+    const SIMILAR_PER_PAGE = 8;
+
+
+
+    // Detay kupon
+    useEffect(() => {
+        dispatch(getCouponBySlugAsync(slug));
+        setSimilarPage(1); // slug değişince alternatiflerin ilk sayfasına dön
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [slug, dispatch]);
+
+    // Kupon liste (alternatifler) – filtre/sort barı yok, sadece sayfalama
+    useEffect(() => {
+        if (!selectedCoupon?.category) return;
+        dispatch(getCouponsAsync({
+            offset: (similarPage - 1) * SIMILAR_PER_PAGE,
+            category: "",
+            shop_region: "",
+            category: selectedCoupon.category,
+        }));
+    }, [dispatch, similarPage, selectedCoupon?.category]);
+
+    useEffect(() => {
+        if (selectedCoupon) {
+            const firstImg =
+                selectedCoupon.images?.[0]?.image ||
+                selectedCoupon.images?.[0] ||
+                selectedCoupon.shop?.images?.[0]?.image ||
+                null;
+            setMainImage(firstImg);
+        } else {
+            setMainImage(banner3);
+        }
+    }, [selectedCoupon]);
+
+     // Loading / null guard önce gelsin
+    if (!selectedCoupon) {
+        return <div className="p-10 text-center">Yüklənir...</div>;
+    }
+
+    // Map + mevcut kuponu çıkar
+    const mappedCoupons = coupons
+        .filter(c =>
+            c.slug !== slug &&
+            String(c.category) === String(selectedCoupon.category)
+        )
+        .map(coupon => ({
+            id: coupon.id,
+            slug: coupon.slug,
+            title: coupon.name,
+            image: coupon.shop?.images?.[0]?.image || banner3,
+            isVip: coupon.is_active,
+            isPremium: false,
+            discountPercent: coupon.discount,
+            oldPrice: Number(coupon.price) + Number(coupon.discount),
+            price: Number(coupon.price),
+            saved: coupon.discount,
+            duration: coupon.start_date && coupon.end_date
+                ? `${Math.ceil((new Date(coupon.end_date) - new Date(coupon.start_date)) / (1000 * 60 * 60 * 24))} gün`
+                : "",
+            rating: 4.5,
+            ratingCount: 10,
+            category: coupon.category || "Təhsil",
+            location: coupon.shop?.region?.name || "Bakı",
+            region: coupon.shop?.region?.name || "Bakı",
+        }))
+
+    // Basit sıralama: en yüksek indirim    
+    const sorted = [...mappedCoupons].sort((a, b) => b.discountPercent - a.discountPercent);
+
+    const totalPages = Math.ceil(count / SIMILAR_PER_PAGE);
+
+    if (isLoading || !selectedCoupon) {
+        return <div className="p-10 text-center">Yüklənir...</div>;
+    }
+
+    const {
+        name,
+        description,
+        price,
+        discount,
+        category,
+        stock,
+        is_used,
+        used_count,
+        start_date,
+        end_date,
+    } = selectedCoupon;
+
+    const priceNum = parseFloat(price) || 0;
+    const discountNum = parseFloat(discount) || 0;
+    const hasDiscount = discountNum > 0 && priceNum > 0;
+    const discountedPrice = hasDiscount ? priceNum - discountNum : priceNum;
 
     const handleAddToCart = () => {
         alert("Səbətə əlavə edildi");
@@ -43,30 +122,14 @@ const ServiceDetail = () => {
             {/* Breadcrumb */}
             <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}
-                <Link to="#" className="hover:underline">{fakeService.category}</Link> &gt;{" "}
-                <Link to="#" className="hover:underline">{fakeService.subcategory}</Link> &gt;{" "}
-                <span className="font-semibold text-black">{fakeService.name}</span>
+                <Link to="#" className="hover:underline">{category}</Link> &gt;{" "}
+                <span className="font-semibold text-black">{name}</span>
             </div>
 
-            {/* Ana İçerik */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
-                {/* Sol kutu - Resimler */}
-                <div className="bg-white p-2 sm:p-4 rounded-xl shadow">
+            {/* Üst Bölüm */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 mb-6">
+                <div className="bg-white p-2 sm:p-4 rounded-xl shadow h-full">
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                        {/* Thumbnail */}
-                        <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 justify-center sm:justify-start">
-                            {fakeService.images.map((img, i) => (
-                                <img
-                                    key={i}
-                                    src={img}
-                                    alt={`thumb-${i}`}
-                                    className={`w-12 h-12 sm:w-16 sm:h-16 object-cover rounded cursor-pointer border ${mainImage === img ? "border-red-500" : "border-gray-300"}`}
-                                    onClick={() => setMainImage(img)}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Büyük Resim */}
                         <div className="flex-1 flex items-center justify-center">
                             <img
                                 src={mainImage}
@@ -77,36 +140,38 @@ const ServiceDetail = () => {
                     </div>
                 </div>
 
-                {/* Sağ kutu - Bilgiler + Butonlar + Benzerler */}
-                <div className="bg-white rounded-xl shadow flex flex-col justify-between">
-                    {/* Hizmet bilgileri */}
-                    <div className="flex flex-col gap-3 sm:gap-4 m-4 sm:m-8">
-                        <h2 className="text-lg sm:text-2xl font-bold">{fakeService.name}</h2>
-
-                        {fakeService.discountPercent > 0 && (
+                <div className="bg-white rounded-xl shadow flex flex-col p-4 sm:p-8">
+                    <div className="flex flex-col gap-3 sm:gap-4">
+                        <h2 className="text-lg sm:text-2xl font-bold">{name}</h2>
+                        {hasDiscount ? (
                             <>
                                 <p className="text-lg sm:text-xl text-[#FAD800] font-bold">
                                     {discountedPrice.toFixed(2)} ₼
                                 </p>
                                 <p className="line-through text-gray-500">
-                                    {fakeService.price.toFixed(2)} ₼
+                                    {priceNum.toFixed(2)} ₼
                                 </p>
                                 <p className="text-green-600 font-semibold">
-                                    -{fakeService.discountPercent}%
+                                    -{discountNum.toFixed(2)} ₼ endirim
                                 </p>
                             </>
+                        ) : (
+                            <p className="text-lg sm:text-xl font-bold">
+                                {priceNum.toFixed(2)} ₼
+                            </p>
                         )}
 
-                        {/* Kullanım süresi */}
                         <p className="text-sm sm:text-md text-gray-700">
-                            İstifadə müddəti: <strong> {fakeService.duration}</strong>
+                            {is_used ? `İstifadə sayı: ${used_count}` : `Stok: ${stock}`}
                         </p>
-
-                        <p className="text-sm sm:text-md text-slate-700">
-                            Bu kuponu <strong>{fakeService.couponPrice.toFixed(2)} ₼</strong> ilə al və endirimdən yararlan!
+                        <p className="text-sm sm:text-md text-gray-700">
+                            Başlanğıc: {new Date(start_date).toLocaleDateString()}
                         </p>
+                        <p className="text-sm sm:text-md text-gray-700">
+                            Bitmə tarixi: {new Date(end_date).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm sm:text-md text-slate-700">{description}</p>
 
-                        {/* Butonlar */}
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                             <button
                                 onClick={handleAddToCart}
@@ -122,32 +187,53 @@ const ServiceDetail = () => {
                             </button>
                         </div>
                     </div>
-                    <hr className="mt-6 sm:mt-12 h-1 bg-slate-300" />
-                    {/* Benzer Hizmetler */}
-                    <div className="m-2 sm:m-4">
-                        <h3 className="text-md sm:text-lg font-semibold mb-2 sm:mb-3">Alternativ Xidmətlər</h3>
-                        <div className="flex gap-3 overflow-x-auto pb-4 thin-scrollbar">
-                            {similarServices.map((srv) => (
-                                <div
-                                    key={srv.id}
-                                    className="min-w-[200px] max-w-xs flex-shrink-0"
-                                >
-                                    <SmallServiceCard
-                                        key={srv.id}
-                                        id={srv.id}
-                                        image={srv.image}
-                                        name={srv.name}
-                                        price={srv.price}
-                                        discountPercent={srv.discountPercent}
-                                        duration={srv.duration}
-                                        onAddToCart={() => alert("sepete eklendi")}
-                                        onBuyNow={() => alert("hemen al")}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
                 </div>
+            </div>
+
+            {/* Alternatif Hizmetler */}
+            <div className="bg-white rounded-xl shadow p-4 sm:p-6">
+                <h3 className="text-md sm:text-lg font-semibold mb-3">Alternativ Xidmətlər</h3>
+                <div className="border-t-2 pt-4 sm:pt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                    {isLoading ? (
+                        <div className="col-span-4 text-center text-gray-400">Yüklənir...</div>
+                    ) : error ? (
+                        <div className="col-span-4 text-center text-red-500">{error}</div>
+                    ) : sorted.length === 0 ? (
+                        <div className="col-span-4 text-center text-gray-400">Kupon tapılmadı</div>
+                    ) : (
+                        sorted.map(service => (
+                            <CardElement key={service.id} {...service} />
+                        ))
+                    )}
+                </div>
+
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
+                        <button
+                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
+                            onClick={() => setSimilarPage(p => Math.max(1, p - 1))}
+                            disabled={similarPage === 1}
+                        >
+                            &lt;
+                        </button>
+                        {Array.from({ length: totalPages }).map((_, idx) => (
+                            <button
+                                key={idx}
+                                className={`px-2 sm:px-3 py-1 rounded border text-xs sm:text-sm ${similarPage === idx + 1 ? 'bg-yellow-200 font-bold' : 'bg-white'}`}
+                                onClick={() => setSimilarPage(idx + 1)}
+                            >
+                                {idx + 1}
+                            </button>
+                        ))}
+                        <button
+                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
+                            onClick={() => setSimilarPage(p => Math.min(totalPages, p + 1))}
+                            disabled={similarPage === totalPages}
+                        >
+                            &gt;
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

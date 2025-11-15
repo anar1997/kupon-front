@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from './Header'
 import Katalog from '../katalog/Katalog'
 import { FaTooth, FaCar } from "react-icons/fa";
@@ -9,6 +9,7 @@ import RestoranKafe from '../images/newFolder/Restoran-Kafe.jpg'
 import Saglamliq from '../images/newFolder/Sağlamlıq.jpg'
 import Tehsil from '../images/newFolder/Təhsil.jpg'
 import elaveSaheler from '../images/newFolder/Əlavə-sahələr.jpg'
+import { useDispatch, useSelector } from 'react-redux';
 
 const categoryData = [
   {
@@ -62,6 +63,7 @@ const categoryData = [
     ]
   }
 ];
+
 
 const Layout = () => {
   const [hoveredCategory, setHoveredCategory] = useState(null);

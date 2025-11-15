@@ -13,7 +13,7 @@ const CartPage = () => {
             discountPercent: 20,
             couponPrice: 8,
             quantity: 1,
-            duration: "30 gün", // burada duration ekledik
+            duration: "30 gün",
         },
         {
             id: 2,
@@ -23,7 +23,7 @@ const CartPage = () => {
             discountPercent: 20,
             couponPrice: 8,
             quantity: 1,
-            duration: "30 gün", // ekledik
+            duration: "30 gün",
         },
     ]);
 
@@ -57,6 +57,8 @@ const CartPage = () => {
 
     const userBalance = 150;
 
+    const [showConfirm, setShowConfirm] = useState(false);
+
     return (
         <div className="bg-slate-100 xl:px-24 sm:px-10 px-6 py-4 min-h-screen">
             {/* Breadcrumb */}
@@ -84,7 +86,7 @@ const CartPage = () => {
                         <div className="bg-white p-4 rounded-xl shadow flex justify-between items-center">
                             <h2 className="text-xl font-semibold">Səbət ({totalServices})</h2>
                             <button
-                                onClick={handleClearCart}
+                                onClick={() => setShowConfirm(true)}
                                 className="text-sm text-red-600 hover:underline"
                             >
                                 Səbəti Boşalt
@@ -190,6 +192,32 @@ const CartPage = () => {
                         </button>
                         <div className="text-center text-xs text-gray-400 mt-2">
                             Ödəniş təhlükəsiz şəkildə həyata keçirilir
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Onay Modalı */}
+            {showConfirm && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
+                        <h3 className="text-lg font-semibold mb-4">Səbəti boşaltmaq istədiyinizə əminsiniz?</h3>
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => {
+                                    handleClearCart();
+                                    setShowConfirm(false);
+                                }}
+                                className="bg-[#FFEB3B] text-black px-4 py-2 rounded hover:bg-red-700"
+                            >
+                                Bəli
+                            </button>
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+                            >
+                                Xeyr
+                            </button>
                         </div>
                     </div>
                 </div>

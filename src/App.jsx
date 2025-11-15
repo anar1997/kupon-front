@@ -13,16 +13,18 @@ import Coupons from './components/profile/Coupons/Coupons';
 import IncreaseBalans from './components/profile/increaseBalans/increaseBalans';
 import Connection from './pages/connection/Connection';
 import AcceptRequest from './pages/connection/AcceptRequest';
+import ScrollToTop from './components/ScroolTop';
 
 function App() {
   return (
     <Router>
       <div className="bg-slate-100 min-h-screen">
+        <ScrollToTop/>
         {/* AuthPage dışında Header ve Footer'ı göster */}
         <Routes>
           <Route path="/auth" element={<AuthPage />} /> {/* AuthPage'de Header ve Footer gösterilmez */}
           <Route path="/" element={<><Layout /><CustomerCoupons /><Footer /></>} />
-          <Route path="/service/:id" element={<><Layout /><ServiceDetail /><Footer /></>} />
+          <Route path="/service/:slug" element={<><Layout /><ServiceDetail /><Footer /></>} />
           <Route path="/my-cart" element={<><Layout /><CartPage /><Footer /></>} />
           <Route path="/services/:serviceName" element={<><Layout /><ServicePaginationPage /><Footer /></>} /> {/* ✅ */}
           <Route path='/profile-m' element={<><Layout /><Profile /><Footer /></>}/>

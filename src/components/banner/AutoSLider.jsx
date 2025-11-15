@@ -5,41 +5,60 @@ import banner1 from "../images/banner-1.webp";
 import banner2 from "../images/banner-2.webp";
 import banner3 from "../images/banner-3.webp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Ok ikonlarını import ettik
+import { getBannerCouponsAsync } from "../../redux/slices/bannerSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const AutoSlider = () => {
   const banners = [banner1, banner2, banner3];
   const [currentIndex, setCurrentIndex] = useState(0);
+  const dispatch = useDispatch();
+  const { bannerCoupons } = useSelector((state) => state.bannerCoupon);
+  const len = bannerCoupons?.length || 0;
+  console.log(bannerCoupons);
+  console.log(len);
 
-  // Resimler arasında geçiş yapmak için setInterval kullanıyoruz
+
+  // 2) Veri çekme effect'i
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % banners.length);
-    }, 5000); // 3 saniyede bir geçiş yapacak
+    dispatch(getBannerCouponsAsync());
+  }, [dispatch]);
 
-    return () => clearInterval(interval); // Komponent unmount olduğunda interval'ı temizle
-  }, []);
+  // 3) Autoplay: len>1 iken kur
+  useEffect(() => {
+    if (len < 2) { setCurrentIndex(0); return; }
+    const t = setInterval(() => setCurrentIndex((p) => (p + 1) % len), 5000);
+    return () => clearInterval(t);
+  }, [len]);
 
-  // Sol ok butonuna tıklayınca resimleri geriye doğru kaydırma
   const handlePrevClick = () => {
-    setCurrentIndex((currentIndex - 1 + banners.length) % banners.length);
+    if (!len) return;
+    setCurrentIndex((prev) => (prev - 1 + len) % len);
   };
 
-  // Sağ ok butonuna tıklayınca resimleri ileri doğru kaydırma
   const handleNextClick = () => {
-    setCurrentIndex((currentIndex + 1) % banners.length);
+    if (!len) return;
+    setCurrentIndex((prev) => (prev + 1) % len);
   };
 
   return (
     <div className="relative overflow-hidden rounded-lg shadow-lg">
       <div
         className="flex transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        style={{
+          width: `${Math.max(len, 1) * 100}%`,
+          transform: `translateX(-${len ? currentIndex * (100 / len) : 0}%)`,
+        }}
       >
-        {banners.map((banner, index) => (
-          <div key={index} className="w-full flex-shrink-0">
+        {bannerCoupons.map((b, idx) => (
+          <div
+            key={b.id ?? idx}
+            className="flex-shrink-0"
+            style={{ width: `${100 / Math.max(len, 1)}%` }} // kritik: her slide genişliği
+          >
             <img
-              src={banner}
-              alt={`Slider Banner ${index + 1}`}
+              src={b.image}
+              alt={b.title || `Banner ${idx + 1}`}
               className="w-full lg:h-[650px]"
             />
           </div>
@@ -49,7 +68,7 @@ const AutoSlider = () => {
       {/* Sol ok */}
       <button
         onClick={handlePrevClick}
-        className="absolute top-1/2 left-2 transform -translate-y-1/2  text-white p-2 rounded-full"
+        className="absolute top-1/2 left-2 transform -translate-y-1/2  text-black p-2 rounded-full"
       >
         <FaChevronLeft size={12} />
       </button>
@@ -57,7 +76,7 @@ const AutoSlider = () => {
       {/* Sağ ok */}
       <button
         onClick={handleNextClick}
-        className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white p-2 rounded-full"
+        className="absolute top-1/2 right-2 transform -translate-y-1/2 text-black p-2 rounded-full"
       >
         <FaChevronRight size={12} />
       </button>
