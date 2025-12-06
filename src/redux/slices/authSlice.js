@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../axios';
 
-export const postLoginAsync = createAsyncThunk('postLoginAsync', async (data) => {
+export const postLoginAsync = createAsyncThunk('postLoginAsync', async (data, { rejectWithValue }) => {
   try {
     const response = await axios.post('/users/login/', data, {
       headers: {
@@ -10,7 +10,9 @@ export const postLoginAsync = createAsyncThunk('postLoginAsync', async (data) =>
     });
     return response.data;
   } catch (error) {
-    throw { 'message': error.response.data.detail };
+    return rejectWithValue({
+      message: 'Email və ya şifrə yanlışdır!'
+    });
   }
 })
 
@@ -32,37 +34,85 @@ export const putMeAsync = createAsyncThunk('putMeAsync', async (data) => {
   }
 });
 
+export const postRegisterAsync = createAsyncThunk('postRegisterAsync', async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.post('/users/', data, {
+      headers: {
+        'Authorization': ''
+      }
+    });
+    return response.data;
+  } catch (error) {
+    const errorData = error.response?.data;
+    let errorMessage = 'Qeydiyyat zamanı xəta baş verdi!';
+    
+    if (errorData?.phone) {
+      errorMessage = 'Bu telefon nömrəsi artıq qeydiyyatdan keçib!';
+    }
+    else if (errorData?.email) {
+      errorMessage = 'Bu email artıq istifadə olunur!';
+    }
+    else if (errorData?.detail) {
+      errorMessage = errorData.detail;
+    }
+    
+    return rejectWithValue({
+      message: errorMessage
+    });
+  }
+});
+
 const initialState = {
   refresh: "",
   access: "",
   isLoading: false,
   isLoggedIn: false,
-  me: ""
+  me: "",
+  error: null,
+  successMsg: null,
 }
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    clearAuthMessages: (state) => {
+      state.error = null;
+      state.successMsg = null;
+    },
+    logout: (state) => {
+      state.refresh = "";
+      state.access = "";
+      state.isLoading = false;
+      state.isLoggedIn = false;
+      state.me = "";
+      state.error = null;
+      state.successMsg = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(postLoginAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.access = action.payload.access;
         state.refresh = action.payload.refresh;
         localStorage.setItem('access', action.payload.access);
         localStorage.setItem('refresh', action.payload.refresh);
         localStorage.setItem('isLoggedIn', true);
         state.isLoggedIn = true;
+        state.error = null;
         console.log(action);
       })
       .addCase(postLoginAsync.rejected, (state, action) => {
-        state.error = action.payload.message;
+        state.isLoading = false;
+        state.error = action.payload?.message || 'Email və ya şifrə yanlışdır!';
         state.isLoggedIn = false;
         console.log(action);
       })
       .addCase(postLoginAsync.pending, (state) => {
         state.isLoading = true;
         state.isLoggedIn = false;
+        state.error = null;
       });
     builder
       .addCase(getMeAsync.fulfilled, (state, action) => {
@@ -87,9 +137,26 @@ const authSlice = createSlice({
       .addCase(putMeAsync.pending, (state) => {
         state.isLoading = true;
       });
+
+    //Register:
+    builder
+      .addCase(postRegisterAsync.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMsg = "Qeydiyyat uğurla tamamlandı! İndi daxil ola bilərsiniz.";
+        state.error = null;
+        console.log(action);
+      })
+      .addCase(postRegisterAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || 'Qeydiyyat zamanı xəta baş verdi!';
+        console.log(action);
+      })
+      .addCase(postRegisterAsync.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      });
   }
 });
 
-// export const {  } = authSlice.actions;
-
+export const { clearAuthMessages, logout } = authSlice.actions;
 export default authSlice.reducer;

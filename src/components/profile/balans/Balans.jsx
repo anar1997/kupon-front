@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { getBalansAsync } from '../../../redux/slices/balansSlice';
 
 const Balans = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { current_balance, total_income, total_expenses } = useSelector(state => state.balans);
+  console.log(current_balance);
+  useEffect(() => {
+    dispatch(getBalansAsync());
+  }, [dispatch]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -11,7 +19,7 @@ const Balans = () => {
         <div className="text-sm font-normal mb-4">Balans Məlumatları</div>
         <div className="text-center mb-4 border-b-2 pb-7">
           <div className="text-4xl font-bold flex items-center justify-center gap-2">
-            150 <span className="text-2xl">₼</span>
+            {current_balance} <span className="text-2xl">₼</span>
           </div>
           <div className="text-gray-500 text-sm mt-2">Mövcud Balans</div>
         </div>
@@ -51,7 +59,7 @@ const Balans = () => {
             <div className="text-green-600 font-semibold">+25 ₼</div>
           </div>
         </div>
-        <button  onClick={()=>navigate('/increase-balans')} className="bg-white text-xs border rounded px-4 py-2 mt-1 font-medium">Hamısını Gör</button>
+        <button onClick={() => navigate('/increase-balans')} className="bg-white text-xs border rounded px-4 py-2 mt-1 font-medium">Hamısını Gör</button>
       </div>
     </div>
   )

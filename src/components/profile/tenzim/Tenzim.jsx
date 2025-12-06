@@ -1,12 +1,21 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const Tenzim = () => {
+  const navigate = useNavigate();
+
+  const handleChangePassword = () => {
+    // Şifrəni dəyişdirmə funksiyası
+    navigate('/profile/tenzim/change-password');
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Hesab Tənzimləmələri */}
       <div className="bg-white rounded-2xl px-8 pt-5 flex flex-col gap-4">
         <div className="text-sm font-semibold">Hesab Tənzimləmələri</div>
-        <button className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
+        <button
+          onClick={handleChangePassword}
+          className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
           <span>⚙️</span> Şifrəni Dəyişdir
         </button>
         <button className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">

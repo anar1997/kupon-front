@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import React, { use, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getMeAsync, putMeAsync } from '../../../redux/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -13,38 +13,34 @@ const initialData = {
 const ProfileAbout = () => {
   const dispatch = useDispatch();
   const me = useSelector(state => state.auth.me)
+  const [edit, setEdit] = useState(false)
+  console.log(edit);
 
   useEffect(() => {
     dispatch(getMeAsync());
-  }, []);
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
-      name: me?.first_name,
-      surname: me?.last_name,
-      email: me?.email,
-      phone: me?.phone,
-      id: me?.id
+      first_name: me?.first_name || '',
+      last_name: me?.last_name || '',
+      email: me?.email || '',
+      phone: me?.phone || '',
     },
     enableReinitialize: true,
     onSubmit: (values) => {
-      dispatch(putMeAsync(values))
+      dispatch(putMeAsync({ ...values, id: me.id }))
+        .unwrap()
+        .then(() => {
+          setEdit(false);
+          dispatch(getMeAsync()); // Məlumatları yenidən yükləyin
+        })
+        .catch(err => console.log(err))
     }
   })
-  const [edit, setEdit] = useState(false)
-  const [form, setForm] = useState(initialData)
-
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
 
   const handleCancel = () => {
-    setForm(initialData)
-    setEdit(false)
-  }
-
-  const handleSave = () => {
-    // Burada API isteği ile güncelleme yapılabilir
+    formik.resetForm();
     setEdit(false)
   }
 
@@ -54,18 +50,21 @@ const ProfileAbout = () => {
         <div className="text-base font-semibold mb-1">Şəxsi Məlumatlar</div>
         {!edit ? (
           <button
+            type="button"
             className="bg-gray-100 border border-gray-300 rounded px-4 py-1 text-sm font-medium"
             onClick={() => setEdit(true)}
           >
             Düzəlt
           </button>
         ) : (
-          <button
-            className="bg-gray-100 hover:bg-[#FFF9C4] border border-gray-300 rounded px-4 py-1 text-sm font-medium"
-            type='submit'
-          >
-            Saxla
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="bg-gray-100 hover:bg-[#FFF9C4] border border-gray-300 rounded px-4 py-1 text-sm font-medium"
+              type="submit"
+            >
+              Saxla
+            </button>
+          </div>
         )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -73,11 +72,11 @@ const ProfileAbout = () => {
           <label className="block text-xs font-medium mb-2">Ad</label>
           <input
             type="text"
-            name="name"
-            id='name'
-            value={formik.values.name}
+            name="first_name"
+            id='first_name'
+            value={formik.values.first_name}
             onBlur={formik.handleBlur}
-            error={formik.errors.name}
+            // error={formik.errors.first_name}
             disabled={!edit}
             onChange={formik.handleChange}
             className={`w-full border border-gray-200 rounded px-4 py-1 text-xs 
@@ -88,13 +87,13 @@ const ProfileAbout = () => {
           <label className="block text-xs font-medium mb-2">Soyad</label>
           <input
             type="text"
-            name="surname"
-            id='surname'
-            value={formik.values.surname}
+            name="last_name"
+            id='last_name'
+            value={formik.values.last_name}
             onBlur={formik.handleBlur}
-            error={formik.errors.surname}
+            // error={formik.errors.last_name}
             disabled={!edit}
-            onChange={handleChange}
+            onChange={formik.handleChange}
             className={`w-full border border-gray-200 rounded px-4 py-1 text-xs 
   ${edit ? 'bg-white text-black' : 'bg-gray-50 text-gray-400'}`} />
         </div>
@@ -107,9 +106,9 @@ const ProfileAbout = () => {
           id='email'
           value={formik.values.email}
           onBlur={formik.handleBlur}
-          error={formik.errors.email}
+          // error={formik.errors.email}
           disabled={!edit}
-          onChange={handleChange}
+          onChange={formik.handleChange}
           className={`w-full border border-gray-200 rounded px-4 py-1 text-xs 
   ${edit ? 'bg-white text-black' : 'bg-gray-50 text-gray-400'}`} />
       </div>
@@ -121,9 +120,9 @@ const ProfileAbout = () => {
           id='phone'
           value={formik.values.phone}
           onBlur={formik.handleBlur}
-          error={formik.errors.phone}
+          // error={formik.errors.phone}
           disabled={!edit}
-          onChange={handleChange}
+          onChange={formik.handleChange}
           className={`w-full border border-gray-200 rounded px-4 py-1 text-xs 
   ${edit ? 'bg-white text-black' : 'bg-gray-50 text-gray-400'}`} />
       </div>
@@ -136,6 +135,7 @@ const ProfileAbout = () => {
             Saxla
           </button>
           <button
+            type='button'
             className="bg-white border rounded text-xs px-3  py-2 hover:bg-[#FFF9C4] font-medium"
             onClick={handleCancel}
           >

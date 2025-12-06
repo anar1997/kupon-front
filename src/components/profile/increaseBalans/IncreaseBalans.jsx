@@ -1,10 +1,62 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { getBalansAsync } from '../../../redux/slices/balansSlice'
+import { useFormik } from 'formik'
+import { clearError, postGiftCardAsync } from '../../../redux/slices/giftSlice'
 
 const IncreaseBalans = () => {
     const [showModal, setShowModal] = useState(false)
+    const [priceModal, setPriceModal] = useState(false)
     const [amount, setAmount] = useState('')
     const [method, setMethod] = useState('card')
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { current_balance, total_income, total_expenses } = useSelector(state => state.balans);
+    console.log(current_balance);
+    const [successMessage, setSuccessMessage] = useState('')
+    const { isLoading, error } = useSelector(state => state.gift);
+
+    useEffect(() => {
+        dispatch(getBalansAsync());
+    }, [dispatch]);
+
+    const formik = useFormik({
+        initialValues: {
+            code: '',
+        },
+        onSubmit: (values) => {
+            dispatch(postGiftCardAsync(values))
+                .unwrap()
+                .then((response) => {
+                    // Başarı mesajı
+                    setSuccessMessage('Hədiyyə kartı uğurla əlavə edildi!');
+
+                    // Balansı yeniden çek
+                    dispatch(getBalansAsync());
+
+                    // Modal'ı kapat ve formu sıfırla
+                    setTimeout(() => {
+                        setPriceModal(false);
+                        formik.resetForm();
+                        setSuccessMessage('');
+                    }, 2000); // 2 saniye sonra modal'ı kapat    
+                })
+                .catch((err) => {
+                    console.error('Gift card error:', err);
+                    // Hata zaten state'de, burada ekstra bir şey yapmaya gerek yok
+                });
+        }
+    })
+
+    // Modal kapanınca hataları temizle
+    const handleCloseModal = () => {
+        setPriceModal(false);
+        formik.resetForm();
+        setSuccessMessage('');
+        dispatch(clearError());
+    };
 
     return (
         <div className="w-full px-24 my-8">
@@ -16,7 +68,7 @@ const IncreaseBalans = () => {
                     <span className="font-semibold text-black">Balans</span>
                 </div>
                 <button className="ml-auto mb-4 bg-black text-white px-5 py-2 rounded-lg font-semibold flex items-center gap-2"
-                 onClick={() => setShowModal(true)}>
+                    onClick={() => setShowModal(true)}>
                     <span className="text-xl font-bold">+</span> Balans Artır
                 </button>
             </div>
@@ -24,7 +76,7 @@ const IncreaseBalans = () => {
             <div className="flex gap-6 mb-6">
                 <div className="flex-1 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-8 flex flex-col justify-between shadow">
                     <div className="text-gray-500 mb-2">Mövcud Balans</div>
-                    <div className="text-4xl font-bold mb-2">150 ₼</div>
+                    <div className="text-4xl font-bold mb-2">{current_balance} ₼</div>
                     <div className="flex justify-end">
                         <span className="bg-black text-white rounded-full p-3">
                             <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><rect x="8" y="10" width="8" height="6" rx="2" fill="currentColor" /></svg>
@@ -33,14 +85,14 @@ const IncreaseBalans = () => {
                 </div>
                 <div className="flex-1 bg-white rounded-xl p-8 flex flex-col justify-between shadow">
                     <div className="text-gray-500 mb-2">Ümumi Daxilolma</div>
-                    <div className="text-4xl font-bold mb-2">155 ₼</div>
+                    <div className="text-4xl font-bold mb-2">{total_income} ₼</div>
                     <div className="flex justify-end">
                         <span className="text-2xl">&#8599;</span>
                     </div>
                 </div>
                 <div className="flex-1 bg-red-100 rounded-xl p-8 flex flex-col justify-between shadow">
                     <div className="text-gray-500 mb-2">Ümumi Xərc</div>
-                    <div className="text-4xl font-bold mb-2 text-red-600">130 ₼</div>
+                    <div className="text-4xl font-bold mb-2 text-red-600">{total_expenses} ₼</div>
                     <div className="flex justify-end">
                         <span className="bg-red-600 rounded-full w-10 h-10 flex items-center justify-center"></span>
                     </div>
@@ -49,12 +101,12 @@ const IncreaseBalans = () => {
             {/* Actions */}
             <div className="flex gap-6">
                 <div className="flex-1 cursor-pointer bg-white rounded-xl p-6 flex flex-col items-center shadow"
-                 onClick={() => setShowModal(true)}>
+                    onClick={() => setShowModal(true)}>
                     <span className="text-2xl font-bold mb-2">+</span>
                     <div className="font-semibold">Balans Artır</div>
                     <div className="text-gray-500 text-sm mt-1">Kart və ya e-wallet ilə</div>
                 </div>
-                <div className="flex-1 bg-white rounded-xl p-6 flex flex-col items-center shadow">
+                <div onClick={() => setPriceModal(true)} className="flex-1 cursor-pointer bg-white rounded-xl p-6 flex flex-col items-center shadow">
                     <span className="text-2xl mb-2">&#127873;</span>
                     <div className="font-semibold">Hədiyyə Kartı</div>
                     <div className="text-gray-500 text-sm mt-1">Dostlarınıza göndərin</div>
@@ -127,7 +179,7 @@ const IncreaseBalans = () => {
                     <button className="bg-white border rounded px-6 py-2 font-medium hover:bg-gray-100 transition">Daha Çox Göstər</button>
                 </div>
             </div>
-             {/* Modal */}
+            {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
                     <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
@@ -183,6 +235,61 @@ const IncreaseBalans = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* priceModal */}
+            {priceModal && (
+                <form onSubmit={formik.handleSubmit} className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+                    <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+                        <div className="text-lg font-semibold mb-6">Hədiyyə kartı</div>
+
+                        {/* Başarı mesajı */}
+                        {successMessage && (
+                            <div className="mb-4 bg-green-50 border border-green-200 rounded px-4 py-3 text-green-700 text-sm">
+                                {successMessage}
+                            </div>
+                        )}
+
+                        {/* Hata mesajı */}
+                        {error && (
+                            <div className="mb-4 bg-red-50 border border-red-200 rounded px-4 py-3 text-red-600 text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        <div className="mb-4">
+                            <label className="block mb-2 font-medium">Kod</label>
+                            <input
+                                id='code'
+                                name='code'
+                                onChange={formik.handleChange}
+                                value={formik.values.code}
+                                onBlur={formik.handleBlur}
+                                type="text"
+                                className="w-full border rounded px-4 py-2"
+                                placeholder="Hədiyyə kodu daxil edin"
+                            />
+                        </div>
+
+                        <div className="flex gap-4 mt-4">
+                            <button
+                                type="button"
+                                className="flex-1 bg-gray-100 rounded px-4 py-2 font-semibold"
+                                onClick={handleCloseModal}
+                            >
+                                Ləğv et
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="flex-1 bg-gray-500 text-white rounded px-4 py-2 font-semibold"
+                        
+                            >
+                                {isLoading ? 'Yüklənir...' : 'Əlavə et'}
+                            </button>
+                        </div>
+                    </div>
+                </form>
             )}
         </div>
     )

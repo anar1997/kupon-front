@@ -1,22 +1,87 @@
-import React, { useState } from "react";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { clearSupportMessages, postSupportAsync } from "../../redux/slices/supportSlice";
+import validations from "./validation";
 
 const Connection = () => {
     const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+    let successMessage = useSelector((state) => state.support.successMessage);
+    let error = useSelector((state) => state.support.error);
+    let isLoading = useSelector((state) => state.support.isLoading);
+
+    const formik = useFormik({
+        initialValues: {
+            fullname: "",
+            email: "",
+            phone: "",
+            category: "",
+            title: "",
+            description: "",
+            image: "",
+        },
+        validationSchema: validations,
+        validateOnChange: true,
+        validateOnBlur: true,
+        onSubmit: (values) => {
+            dispatch(postSupportAsync(values))
+                .unwrap()
+                .then(() => {
+                    formik.resetForm();
+                    handleRemoveImage();
+                })
+                .catch(err => {
+                    console.error("Support error:", err);
+                });
+        }
+    });
+
+    useEffect(() => {
+        if (successMessage) {
             navigate("/accept-request");
-        }, 2000); // 2 saniyə loading göstər
+        }
+    }, [successMessage, navigate]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearSupportMessages());
+        };
+    }, [dispatch]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        console.log(e);
+        if (file) {
+            setSelectedImage(file);
+            formik.setFieldValue("image", file);
+            // Önizleme için URL oluştur
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setSelectedImage(null);
+        formik.setFieldValue("image", null);
+        setImagePreview(null);
+        // Input'u temizle
+        const fileInput = document.getElementById('image');
+        if (fileInput) fileInput.value = '';
     };
 
     return (
         <div className="bg-[#FAFBFC] xl:px-24 sm:px-10 px-6 min-h-screen py-8">
-             {/* Breadcrumb */}
+            {/* Breadcrumb */}
             <div className="w-full">
                 <div className="text-sm text-gray-600 mb-4">
                     <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}
@@ -34,58 +99,158 @@ const Connection = () => {
                         <div className="text-gray-600 mb-6 text-sm">
                             Suallarınız, təklifləriniz və ya şikayətləriniz üçün aşağıdakı formu doldurun.
                         </div>
-                        <form className="space-y-4">
+
+                        {/* Success Message */}
+                        {successMessage && (
+                            <div className="mb-4 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-green-700 text-sm">
+                                {successMessage}
+                            </div>
+                        )}
+
+                        <form className="space-y-4" onSubmit={formik.handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block font-medium mb-1 text-sm">Ad Soyad *</label>
                                     <input
                                         type="text"
+                                        name="fullname"
+                                        value={formik.values.fullname}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
                                         placeholder="Adınız və soyadınız"
                                     />
+                                    <div className="h-4">
+                                        {formik.touched.fullname && formik.errors.fullname && (
+                                            <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.fullname}</p>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-medium mb-1 text-sm">Email *</label>
                                     <input
                                         type="email"
+                                        name="email"
+                                        value={formik.values.email}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
                                         placeholder="email@example.com"
                                     />
+                                    <div className="h-4">
+                                        {formik.touched.email && formik.errors.email && (
+                                            <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.email}</p>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-medium mb-1 text-sm">Telefon</label>
                                     <input
                                         type="text"
+                                        name="phone"
+                                        value={formik.values.phone}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
                                         className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
                                         placeholder="+994 50 123 45 67"
                                     />
+                                    <div className="h-4">
+                                        {formik.touched.phone && formik.errors.phone && (
+                                            <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.phone}</p>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block font-medium mb-1 text-sm">Kateqoriya *</label>
-                                    <select className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none">
+                                    <select
+                                        name="category"
+                                        value={formik.values.category}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none">
                                         <option>Müraciət növünü seçin</option>
-                                        <option>Ümumi sual</option>
-                                        <option>Şikayət</option>
-                                        <option>Təklif</option>
+                                        <option value="ümumi sual">Ümumi sual</option>
+                                        <option value="şikayət">Şikayət</option>
+                                        <option value="təklif">Təklif</option>
                                     </select>
+                                    <div className="h-4">
+                                        {formik.touched.category && formik.errors.category && (
+                                            <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.category}</p>
+                                        )}
+                                    </div>
                                 </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1" htmlFor="image">Şəkil əlavə edin</label>
+                                {!imagePreview ? (
+                                    <input
+                                        type="file"
+                                        id="image"
+                                        name="image"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        // value={formik.values.image}
+                                        // onBlur={formik.handleBlur}
+                                        className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
+                                    />
+                                ) : (
+                                    <div className="relative w-full border border-gray-200 rounded-lg p-2 bg-gray-50">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Önizleme"
+                                            className="w-full max-h-48 object-contain rounded"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveImage}
+                                            className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1">Mövzu *</label>
                                 <input
                                     type="text"
+                                    name="title"
+                                    value={formik.values.title}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
                                     placeholder="Müraciətinizin mövzusu"
                                 />
+                                <div className="h-4">
+                                    {formik.touched.title && formik.errors.title && (
+                                        <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.title}</p>
+                                    )}
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1">Mesaj *</label>
                                 <textarea
+                                    name="description"
+                                    value={formik.values.description}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
                                     className="w-full text-sm rounded-lg border border-gray-200 px-4 py-2 bg-gray-50 focus:outline-none"
                                     rows={4}
                                     placeholder="Müraciətinizi ətraflı yazın…"
                                 />
+                                <div className="h-4">
+                                    {formik.touched.description && formik.errors.description && (
+                                        <p className="text-red-500 text-[10px] mt-0.5">{formik.errors.description}</p>
+                                    )}
+                                </div>
                             </div>
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-red-600 text-sm">
+                                    {error}
+                                </div>
+                            )}
                             <div className="bg-yellow-50 rounded-lg px-4 py-3 flex items-center gap-2 mt-2 mb-4">
                                 <span className="text-yellow-400 text-xl">ℹ️</span>
                                 <div>
@@ -96,9 +261,8 @@ const Connection = () => {
                                 </div>
                             </div>
                             <button
-                                onClick={handleSubmit}
                                 type="submit"
-                                disabled={loading}
+                                disabled={isLoading}
                                 className="w-full bg-yellow-200 text-sm hover:bg-yellow-300 transition rounded-lg py-3 font-semibold flex items-center justify-center gap-2 text-black"
                             >
                                 {loading ? (

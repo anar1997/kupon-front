@@ -4,20 +4,46 @@ import irsad from '../images/irsad.svg';
 import { FiSearch, FiBell, FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMeAsync } from '../../redux/slices/authSlice';
+import { getBalansAsync } from '../../redux/slices/balansSlice';
+import { getCouponsAsync } from '../../redux/slices/couponSlice';
+import { logout } from '../../redux/slices/authSlice';
 
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState(""); // Yeni state
   const me = useSelector(state => state.auth.me)
+  const { current_balance } = useSelector(state => state.balans);
+  console.log(current_balance);
+  useEffect(() => {
+    dispatch(getBalansAsync());
+  }, [dispatch]);
+
+
+  const search = () => {
+    if (searchQuery.trim()) {
+      dispatch(getCouponsAsync({ name__icontains: searchQuery }));
+      navigate("/"); // Arama sonuçlarını ana sayfada göstermek için
+    }
+  };
+
+  // Enter tuşuna basınca da arama yapsın
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      search();
+    }
+  };
+
   // Dummy auth state (əslində bunu context və ya redux ilə idarə edin)
   const isLoggedIn = localStorage.getItem('isLoggedIn');
   const user = {
     name: `${me.first_name} ${me.last_name}`,
-    balance: 150,
+    balance: current_balance,
     notifications: 3,
   };
 
-  const logout = () => {
+  const handleLogout = () => {
+    dispatch(logout());
     // Çıxış funksiyası
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('access');
@@ -47,10 +73,13 @@ function Header() {
             <FiSearch className="text-gray-400 ml-2" size={20} />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Kupon və ya xidmət axtarın..."
               className="flex-1 text-xs bg-transparent outline-none px-3 py-1 text-gray-700"
             />
-            <button className="bg-[#FAD800] text-xs font-medium text-black rounded-md px-3 py-1.5" style={{ height: "28px" }}>
+            <button onClick={search} className="bg-[#FAD800] text-xs font-medium text-black rounded-md px-3 py-1.5" style={{ height: "28px" }}>
               Axtar
             </button>
           </div>
@@ -73,7 +102,7 @@ function Header() {
                   <span className="font-medium text-xs text-gray-800">{user.name}</span>
                   <span className="text-xs text-[#FAD800] font-semibold">{user.balance} AZN</span>
                 </div>
-                <button onClick={() => logout()} className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold">
+                <button onClick={() => handleLogout()} className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold">
                   Çıxış
                 </button>
               </div>

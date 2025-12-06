@@ -11,10 +11,12 @@ export const getCouponsAsync = createAsyncThunk(
             offset = 0,
             category = '',
             shop_region = '',
-            service = ''
+            service = '',
+            search = '',
+            name__icontains = ''
         } = merged;
 
-        const url = `/coupons/?limit=10&offset=${offset}&category=${category || ""}&shop_region=${shop_region || ""}&service=${service || ""}`;
+        const url = `/coupons/?limit=10&offset=${offset}&category=${category || ""}&shop_region=${shop_region || ""}&service=${service || ""}&search=${search || ""}&name__icontains=${name__icontains || ""}`;
 
         try {
             const response = await axios.get(url);

@@ -1,6 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { getMeAsync } from '../../../redux/slices/authSlice';
 
 const Referal = () => {
+  const dispatch = useDispatch();
+  const me = useSelector(state => state.auth.me)
+  useEffect(() => {
+    dispatch(getMeAsync());
+  }, [dispatch]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Referal Proqramı */}
@@ -16,7 +24,7 @@ const Referal = () => {
           <div className="flex items-center gap-2 mt-1">
             <input
               type="text"
-              value="AYSE2024"
+              value={me.referral_code}
               disabled
               className="bg-gray-50 border rounded px-2 py-1 text-xs w-full font-mono"
             />

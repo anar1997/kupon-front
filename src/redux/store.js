@@ -8,6 +8,10 @@ import shopsReducer from './slices/shopsSlice';
 import categoryReducer from './slices/categorySlice';
 import premiumCouponReducer from './slices/premiumCouponSlice';
 import bannerCouponReducer from './slices/bannerSlice';
+import supportReducer from './slices/supportSlice';
+import balansReducer from './slices/balansSlice';
+import giftReducer from './slices/giftSlice';
+import changePasswordReducer from './slices/changePasswordSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +24,9 @@ export const store = configureStore({
     category: categoryReducer,
     premiumCoupon: premiumCouponReducer,
     bannerCoupon: bannerCouponReducer,
+    support: supportReducer,
+    balans: balansReducer,
+    gift: giftReducer,
+    changePassword: changePasswordReducer,
   }
 });

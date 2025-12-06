@@ -1,13 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProfileAbout from '../../components/profile/profileAbout/ProfileAbout'
 import Balans from '../../components/profile/balans/Balans'
 import Referal from '../../components/profile/referal/Referal'
 import Tenzim from '../../components/profile/tenzim/Tenzim'
 import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { getMeAsync } from '../../redux/slices/authSlice'
 
 const ManuelTest = () => {
     const [activeTab, setActiveTab] = useState('profil')
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const me = useSelector(state => state.auth.me);
+
+    useEffect(() => {
+        dispatch(getMeAsync());
+    }, []);
+
+
 
     return (
         <div className="flex flex-col xl:px-24 sm:px-10 px-6 gap-8 items-center w-full my-8">

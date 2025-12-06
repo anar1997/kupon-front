@@ -14,6 +14,7 @@ import IncreaseBalans from './components/profile/increaseBalans/increaseBalans';
 import Connection from './pages/connection/Connection';
 import AcceptRequest from './pages/connection/AcceptRequest';
 import ScrollToTop from './components/ScroolTop';
+import ChangePassword from './components/profile/tenzim/changePassword';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="/increase-balans" element={<><Layout /><IncreaseBalans /><Footer /></>} />
           <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />
           <Route path="/accept-request" element={<><Layout /><AcceptRequest /><Footer /></>} />
+          <Route path="/profile/tenzim/change-password" element={<><Layout /><ChangePassword /><Footer /></>} />
         </Routes>
       </div>
     </Router>

@@ -6,7 +6,7 @@ export const getBannerCouponsAsync = createAsyncThunk('getBannerCouponsAsync', a
         const response = await axios.get('coupons/banners/')
         return response.data;
     } catch (error) {
-        throw { 'message': error.response.data.detail };
+        throw { 'message': error.response.data.detail };    
     }
 }); 
 

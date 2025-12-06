@@ -4,11 +4,16 @@ import axios from '../axios';
 // Async thunk for fetching regions
 export const getRegionsAsync = createAsyncThunk('getRegionsAsync', async () => {
     try {
-        const response = await axios.get('/regions/');
+        const response = await axios.get('/regions/', {
+            headers: {
+                'Authorization': ''
+            }
+        });
+        console.log(response);
         // API'den dönen veri: { count, next, previous, results: [...] }
         return response.data;
     } catch (error) {
-        throw { message: error.response?.data?.detail || "Region fetch error" };
+        throw { 'message': error.response.data.detail };
     }
 });
 
@@ -34,6 +39,7 @@ const regionSlice = createSlice({
             .addCase(getRegionsAsync.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.regions = action.payload.results;
+                console.log(action.payload);
                 state.count = action.payload.count;
                 state.next = action.payload.next;
                 state.previous = action.payload.previous;
