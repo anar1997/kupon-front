@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { getRegionsAsync } from "../../redux/slices/regionSlice";
 import validations from "./validation";
 import loginValidations from "./loginValidation";
+import { message } from "antd";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,10 +20,23 @@ const AuthPage = () => {
   console.log(regions);
   const { error, successMsg, isLoading } = useSelector(state => state.auth);
   console.log(error);
-  
+
   useEffect(() => {
     dispatch(getRegionsAsync());
   }, [dispatch]);
+
+
+  // Success və Error mesajlarını göstər
+  useEffect(() => {
+    if (successMsg) {
+      message.success(successMsg);
+      dispatch(clearAuthMessages());
+    }
+    if (error) {
+      message.error(error)
+      dispatch(clearAuthMessages());
+    }
+  }, [successMsg, error, dispatch]);
 
   // Mesajları temizle
   useEffect(() => {
@@ -66,10 +80,15 @@ const AuthPage = () => {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: (values) => {
-      dispatch(postRegisterAsync(values))
+      const submitData = { ...values };
+      if (!submitData.referred_by_code || submitData.referred_by_code.trim() === '') {
+        delete submitData.referred_by_code;
+      }
+
+      dispatch(postRegisterAsync(submitData))
         .unwrap()
         .then(() => {
-          setIsLogin(true); // Login ekranına geç
+          setIsLogin(true);
           formikReg.resetForm();
         })
         .catch(err => console.error("Registration error:", err));

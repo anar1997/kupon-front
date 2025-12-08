@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getMeAsync } from '../../../redux/slices/authSlice';
+import { getMyReferralsAsync } from '../../../redux/slices/myReferalsSlice';
 
 const Referal = () => {
   const dispatch = useDispatch();
   const me = useSelector(state => state.auth.me)
+  const  { myReferrals, loading, error } = useSelector(state => state.myReferrals);
+  console.log(myReferrals);
   useEffect(() => {
     dispatch(getMeAsync());
+    dispatch(getMyReferralsAsync());
   }, [dispatch]);
 
   return (
@@ -45,27 +49,33 @@ const Referal = () => {
       <div className="bg-white rounded-2xl px-8 pt-5 flex flex-col gap-4">
         <div className="text-sm font-semibold">Referal Statistikalar</div>
         <div className="flex flex-col gap-3">
-          <div className="bg-white border rounded px-4 py-3 flex justify-between items-center">
-            <div>
-              <div className="font-medium">Əli Vəliyev</div>
-              <div className="text-gray-500 text-xs">Qeydiyyat: 15.01.2024</div>
+          {loading ? (
+            <div className="text-center py-8 text-gray-500">Yüklənir...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-600">Xəta baş verdi</div>
+          ) : myReferrals.length > 0 ? (
+            myReferrals.map((referral, idx) => (
+              <div key={idx} className="bg-white border rounded px-4 py-3 flex justify-between items-center">
+                <div>
+                  <div className="font-medium">
+                    {referral.first_name} {referral.last_name}
+                  </div>
+                  <div className="text-gray-500 text-xs">
+                    Qeydiyyat: {new Date(referral.date_joined).toLocaleDateString('az-AZ', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    })}
+                  </div>
+                </div>
+                {/* <div className="text-green-600 font-semibold">+25 ₼</div> */}
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Hələ ki, dəvət etdiyiniz dost yoxdur
             </div>
-            <div className="text-green-600 font-semibold">+25 ₼</div>
-          </div>
-          <div className="bg-white border rounded px-4 py-3 flex justify-between items-center">
-            <div>
-              <div className="font-medium">Ayşə Həsənova</div>
-              <div className="text-gray-500 text-xs">Qeydiyyat: 12.01.2024</div>
-            </div>
-            <div className="text-green-600 font-semibold">+25 ₼</div>
-          </div>
-          <div className="bg-white border rounded px-4 py-3 flex justify-between items-center">
-            <div>
-              <div className="font-medium">Məhəmməd Əliyev</div>
-              <div className="text-gray-500 text-xs">Qeydiyyat: 08.01.2024</div>
-            </div>
-            <div className="text-green-600 font-semibold">+25 ₼</div>
-          </div>
+          )}
         </div>
         <button className="bg-[#FFF283] mb-12 text-black rounded px-4 py-2 mt-4 font-semibold w-40 mx-auto text-xs flex items-center gap-2 justify-center">
           <span>🔗</span> Dostları Dəvət Et

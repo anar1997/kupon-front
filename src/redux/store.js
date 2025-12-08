@@ -12,6 +12,9 @@ import supportReducer from './slices/supportSlice';
 import balansReducer from './slices/balansSlice';
 import giftReducer from './slices/giftSlice';
 import changePasswordReducer from './slices/changePasswordSlice';
+import myTransactionReducer from './slices/myTransactionSlice';
+import meStatsReducer from './slices/meStatsSlice';
+import myReferralsReducer from './slices/myReferalsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -28,5 +31,8 @@ export const store = configureStore({
     balans: balansReducer,
     gift: giftReducer,
     changePassword: changePasswordReducer,
+    myTransaction: myTransactionReducer,
+    meStats: meStatsReducer,
+    myReferrals: myReferralsReducer,
   }
 });

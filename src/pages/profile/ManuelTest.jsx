@@ -6,16 +6,20 @@ import Tenzim from '../../components/profile/tenzim/Tenzim'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getMeAsync } from '../../redux/slices/authSlice'
+import { getMeStatsAsync } from '../../redux/slices/meStatsSlice'
 
 const ManuelTest = () => {
     const [activeTab, setActiveTab] = useState('profil')
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const me = useSelector(state => state.auth.me);
+    const { meStats, loading, error } = useSelector(state => state.meStats);
+    console.log(meStats);
 
     useEffect(() => {
         dispatch(getMeAsync());
-    }, []);
+        dispatch(getMeStatsAsync());
+    }, [dispatch]);
 
 
 
@@ -66,15 +70,15 @@ const ManuelTest = () => {
             {/* Stats */}
             <div className="w-full flex flex-col 367:flex-row justify-between gap-6">
                 <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#FAD800] font-bold">12</div>
+                    <div className="text-xl text-[#FAD800] font-bold"> {loading ? '...' : meStats?.total_coupons || 0}</div>
                     <div className="text-gray-500 text-xs mt-2">Alınmış Kupon</div>
                 </div>
                 <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#4CAF50] font-bold">185 ₼</div>
+                    <div className="text-xl text-[#4CAF50] font-bold">{loading ? '...' : meStats?.total_savings || 0} ₼</div>
                     <div className="text-gray-500 text-xs mt-2">Qənaət</div>
                 </div>
                 <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#FF9800] font-bold">3</div>
+                    <div className="text-xl text-[#FF9800] font-bold">{loading ? '...' : meStats?.total_referrals || 0}</div>
                     <div className="text-gray-500 text-xs mt-2">Dəvət Edilən</div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getBalansAsync } from '../../../redux/slices/balansSlice'
 import { useFormik } from 'formik'
 import { clearError, postGiftCardAsync } from '../../../redux/slices/giftSlice'
+import { getMyTransactionsAsync } from '../../../redux/slices/myTransactionSlice'
 
 const IncreaseBalans = () => {
     const [showModal, setShowModal] = useState(false)
@@ -17,9 +18,14 @@ const IncreaseBalans = () => {
     console.log(current_balance);
     const [successMessage, setSuccessMessage] = useState('')
     const { isLoading, error } = useSelector(state => state.gift);
-
+    const { myTransactions, loading: transactionsLoading, error: transactionsError } = useSelector(state => state.myTransaction);
+    console.log(myTransactions);
     useEffect(() => {
         dispatch(getBalansAsync());
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getMyTransactionsAsync());
     }, [dispatch]);
 
     const formik = useFormik({
@@ -122,7 +128,7 @@ const IncreaseBalans = () => {
                 <div className="text-lg font-semibold mb-6">Əməliyyat Tarixçəsi</div>
                 <div className="flex flex-col gap-6">
                     {/* İşlem Listesi */}
-                    {[
+                    {/* {[
                         {
                             icon: <span className="bg-gray-100 rounded-full p-3 text-xl">&#8594;</span>,
                             title: "Diş təmizliyi kuponu",
@@ -172,7 +178,44 @@ const IncreaseBalans = () => {
                                 <span className="bg-[#FFF176] text-black rounded px-3 py-1 text-xs">Tamamlandı</span>
                             </div>
                         </div>
-                    ))}
+                    ))} */}
+                    {transactionsLoading ? (
+                        <div>Yüklənir...</div>
+                    ) : transactionsError ? (
+                        <div>Xəta baş verdi: {transactionsError}</div>
+                    ) : myTransactions.length > 0 ? (
+                        myTransactions.map((item, idx) => (
+                            <div key={idx} className="flex items-center justify-between border-b pb-4 last:border-b-0">
+                                <div className="flex items-center gap-4">
+                                    <div>
+                                        <div className="font-semibold">{item.transaction_type_display}</div>
+                                        <div className="text-gray-500 text-sm">
+                                            {new Date(item.created_at).toLocaleDateString('az-AZ', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit'
+                                            })}
+                                            {', '}
+                                            {new Date(item.created_at).toLocaleTimeString('az-AZ', {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className={`font-bold text-lg ${item.amountClass}`}>{item.amount}</div>
+                                    <span className="bg-[#FFF176] text-black rounded px-3 py-1 text-xs">
+                                        {item.status_display}
+                                    </span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            Hələ ki, əməliyyat tarixçəniz yoxdur
+                        </div>
+                    )}
                 </div>
                 {/* Daha çox göstər butonu */}
                 <div className="flex justify-center mt-6">
@@ -283,7 +326,7 @@ const IncreaseBalans = () => {
                                 type="submit"
                                 disabled={isLoading}
                                 className="flex-1 bg-gray-500 text-white rounded px-4 py-2 font-semibold"
-                        
+
                             >
                                 {isLoading ? 'Yüklənir...' : 'Əlavə et'}
                             </button>

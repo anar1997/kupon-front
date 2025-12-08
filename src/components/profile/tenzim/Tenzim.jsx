@@ -18,7 +18,7 @@ const Tenzim = () => {
           className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
           <span>⚙️</span> Şifrəni Dəyişdir
         </button>
-        <button className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
+        {/* <button className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
           <span>🔔</span> Bildiriş Tənzimləmələri
         </button>
         <button className="bg-white text-sm border rounded px-4 py-1 flex items-center gap-2 font-medium">
@@ -26,7 +26,7 @@ const Tenzim = () => {
         </button>
         <button className="bg-white text-sm border rounded px-4 py-1 mb-5 flex items-center gap-2 font-medium">
           <span>💬</span> Dəstək və Yardım
-        </button>
+        </button> */}
       </div>
       {/* Hesab Hərəkətləri */}
       <div className="bg-white rounded-2xl px-8 pt-5 flex flex-col gap-4">
