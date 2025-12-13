@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../axios';
+import { notifySuccess, notifyError, extractErrorMessage } from '../../utils/notify';
 
 export const postSupportAsync = createAsyncThunk('postSupportAsync', async (data, { rejectWithValue }) => {
     try {
@@ -17,10 +18,14 @@ export const postSupportAsync = createAsyncThunk('postSupportAsync', async (data
         const response = await axios.post('/support/', formData, {
             headers: { "Content-Type": "multipart/form-data", "Authorization": "" }
         });
+        const detail = response.data?.detail || 'Müraciətiniz uğurla göndərildi!';
+        notifySuccess('Müraciət göndərildi', detail);
         return response.data;
     } catch (error) {
+        const message = extractErrorMessage(error, 'Müraciət göndərilərkən xəta baş verdi!');
+        notifyError('Müraciət xətası', message);
         return rejectWithValue({
-            message: error.response?.data?.detail || 'Müraciət göndərilərkən xəta baş verdi!'
+            message,
         });
     }
 });

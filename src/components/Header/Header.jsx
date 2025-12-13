@@ -7,6 +7,7 @@ import { getMeAsync, logoutAsync } from '../../redux/slices/authSlice';
 import { getBalansAsync } from '../../redux/slices/balansSlice';
 import { getCouponsAsync } from '../../redux/slices/couponSlice';
 import { logout } from '../../redux/slices/authSlice';
+import { fetchCartAsync } from '../../redux/slices/cartSlice';
 
 function Header() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Header() {
   const [searchQuery, setSearchQuery] = useState(""); // Yeni state
   const me = useSelector(state => state.auth.me)
   const { current_balance } = useSelector(state => state.balans);
+  const cartItemsCount = useSelector(state => state.cart.itemsCount);
   console.log(current_balance);
   useEffect(() => {
     dispatch(getBalansAsync());
@@ -49,7 +51,8 @@ function Header() {
 
   useEffect(() => {
     dispatch(getMeAsync());
-  }, []);
+    dispatch(fetchCartAsync());
+  }, [dispatch]);
 
   return (
     <header className="bg-white shadow-md relative z-50">
@@ -90,7 +93,14 @@ function Header() {
                   <FiBell size={16} />
                 </div>
                 <FiHeart size={16} />
-                <FiShoppingCart size={16} className="cursor-pointer" onClick={() => navigate("/my-cart")} />
+                <div className="relative cursor-pointer" onClick={() => navigate("/my-cart")}>
+                  <FiShoppingCart size={16} />
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </div>
                 <FiUser size={16} className="cursor-pointer" onClick={() => navigate("/profile")} />
               </div>
               <div className='flex gap-2'>
@@ -106,7 +116,14 @@ function Header() {
           ) : (
             <>
               <FiHeart size={16} />
-              <FiShoppingCart size={16} className="cursor-pointer" onClick={() => navigate("/my-cart")} />
+              <div className="relative cursor-pointer" onClick={() => navigate("/my-cart")}>
+                <FiShoppingCart size={16} />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </div>
               <Link
                 to="/auth"
                 className="bg-[#FFEB70] hover:bg-[#FFCC00] text-black text-xs px-2 py-1 rounded-md font-semibold transition"

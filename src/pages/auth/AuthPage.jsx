@@ -186,6 +186,16 @@ const AuthPage = () => {
           <button className="btn transition disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={isLoading}>
             {isLoading ? "Daxil olunur..." : "Daxil ol"}
           </button>
+          <p className="mt-3 text-[11px] text-center text-gray-500">
+            və ya&nbsp;
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-blue-600 hover:underline"
+            >
+              Ana səhifəyə qayıt
+            </button>
+          </p>
           {/* <p>Digər sosial şəbəkə səhifələrimiz</p>
           <div className="social-icons">
             <a href="#"><i className="bx bxl-google"></i></a>
@@ -387,6 +397,16 @@ const AuthPage = () => {
           <button type="submit" className="w-full h-10 bg-[#ffcc00] rounded font-semibold text-sm text-black mt-4 transition hover:bg-yellow-400">
             Qeydiyyatdan keç
           </button>
+          <p className="mt-3 text-[11px] text-center text-gray-500">
+            və ya&nbsp;
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-blue-600 hover:underline"
+            >
+              Ana səhifəyə qayıt
+            </button>
+          </p>
         </form>
       </div>
 

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../axios';
+import { notifySuccess, notifyError, extractErrorMessage } from '../../utils/notify';
 
 export const postLoginAsync = createAsyncThunk('postLoginAsync', async (data, { rejectWithValue }) => {
   try {
@@ -8,10 +9,14 @@ export const postLoginAsync = createAsyncThunk('postLoginAsync', async (data, { 
         'Authorization': ''
       }
     });
+    const detail = response.data?.detail || 'Uğurla daxil oldunuz!';
+    notifySuccess('Daxil olundu', detail);
     return response.data;
   } catch (error) {
+    const message = extractErrorMessage(error, 'Email və ya şifrə yanlışdır!');
+    notifyError('Daxil olma xətası', message);
     return rejectWithValue({
-      message: 'Email və ya şifrə yanlışdır!'
+      message,
     });
   }
 })
@@ -28,9 +33,13 @@ export const getMeAsync = createAsyncThunk('getMeAsync', async () => {
 export const putMeAsync = createAsyncThunk('putMeAsync', async (data) => {
   try {
     const response = await axios.put(`/users/${data.id}/`, data);
+    const detail = response.data?.detail || 'Profil məlumatlarınız yeniləndi.';
+    notifySuccess('Profil yeniləndi', detail);
     return response.data;
   } catch (error) {
-    throw { 'message': error.response.data.detail };
+    const message = extractErrorMessage(error, 'Profil yenilənərkən xəta baş verdi!');
+    notifyError('Profil xətası', message);
+    throw { 'message': message };
   }
 });
 
@@ -41,6 +50,8 @@ export const postRegisterAsync = createAsyncThunk('postRegisterAsync', async (da
         'Authorization': ''
       }
     });
+    const detail = response.data?.detail || 'Qeydiyyat uğurla tamamlandı! İndi daxil ola bilərsiniz.';
+    notifySuccess('Qeydiyyat', detail);
     return response.data;
   } catch (error) {
     const errorData = error.response?.data;
@@ -56,6 +67,7 @@ export const postRegisterAsync = createAsyncThunk('postRegisterAsync', async (da
       errorMessage = errorData.detail;
     }
     
+    notifyError('Qeydiyyat xətası', errorMessage);
     return rejectWithValue({
       message: errorMessage
     });
@@ -65,10 +77,13 @@ export const postRegisterAsync = createAsyncThunk('postRegisterAsync', async (da
 export const logoutAsync = createAsyncThunk('logoutAsync', async (_, { rejectWithValue }) => {
   try {
     await axios.post('/users/logout/');
+    notifySuccess('Çıxış edildi', 'Hesabdan uğurla çıxış etdiniz.');
     return {};
   } catch (error) {
+    const message = extractErrorMessage(error, 'Çıxış zamanı xəta baş verdi!');
+    notifyError('Çıxış xətası', message);
     return rejectWithValue({
-      message: 'Çıxış zamanı xəta baş verdi!'
+      message,
     });
   }
 });
