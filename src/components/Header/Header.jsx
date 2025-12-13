@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import irsad from '../images/irsad.svg';
 import { FiSearch, FiBell, FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMeAsync } from '../../redux/slices/authSlice';
+import { getMeAsync, logoutAsync } from '../../redux/slices/authSlice';
 import { getBalansAsync } from '../../redux/slices/balansSlice';
 import { getCouponsAsync } from '../../redux/slices/couponSlice';
 import { logout } from '../../redux/slices/authSlice';
@@ -34,8 +34,8 @@ function Header() {
     }
   };
 
-  // Dummy auth state (əslində bunu context və ya redux ilə idarə edin)
-  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  // Auth state Redux-dan gəlir, cookie-based backend sessiyasına uyğundur
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const user = {
     name: `${me.first_name} ${me.last_name}`,
     balance: current_balance,
@@ -43,11 +43,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    dispatch(logout());
-    // Çıxış funksiyası
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
+    dispatch(logoutAsync());
     navigate("/auth");
   }
 
@@ -110,7 +106,7 @@ function Header() {
           ) : (
             <>
               <FiHeart size={16} />
-              <FiShoppingCart size={16} />
+              <FiShoppingCart size={16} className="cursor-pointer" onClick={() => navigate("/my-cart")} />
               <Link
                 to="/auth"
                 className="bg-[#FFEB70] hover:bg-[#FFCC00] text-black text-xs px-2 py-1 rounded-md font-semibold transition"

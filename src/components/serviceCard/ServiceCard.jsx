@@ -1,6 +1,8 @@
 import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import { useNavigate } from "react-router-dom"; // ✅ EKLENDİ
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { addToCartAsync } from '../../redux/slices/cartSlice';
 
 const ServiceCard = ({
     id,
@@ -13,6 +15,7 @@ const ServiceCard = ({
     onBuyNow,
 }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const discountedPrice = discountPercent
         ? (price * (100 - discountPercent)) / 100
@@ -62,7 +65,7 @@ const ServiceCard = ({
             >
                 <div className="flex gap-3">
                     <button
-                        onClick={onAddToCart}
+                        onClick={() => dispatch(addToCartAsync({ couponId: id, quantity: 1 }))}
                         className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition"
                     >
                         <FiShoppingCart size={20} />

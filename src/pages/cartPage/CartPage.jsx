@@ -1,63 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import mobile from "../../components/images/mobile.webp"; // sahte resim
 import { FiPlus, FiMinus, FiTag } from "react-icons/fi";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCartAsync, updateCartItemAsync, clearCartAsync } from '../../redux/slices/cartSlice';
+import placeholder from "../../components/images/placeholder.jpg";
 
 const CartPage = () => {
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: "Stomatoloq Xidməti",
-            image: mobile,
-            price: 100,
-            discountPercent: 20,
-            couponPrice: 8,
-            quantity: 1,
-            duration: "30 gün",
-        },
-        {
-            id: 2,
-            name: "Stomatoloq Xidməti",
-            image: mobile,
-            price: 100,
-            discountPercent: 20,
-            couponPrice: 8,
-            quantity: 1,
-            duration: "30 gün",
-        },
-    ]);
+    const dispatch = useDispatch();
+    const { items, totalAmount, itemsCount } = useSelector(state => state.cart);
 
-    const handleIncrease = (id) => {
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-            )
-        );
+    const handleIncrease = (item) => {
+        dispatch(updateCartItemAsync({ id: item.id, quantity: item.quantity + 1 }));
     };
 
-    const handleDecrease = (id) => {
-        setCartItems((prev) =>
-            prev.map((item) =>
-                item.id === id && item.quantity > 1
-                    ? { ...item, quantity: item.quantity - 1 }
-                    : item
-            )
-        );
+    const handleDecrease = (item) => {
+        if (item.quantity > 1) {
+            dispatch(updateCartItemAsync({ id: item.id, quantity: item.quantity - 1 }));
+        }
     };
 
     const handleClearCart = () => {
-        setCartItems([]);
+        dispatch(clearCartAsync());
     };
 
-    const totalServices = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const totalCouponPrice = cartItems.reduce(
-        (sum, item) => sum + item.quantity * item.couponPrice,
-        0
-    );
+    const totalServices = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    const userBalance = 150;
+    const [showConfirm, setShowConfirm] = React.useState(false);
 
-    const [showConfirm, setShowConfirm] = useState(false);
+    useEffect(() => {
+        dispatch(fetchCartAsync());
+    }, [dispatch]);
 
     return (
         <div className="bg-slate-100 xl:px-24 sm:px-10 px-6 py-4 min-h-screen">
@@ -66,7 +38,7 @@ const CartPage = () => {
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt; <span className="font-semibold text-black">Səbət</span>
             </div>
 
-            {cartItems.length === 0 ? (
+            {items.length === 0 ? (
                 <div className="bg-white p-6 rounded-xl text-center shadow">
                     <h2 className="text-xl font-semibold mb-2">Səbət (0)</h2>
                     <p className="text-gray-600 mb-1">Səbətində məhsul yoxdur</p>
@@ -94,46 +66,45 @@ const CartPage = () => {
                         </div>
 
                         {/* Ürün Listesi */}
-                        {cartItems.map((item) => {
-                            const discounted = (item.price * (100 - item.discountPercent)) / 100;
+                        {items.map((item) => {
+                            const coupon = item.coupon;
+                            const price = Number(coupon?.price || 0);
+                            const discounted = Number(coupon?.discount || 0);
+                            const image = coupon?.shop?.images?.[0]?.image || placeholder;
+                            const name = coupon?.name || '';
+                            const discountPercent = price > 0 ? Math.round(((price - discounted) / price) * 100) : 0;
                             return (
                                 <div
                                     key={item.id}
                                     className="bg-white p-4 rounded-xl shadow flex gap-4 items-center"
                                 >
                                     <img
-                                        src={item.image}
-                                        alt={item.name}
+                                        src={image}
+                                        alt={name}
                                         className="w-24 h-24 object-contain rounded"
                                     />
                                     <div className="flex-1">
-                                        <h3 className="font-semibold text-lg mb-1">{item.name}</h3>
-                                        <p className="text-gray-700 mb-1">
-                                            İstifadə müddəti: <strong>{item.duration}</strong>
-                                        </p>
+                                        <h3 className="font-semibold text-lg mb-1">{name}</h3>
                                         <div className="flex items-center gap-2 mb-2">
                                             <button
-                                                onClick={() => handleDecrease(item.id)}
+                                                onClick={() => handleDecrease(item)}
                                                 className="border p-1 rounded hover:bg-slate-200"
                                             >
                                                 <FiMinus />
                                             </button>
                                             <span>{item.quantity}</span>
                                             <button
-                                                onClick={() => handleIncrease(item.id)}
+                                                onClick={() => handleIncrease(item)}
                                                 className="border p-1 rounded hover:bg-slate-200"
                                             >
                                                 <FiPlus />
                                             </button>
                                         </div>
                                         <p className="text-gray-500 line-through text-sm">
-                                            {(item.price * item.quantity).toFixed(2)} ₼
+                                            {(price * item.quantity).toFixed(2)} ₼
                                         </p>
                                         <p className="text-red-600 font-semibold">
                                             {(discounted * item.quantity).toFixed(2)} ₼
-                                        </p>
-                                        <p className="text-green-600 text-sm">
-                                            Kupon Qiyməti: {(item.couponPrice * item.quantity).toFixed(2)} ₼
                                         </p>
                                     </div>
                                 </div>
@@ -159,14 +130,24 @@ const CartPage = () => {
                         {/* Alt cəmi və endirim */}
                         <div className="flex justify-between mb-2 text-gray-700 text-xs lg:text-base">
                             <span>Alt cəmi</span>
-                            <span>
-                                {(cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)).toFixed(2)} ₼
+                            <span>{items
+                                .reduce((sum, item) => {
+                                    const price = Number(item.coupon?.price || 0);
+                                    return sum + price * item.quantity;
+                                }, 0)
+                                .toFixed(2)} ₼
                             </span>
                         </div>
                         <div className="flex justify-between mb-2 text-green-600 text-xs lg:text-base">
                             <span>Kupon endirimi</span>
                             <span>
-                                -{(cartItems.reduce((sum, item) => sum + (item.price - ((item.price * (100 - item.discountPercent)) / 100)) * item.quantity, 0)).toFixed(2)} ₼
+                                -{items
+                                    .reduce((sum, item) => {
+                                        const price = Number(item.coupon?.price || 0);
+                                        const discounted = Number(item.coupon?.discount || 0);
+                                        return sum + (price - discounted) * item.quantity;
+                                    }, 0)
+                                    .toFixed(2)} ₼
                             </span>
                         </div>
                         <hr className="my-3" />
@@ -174,18 +155,12 @@ const CartPage = () => {
                         <div className="flex justify-between items-center mb-2">
                             <span className="font-bold text-lg lg:text-2xl">CƏMİ</span>
                             <span className="font-bold text-lg lg:text-2xl text-[#FFEB3B]">
-                                {(cartItems.reduce((sum, item) => sum + ((item.price * (100 - item.discountPercent)) / 100) * item.quantity, 0)).toFixed(2)} ₼
+                                {Number(totalAmount).toFixed(2)} ₼
                             </span>
                         </div>
                         <hr className="my-3" />
                         {/* Balans istifadəsi */}
-                        <div className="flex justify-between items-center mb-2 text-xs lg:text-sm">
-                            <span className="text-gray-700">Balans istifadəsi</span>
-                            <span className="text-[#FFEB3B] font-semibold">Mövcud: {userBalance} ₼</span>
-                        </div>
-                        <button className="w-full border rounded-lg py-2 mb-4 bg-white hover:bg-gray-100 transition font-semibold text-xs lg:text-base">
-                            Bütün balansı istifadə et
-                        </button>
+                        {/* Balans hissəsi hələ backend ilə bağlı deyil, gələcəkdə wallet inteqrasiyası üçün saxlanılıb */}
                         {/* Sifarişi tamamla */}
                         <button className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2">
                             Sifarişi Tamamla

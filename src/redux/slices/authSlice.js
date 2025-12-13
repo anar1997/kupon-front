@@ -62,9 +62,18 @@ export const postRegisterAsync = createAsyncThunk('postRegisterAsync', async (da
   }
 });
 
+export const logoutAsync = createAsyncThunk('logoutAsync', async (_, { rejectWithValue }) => {
+  try {
+    await axios.post('/users/logout/');
+    return {};
+  } catch (error) {
+    return rejectWithValue({
+      message: 'Çıxış zamanı xəta baş verdi!'
+    });
+  }
+});
+
 const initialState = {
-  refresh: "",
-  access: "",
   isLoading: false,
   isLoggedIn: false,
   me: "",
@@ -81,8 +90,6 @@ const authSlice = createSlice({
       state.successMsg = null;
     },
     logout: (state) => {
-      state.refresh = "";
-      state.access = "";
       state.isLoading = false;
       state.isLoggedIn = false;
       state.me = "";
@@ -94,11 +101,6 @@ const authSlice = createSlice({
     builder
       .addCase(postLoginAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.access = action.payload.access;
-        state.refresh = action.payload.refresh;
-        localStorage.setItem('access', action.payload.access);
-        localStorage.setItem('refresh', action.payload.refresh);
-        localStorage.setItem('isLoggedIn', true);
         state.isLoggedIn = true;
         state.error = null;
         console.log(action);
@@ -117,10 +119,15 @@ const authSlice = createSlice({
     builder
       .addCase(getMeAsync.fulfilled, (state, action) => {
         state.me = action.payload;
+        state.isLoggedIn = true;
+        state.isLoading = false;
+        state.error = null;
         console.log(action);
       })
       .addCase(getMeAsync.rejected, (state, action) => {
-        state.error = action.payload.message;
+        state.isLoggedIn = false;
+        state.isLoading = false;
+        state.error = action.payload?.message || state.error;
         console.log(action);
       })
       .addCase(getMeAsync.pending, (state) => {
@@ -154,6 +161,22 @@ const authSlice = createSlice({
       .addCase(postRegisterAsync.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+      });
+
+    builder
+      .addCase(logoutAsync.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logoutAsync.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isLoggedIn = false;
+        state.me = "";
+        state.error = null;
+        state.successMsg = null;
+      })
+      .addCase(logoutAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || 'Çıxış zamanı xəta baş verdi!';
       });
   }
 });

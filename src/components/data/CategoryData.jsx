@@ -3,7 +3,7 @@ import Tibb from '../images/newFolder/Tibb.jpg';
 import RestoranKafe from '../images/newFolder/Restoran-Kafe.jpg';
 import Saglamliq from '../images/newFolder/Sağlamlıq.jpg';
 import Tehsil from '../images/newFolder/Təhsil.jpg';
-import elaveSaheler from '../images/newFolder/Əlavə-sahələr.jpg';
+import elaveSaheler from '../images/newFolder/elave-saheler.jpg';
 
 const categoryData = [
   {

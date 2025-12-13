@@ -10,11 +10,11 @@ import ServicePaginationPage from './pages/ServicePaginationPage/ServicePaginati
 import Profile from './pages/profile/Profile';
 import ManuelTest from './pages/profile/ManuelTest';
 import Coupons from './components/profile/Coupons/Coupons';
-import IncreaseBalans from './components/profile/increaseBalans/increaseBalans';
 import Connection from './pages/connection/Connection';
 import AcceptRequest from './pages/connection/AcceptRequest';
 import ScrollToTop from './components/ScroolTop';
 import ChangePassword from './components/profile/tenzim/changePassword';
+import IncreaseBalans from './components/profile/increaseBalans/IncreaseBalans';
 
 function App() {
   return (

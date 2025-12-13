@@ -1,6 +1,8 @@
 import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { addToCartAsync } from '../../redux/slices/cartSlice';
 
 const SmallServiceCard = ({
     id,
@@ -21,6 +23,7 @@ const SmallServiceCard = ({
     onBuyNow = () => {},
 }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleClick = () => {
         navigate(`/service/${slug || id}`);
@@ -91,7 +94,7 @@ const SmallServiceCard = ({
                         className="w-full border text-[10px] hover:bg-[#FFF283] hover:text-black border-[#FFCC00] rounded-lg px-2 py-1 flex items-center justify-center gap-1 font-semibold text-[#FFCC00]"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onAddToCart();
+                            dispatch(addToCartAsync({ couponId: id, quantity: 1 }));
                         }}
                     >
                         <FiShoppingCart size={12} />

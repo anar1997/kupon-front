@@ -2,6 +2,8 @@
 import React from 'react';
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addToCartAsync } from '../../redux/slices/cartSlice';
 
 const CardElement = ({
     id,
@@ -37,6 +39,7 @@ const CardElement = ({
         ratingCount,
         region,});
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     return (
         <div
@@ -91,7 +94,10 @@ const CardElement = ({
                 <div className="flex gap-2 mt-auto mb-2 sm:mb-3 flex-col sm:flex-row">
                     <button
                         className="w-full border text-xs sm:text-[11px] xs:text-[10px] hover:bg-[#FFF283] hover:text-black border-[#FFCC00] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FFCC00]"
-                        onClick={e => { e.stopPropagation(); }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            dispatch(addToCartAsync({ couponId: id, quantity: 1 }));
+                        }}
                     >
                         <FiShoppingCart size={16} />
                         Səbət

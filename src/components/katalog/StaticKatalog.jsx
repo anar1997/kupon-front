@@ -5,6 +5,7 @@ import { getCouponsAsync } from '../../redux/slices/couponSlice';
 
 const StaticKatalog = ({ categoryData }) => {
     const [hoveredIdx, setHoveredIdx] = useState(null);
+    const [hoveredCat, setHoveredCat] = useState(null);
 
     const { categories, isLoading, error } = useSelector(state => state.category);
     const dispatch = useDispatch();
@@ -39,7 +40,13 @@ const StaticKatalog = ({ categoryData }) => {
     }, [dispatch]);
 
     return (
-        <div className="h-[650px] py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative">
+        <div
+            className="py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative max-h-[70vh]"
+            onMouseLeave={() => {
+                setHoveredIdx(null);
+                setHoveredCat(null);
+            }}
+        >
             <h1 className='px-4 mb-5 mt-2 font-black'>Kateqoriyalar</h1>
             <button className={'flex items-center text-sm w-full gap-3 px-5 py-2 rounded-lg transition hover:bg-[#FFF281]'}
                 onClick={() => {
@@ -49,13 +56,15 @@ const StaticKatalog = ({ categoryData }) => {
                 }}>
                 Bütün Kateqoriyalar
             </button>
-            <ul className="flex flex-col gap-1">
+            <ul className="flex flex-col gap-1 pr-1 overflow-y-auto">
                 {categories.map((cat, idx) => (
                     <div
                         key={cat.id ?? idx}
                         className="relative text-sm"
-                        onMouseEnter={() => setHoveredIdx(idx)}
-                        onMouseLeave={() => setHoveredIdx(null)}
+                        onMouseEnter={() => {
+                            setHoveredIdx(idx);
+                            setHoveredCat(cat);
+                        }}
                     >
                         <button
                             className={`flex items-center w-full gap-3 px-4 py-2 rounded-lg transition
@@ -71,54 +80,54 @@ const StaticKatalog = ({ categoryData }) => {
                                 {cat.name}
                             </span>
                         </button>
-                        {/* Alt menyu popup */}
-                        {hoveredIdx === idx && (
-                            <div className="absolute left-full  text-xs top-0 pt-4 bg-white rounded-xl shadow-lg min-w-[220px] py-3 px-4 z-20 flex flex-col">
-                                <h1 onClick={() => {
-                                    const el = document.getElementById('customer-coupons');
-                                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                    handleCategory(cat.id);
-                                }} className="text-base font-bold justify-center px-4 flex items-center gap-2 cursor-pointer">
-                                    {cat.name}
-                                </h1>
-                                <div className="overflow-y-auto max-h-[300px] pb-2 scrollbar-thin scrollbar-thumb-[#A9A9A9] scrollbar-track-[#FFFDEB]">
-                                    {(cat.subcategories || []).map((sub) => (
-                                        <div key={sub.id} className="mb-3">
-                                            <div onClick={() => {
-                                                const el = document.getElementById('customer-coupons');
-                                                if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                                handleCategory(sub.id);
-                                            }} className="font-semibold text-gray-800 mb-1 cursor-pointer">{sub.name}</div>
-                                            <ul className="flex flex-col">
-                                                {(sub.services || []).map((service) => (
-                                                    <li
-                                                        onClick={() => {
-                                                            const el = document.getElementById('customer-coupons');
-                                                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                                            handleService(service.id);
-                                                        }}
-                                                        key={service.id ?? service.name}
-                                                        className="text-gray-700 text-xs cursor-pointer hover:text-[#FFD600]"
-                                                    >
-                                                        {service.name ?? String(service)}
-                                                    </li>
-                                                ))}
-                                                {(!sub.services || sub.services.length === 0) && (
-                                                    <li className="text-gray-400 text-xs">Xidmət yoxdur</li>
-                                                )}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                                <hr className="my-2" />
-                                <button className="text-[#FFD600] text-sm font-semibold hover:underline w-full text-left px-1 py-1 sticky bottom-0 bg-white">
-                                    Hamısını gör
-                                </button>
-                            </div>
-                        )}
                     </div>
                 ))}
             </ul>
+
+            {hoveredIdx !== null && hoveredCat && (
+                <div className="absolute left-full top-24 text-xs pt-4 bg-white rounded-xl shadow-lg min-w-[220px] py-3 px-4 z-20 flex flex-col">
+                    <h1 onClick={() => {
+                        const el = document.getElementById('customer-coupons');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        handleCategory(hoveredCat.id);
+                    }} className="text-base font-bold justify-center px-4 flex items-center gap-2 cursor-pointer">
+                        {hoveredCat.name}
+                    </h1>
+                    <div className="overflow-y-auto max-h-[300px] pb-2 scrollbar-thin scrollbar-thumb-[#A9A9A9] scrollbar-track-[#FFFDEB]">
+                        {(hoveredCat.subcategories || []).map((sub) => (
+                            <div key={sub.id} className="mb-3">
+                                <div onClick={() => {
+                                    const el = document.getElementById('customer-coupons');
+                                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                    handleCategory(sub.id);
+                                }} className="font-semibold text-gray-800 mb-1 cursor-pointer">{sub.name}</div>
+                                <ul className="flex flex-col">
+                                    {(sub.services || []).map((service) => (
+                                        <li
+                                            onClick={() => {
+                                                const el = document.getElementById('customer-coupons');
+                                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                                handleService(service.id);
+                                            }}
+                                            key={service.id ?? service.name}
+                                            className="text-gray-700 text-xs cursor-pointer hover:text-[#FFD600]"
+                                        >
+                                            {service.name ?? String(service)}
+                                        </li>
+                                    ))}
+                                    {(!sub.services || sub.services.length === 0) && (
+                                        <li className="text-gray-400 text-xs">Xidmət yoxdur</li>
+                                    )}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                    <hr className="my-2" />
+                    <button className="text-[#FFD600] text-sm font-semibold hover:underline w-full text-left px-1 py-1 sticky bottom-0 bg-white">
+                        Hamısını gör
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

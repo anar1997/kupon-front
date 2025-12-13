@@ -1,11 +1,15 @@
 import axios from 'axios';
 
-const access = localStorage.getItem('access')
+// Central axios instance. We rely on HttpOnly cookies for auth, so
+// tokens are NOT stored in localStorage and no Authorization header
+// is set on the frontend side.
 
-export default axios.create({
-    baseURL: "http://5.175.136.37/api/",
+const instance = axios.create({
+    baseURL: 'http://localhost:8005/api/',
     headers: {
-        "Content-Type" : "application/json",
-        "Authorization" : `Bearer ${access}`
-     }
-})
+        'Content-Type': 'application/json',
+    },
+    withCredentials: true,
+});
+
+export default instance;

@@ -162,8 +162,8 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
           {/* Kategoriler Menü (Dikey) */}
           {isOpen && (
             <div className="absolute top-[77px] sm:top-12 left-0 z-50 bg-white shadow-md xl:mx-24 sm:mx-10 mx-6 pl-3 py-4 w-80 h-[500px]">
-              <h1 className='px-4 mb-5 mt-2 font-black'>Kateqoriyalar</h1>
-              <ul>
+              <h1 className='px-4 mb-3 mt-2 font-black'>Kateqoriyalar</h1>
+              <ul className="pr-2 space-y-1 max-h-[440px] overflow-y-auto">
                 {categories.map((category, index) => {
                   const isOpenCat = openCategoryIndex === index;
                   return (
@@ -180,7 +180,7 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
                       </div>
 
                       {isOpenCat && (
-                        <div className="absolute left-0 xl:left-full pt-4 w-80 top-0 bg-white xl:py-4 xl:px-12 border-l-4 xl:max-w-[66vw] xl:w-[70vw] h-[500px] z-40 shadow-md">
+                        <div className="absolute left-0 xl:left-full pt-4 w-80 top-0 bg-white xl:py-4 xl:px-12 border-l-4 xl:max-w-[66vw] xl:w-[70vw] h-[500px] overflow-y-auto z-40 shadow-md">
                           <h1 className="text-2xl font-bold justify-center px-4 flex items-center gap-2" onClick={() => {
                             const el = document.getElementById('customer-coupons');
                             if (el) el.scrollIntoView({ behavior: 'smooth' });
