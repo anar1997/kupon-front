@@ -7,18 +7,27 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getMeAsync } from '../../redux/slices/authSlice'
 import { getMeStatsAsync } from '../../redux/slices/meStatsSlice'
+import { getBalansAsync } from '../../redux/slices/balansSlice'
 
 const ManuelTest = () => {
     const [activeTab, setActiveTab] = useState('profil')
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const me = useSelector(state => state.auth.me);
-    const { meStats, loading, error } = useSelector(state => state.meStats);
-    console.log(meStats);
+    const { meStats, loading } = useSelector(state => state.meStats);
+    const { current_balance } = useSelector(state => state.balans);
+
+    const fullName = me
+        ? `${me.first_name || ''} ${me.last_name || ''}`.trim() || me.email
+        : 'İstifadəçi';
+    const email = me?.email || '';
+    const avatarInitial = (me?.first_name || me?.email || 'A').charAt(0).toUpperCase();
+    const membershipLabel = me?.is_guest ? 'Qonaq istifadəçi' : 'Premium Üzv';
 
     useEffect(() => {
         dispatch(getMeAsync());
         dispatch(getMeStatsAsync());
+        dispatch(getBalansAsync());
     }, [dispatch]);
 
 
@@ -37,17 +46,17 @@ const ManuelTest = () => {
             <div className="w-full bg-gradient-to-r from-[#F9F9F4] to-[#FAF9EE] rounded-xl flex flex-col sm:flex-row items-center px-4 sm:px-8 py-4 sm:py-6 shadow gap-4 sm:gap-0">
                 {/* Avatar */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FFF176] flex items-center justify-center text-black text-2xl sm:text-3xl font-bold mb-4 sm:mb-0 sm:mr-6">
-                    A
+                    {avatarInitial}
                 </div>
                 {/* Info */}
                 <div className="flex-1 text-center sm:text-left">
-                    <div className="text-lg sm:text-xl font-semibold">Anar Quliyev</div>
-                    <div className="text-gray-500 text-xs sm:text-xs">abbasquliyev111@gmail.com</div>
+                    <div className="text-lg sm:text-xl font-semibold">{fullName}</div>
+                    <div className="text-gray-500 text-xs sm:text-xs">{email}</div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 mt-2 justify-center sm:justify-start">
-                        <span className="bg-[#FAD800] text-black text-xs px-2 py-1 rounded">Premium Üzv</span>
+                        <span className="bg-[#FAD800] text-black text-xs px-2 py-1 rounded">{membershipLabel}</span>
                         <span className="flex items-center gap-1 font-semibold text-[#FAD800] text-sm">
                             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><text x="12" y="16" textAnchor="middle" fontSize="12" fill="currentColor">₼</text></svg>
-                            150 ₼
+                            {current_balance} ₼
                         </span>
                     </div>
                 </div>

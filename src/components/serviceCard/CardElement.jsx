@@ -2,8 +2,9 @@
 import React from 'react';
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { addToCartAsync } from '../../redux/slices/cartSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCartAsync, fetchCartAsync } from '../../redux/slices/cartSlice';
+import { buyNowAsync } from '../../redux/slices/ordersSlice';
 
 const CardElement = ({
     id,
@@ -23,23 +24,37 @@ const CardElement = ({
     region,
     category
 }) => {
-    console.log("CardElement props:", {id,
-        slug,
-        title,
-        image,
-        isVip,
-        isPremium,
-        discountPercent,
-        oldPrice,
-        price,
-        saved,
-        location,
-        duration,
-        rating,
-        ratingCount,
-        region,});
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+    const handleBuyNow = async (e) => {
+        e.stopPropagation();
+
+        // Login olmayıbsa: kart ödənişi səhifəsinə yönləndir
+        if (!isLoggedIn) {
+            navigate('/card-payment');
+            return;
+        }
+
+        try {
+            const action = await dispatch(buyNowAsync({ couponId: id, quantity: 1 }));
+            if (buyNowAsync.fulfilled.match(action)) {
+                const { status } = action.payload || {};
+
+                if (status === 'paid_full') {
+                    // Hamısı balansdan ödənib
+                    await dispatch(fetchCartAsync());
+                    navigate('/coupons');
+                } else {
+                    // mixed və ya card_only: kart ödənişi səhifəsinə yönləndir
+                    navigate('/card-payment', { state: action.payload });
+                }
+            }
+        } catch {
+            // Xətalar notification-larda göstərilir
+        }
+    };
 
     return (
         <div
@@ -104,7 +119,7 @@ const CardElement = ({
                     </button>
                     <button
                         className="w-full bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]"
-                        onClick={e => { e.stopPropagation(); }}
+                        onClick={handleBuyNow}
                     >
                         <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">İndi al</span>
                     </button>

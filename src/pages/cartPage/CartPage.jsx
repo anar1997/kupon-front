@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FiPlus, FiMinus, FiTag } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import { FiPlus, FiMinus, FiTag, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCartAsync, updateCartItemAsync, clearCartAsync } from '../../redux/slices/cartSlice';
+import { fetchCartAsync, updateCartItemAsync, clearCartAsync, removeCartItemAsync } from '../../redux/slices/cartSlice';
+import { createOrderFromCartAsync } from '../../redux/slices/ordersSlice';
 import placeholder from "../../components/images/placeholder.jpg";
 
 const CartPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { items, totalAmount, itemsCount } = useSelector(state => state.cart);
 
     const handleIncrease = (item) => {
@@ -23,9 +25,26 @@ const CartPage = () => {
         dispatch(clearCartAsync());
     };
 
+    const handleRemoveItem = (id) => {
+        dispatch(removeCartItemAsync(id));
+    };
+
     const totalServices = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const [showConfirm, setShowConfirm] = React.useState(false);
+
+    const handleCheckout = async () => {
+        try {
+            const action = await dispatch(createOrderFromCartAsync());
+            if (createOrderFromCartAsync.fulfilled.match(action)) {
+                // Sifariş uğurludursa, səbəti yenilə və kuponlara yönləndir
+                dispatch(fetchCartAsync());
+                navigate('/coupons');
+            }
+        } catch (e) {
+            // Xətalar notify içində göstərilir
+        }
+    };
 
     useEffect(() => {
         dispatch(fetchCartAsync());
@@ -99,6 +118,12 @@ const CartPage = () => {
                                             >
                                                 <FiPlus />
                                             </button>
+                                            <button
+                                                onClick={() => handleRemoveItem(item.id)}
+                                                className="ml-4 border p-1 rounded text-red-600 hover:bg-red-50"
+                                            >
+                                                <FiTrash2 />
+                                            </button>
                                         </div>
                                         <p className="text-gray-500 line-through text-sm">
                                             {(price * item.quantity).toFixed(2)} ₼
@@ -162,7 +187,10 @@ const CartPage = () => {
                         {/* Balans istifadəsi */}
                         {/* Balans hissəsi hələ backend ilə bağlı deyil, gələcəkdə wallet inteqrasiyası üçün saxlanılıb */}
                         {/* Sifarişi tamamla */}
-                        <button className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2">
+                        <button
+                            onClick={handleCheckout}
+                            className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2"
+                        >
                             Sifarişi Tamamla
                         </button>
                         <div className="text-center text-xs text-gray-400 mt-2">

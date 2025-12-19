@@ -30,11 +30,11 @@ export const addToCartAsync = createAsyncThunk(
 
 export const updateCartItemAsync = createAsyncThunk(
   'cart/updateItem',
-  async ({ id, quantity }, { dispatch, rejectWithValue }) => {
+  async ({ id, quantity }, { rejectWithValue }) => {
     try {
       await axios.patch(`/cart/items/${id}/`, { quantity });
-      await dispatch(fetchCartAsync());
-      return {};
+      // Backend uğurludur, frontend state-i lokalda yeniləyirik (yenidən GET etmirik)
+      return { id, quantity };
     } catch (error) {
       const message = extractErrorMessage(error, 'Səbət yenilənərkən xəta baş verdi!');
       notifyError('Səbət yeniləmə xətası', message);
@@ -45,11 +45,11 @@ export const updateCartItemAsync = createAsyncThunk(
 
 export const removeCartItemAsync = createAsyncThunk(
   'cart/removeItem',
-  async (id, { dispatch, rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       await axios.delete(`/cart/items/${id}/`);
-      await dispatch(fetchCartAsync());
-      return {};
+      // Uğurlu olduqda, state-dən bu item-i lokalda siləcəyik
+      return { id };
     } catch (error) {
       const message = extractErrorMessage(error, 'Səbətdən silinərkən xəta baş verdi!');
       notifyError('Səbətdən silmə xətası', message);
@@ -64,8 +64,8 @@ export const clearCartAsync = createAsyncThunk(
     try {
       const items = getState().cart.items || [];
       await Promise.all(items.map((item) => axios.delete(`/cart/items/${item.id}/`)));
-      await dispatch(fetchCartAsync());
       notifySuccess('Səbət', 'Səbət uğurla boşaldıldı.');
+      // Backend səbəti təmizlədi, state-i lokalda sıfırlayacağıq
       return {};
     } catch (error) {
       const message = extractErrorMessage(error, 'Səbət boşaldılarkən xəta baş verdi!');
@@ -109,8 +109,30 @@ const cartSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload?.message || 'Səbət yüklənərkən xəta baş verdi!';
       })
+      .addCase(updateCartItemAsync.fulfilled, (state, action) => {
+        const { id, quantity } = action.payload || {};
+        const item = state.items.find((i) => i.id === id);
+        if (item) {
+          item.quantity = quantity;
+        }
+        // Total və count-u lokalda yenilə
+        state.itemsCount = state.items.reduce((sum, it) => sum + it.quantity, 0);
+        state.totalAmount = state.items.reduce((sum, it) => {
+          const discounted = Number(it.coupon?.discount || 0);
+          return sum + discounted * it.quantity;
+        }, 0);
+      })
       .addCase(addToCartAsync.rejected, (state, action) => {
         state.error = action.payload?.message || state.error;
+      })
+      .addCase(removeCartItemAsync.fulfilled, (state, action) => {
+        const { id } = action.payload || {};
+        state.items = state.items.filter((it) => it.id !== id);
+        state.itemsCount = state.items.reduce((sum, it) => sum + it.quantity, 0);
+        state.totalAmount = state.items.reduce((sum, it) => {
+          const discounted = Number(it.coupon?.discount || 0);
+          return sum + discounted * it.quantity;
+        }, 0);
       })
       .addCase(updateCartItemAsync.rejected, (state, action) => {
         state.error = action.payload?.message || state.error;
@@ -120,6 +142,11 @@ const cartSlice = createSlice({
       })
       .addCase(clearCartAsync.rejected, (state, action) => {
         state.error = action.payload?.message || state.error;
+      })
+      .addCase(clearCartAsync.fulfilled, (state) => {
+        state.items = [];
+        state.itemsCount = 0;
+        state.totalAmount = 0;
       });
   },
 });

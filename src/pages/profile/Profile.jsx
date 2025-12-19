@@ -1,44 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import mobile from "../../components/images/mobile.webp";
+import { fetchMyCouponsAsync } from "../../redux/slices/myCouponsSlice";
 
 const Profile = () => {
-    // Kullanıcının kuponları
-    const [coupons, setCoupons] = useState([
-        {
-            id: 1,
-            name: "Stomatoloq Xidməti",
-            image: mobile,
-            price: 100,
-            discountPercent: 20,
-            couponPrice: 8,
-            quantity: 2,
-            duration: "6 ay",
-            isActive: true,
-        },
-        {
-            id: 2,
-            name: "Ortopediya Xidməti",
-            image: mobile,
-            price: 150,
-            discountPercent: 10,
-            couponPrice: 10,
-            quantity: 1,
-            duration: "3 ay",
-            isActive: false,
-        },
-    ]);
+    const dispatch = useDispatch();
+    const { items: coupons, isLoading } = useSelector((state) => state.myCoupons);
 
-    const useCoupon = (id) => {
-        setCoupons((prev) =>
-            prev.map((c) =>
-                c.id === id ? { ...c, isActive: false } : c
-            )
-        );
-    };
+    useEffect(() => {
+        dispatch(fetchMyCouponsAsync());
+    }, [dispatch]);
 
-    const activeCoupons = coupons.filter(c => c.isActive);
-    const passiveCoupons = coupons.filter(c => !c.isActive);
+    const activeCoupons = (coupons || []).filter((c) => !c.is_used);
+    const passiveCoupons = (coupons || []).filter((c) => c.is_used);
 
     return (
         <div className="p-6 max-w-4xl mx-auto bg-slate-100 min-h-screen">
@@ -52,41 +27,42 @@ const Profile = () => {
 
             <section className="mb-12">
                 <h2 className="text-2xl font-semibold mb-4">Aktiv Kuponlar</h2>
-                {activeCoupons.length === 0 ? (
+                {isLoading ? (
+                    <p>Yüklənir...</p>
+                ) : activeCoupons.length === 0 ? (
                     <p>Aktiv kuponunuz yoxdur.</p>
                 ) : (
                     activeCoupons.map(coupon => {
-                        const discountedPrice = (coupon.price * (100 - coupon.discountPercent)) / 100;
                         return (
                             <div
                                 key={coupon.id}
                                 className="flex items-center gap-4 bg-white rounded p-4 mb-4 shadow"
                             >
                                 <img
-                                    src={coupon.image}
-                                    alt={coupon.name}
+                                    src={mobile}
+                                    alt={coupon.coupon_name}
                                     className="w-24 h-24 object-contain rounded"
                                 />
                                 <div className="flex-1">
-                                    <h3 className="font-semibold text-xl">{coupon.name}</h3>
-                                    <p>İstifadə müddəti: <strong>{coupon.duration}</strong></p>
+                                    <h3 className="font-semibold text-xl">{coupon.coupon_name}</h3>
+                                    <p>Mağaza: <strong>{coupon.shop_name}</strong></p>
                                     <p>Say: {coupon.quantity}</p>
-                                    <p className="line-through text-gray-500">
-                                        {(coupon.price * coupon.quantity).toFixed(2)} ₼
-                                    </p>
                                     <p className="text-red-600 font-bold">
-                                        {(discountedPrice * coupon.quantity).toFixed(2)} ₼
-                                    </p>
-                                    <p className="text-green-600 text-sm">
-                                        Kupon Qiyməti: {(coupon.couponPrice * coupon.quantity).toFixed(2)} ₼
+                                        {(coupon.subtotal || 0).toFixed(2)} ₼
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => useCoupon(coupon.id)}
-                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                                >
-                                    Kuponu İstifadə Et
-                                </button>
+                                <div className="flex flex-col items-end gap-2">
+                                    {coupon.qr_code_image && (
+                                        <img
+                                            src={coupon.qr_code_image}
+                                            alt="Kupon QR kodu"
+                                            className="w-20 h-20 object-contain border rounded"
+                                        />
+                                    )}
+                                    <span className="text-green-700 text-sm font-semibold">
+                                        Aktiv
+                                    </span>
+                                </div>
                             </div>
                         );
                     })
@@ -95,7 +71,9 @@ const Profile = () => {
 
             <section>
                 <h2 className="text-2xl font-semibold mb-4">Passiv Kuponlar</h2>
-                {passiveCoupons.length === 0 ? (
+                {isLoading ? (
+                    <p>Yüklənir...</p>
+                ) : passiveCoupons.length === 0 ? (
                     <p>İstifadə edilmiş kupon yoxdur.</p>
                 ) : (
                     passiveCoupons.map(coupon => (
@@ -104,22 +82,16 @@ const Profile = () => {
                             className="flex items-center gap-4 bg-gray-200 rounded p-4 mb-4 shadow-inner"
                         >
                             <img
-                                src={coupon.image}
-                                alt={coupon.name}
+                                src={mobile}
+                                alt={coupon.coupon_name}
                                 className="w-24 h-24 object-contain rounded opacity-70"
                             />
                             <div className="flex-1">
-                                <h3 className="font-semibold text-xl">{coupon.name}</h3>
-                                <p>İstifadə müddəti: <strong>{coupon.duration}</strong></p>
+                                <h3 className="font-semibold text-xl">{coupon.coupon_name}</h3>
+                                <p>Mağaza: <strong>{coupon.shop_name}</strong></p>
                                 <p>Say: {coupon.quantity}</p>
-                                <p className="line-through text-gray-600">
-                                    {(coupon.price * coupon.quantity).toFixed(2)} ₼
-                                </p>
                                 <p className="text-red-600 font-bold line-through">
-                                    {(((coupon.price * (100 - coupon.discountPercent)) / 100) * coupon.quantity).toFixed(2)} ₼
-                                </p>
-                                <p className="text-green-600 text-sm line-through">
-                                    Kupon Qiyməti: {(coupon.couponPrice * coupon.quantity).toFixed(2)} ₼
+                                    {(coupon.subtotal || 0).toFixed(2)} ₼
                                 </p>
                                 <p className="text-red-700 font-semibold mt-1">İstifadə Edilib</p>
                             </div>
@@ -132,12 +104,12 @@ const Profile = () => {
                 <h2 className="text-2xl font-semibold mb-4">
                     İndiyə qədər aldığınız bütün kuponlar
                 </h2>
-                {coupons.length === 0 ? (
+                {isLoading ? (
+                    <p>Yüklənir...</p>
+                ) : !coupons || coupons.length === 0 ? (
                     <p>Hələ heç bir kupon almamısınız.</p>
                 ) : (
                     coupons.map((coupon) => {
-                        const discountedPrice =
-                            (coupon.price * (100 - coupon.discountPercent)) / 100;
                         return (
                             <div
                                 key={coupon.id}
@@ -147,40 +119,28 @@ const Profile = () => {
                                     }`}
                             >
                                 <img
-                                    src={coupon.image}
-                                    alt={coupon.name}
+                                    src={mobile}
+                                    alt={coupon.coupon_name}
                                     className={`w-24 h-24 object-contain rounded ${!coupon.isActive ? "opacity-70" : ""
                                         }`}
                                 />
                                 <div className="flex-1">
-                                    <h3 className="font-semibold text-xl">{coupon.name}</h3>
-                                    <p>
-                                        İstifadə müddəti: <strong>{coupon.duration}</strong>
-                                    </p>
+                                    <h3 className="font-semibold text-xl">{coupon.coupon_name}</h3>
+                                    <p>Mağaza: <strong>{coupon.shop_name}</strong></p>
                                     <p>Adet: {coupon.quantity}</p>
-                                    <p className="line-through text-gray-500">
-                                        {(coupon.price * coupon.quantity).toFixed(2)} ₼
-                                    </p>
                                     <p
                                         className={`font-bold ${coupon.isActive
                                                 ? "text-red-600"
                                                 : "text-red-600 line-through"
                                             }`}
                                     >
-                                        {(discountedPrice * coupon.quantity).toFixed(2)} ₼
-                                    </p>
-                                    <p
-                                        className={`text-green-600 text-sm ${!coupon.isActive ? "line-through" : ""
-                                            }`}
-                                    >
-                                        Kupon Qiyməti:{" "}
-                                        {(coupon.couponPrice * coupon.quantity).toFixed(2)} ₼
+                                        {(coupon.subtotal || 0).toFixed(2)} ₼
                                     </p>
                                     <p
                                         className={`mt-1 text-sm font-semibold ${coupon.isActive ? "text-green-700" : "text-red-700"
                                             }`}
                                     >
-                                        {coupon.isActive ? "Aktiv" : "İstifadə olunub"}
+                                        {coupon.is_used ? "İstifadə olunub" : "Aktiv"}
                                     </p>
                                 </div>
                             </div>

@@ -5,18 +5,7 @@ import { CiFilter } from "react-icons/ci";
 import { useDispatch, useSelector } from 'react-redux';
 import { getCouponsAsync } from '../../redux/slices/couponSlice';
 import { getRegionsAsync } from '../../redux/slices/regionSlice';
-
-const categoryOptions = [
-    "Bütün kateqoriyalar",
-    "Sağlamlıq",
-    "Gözəllik",
-    "Yemək",
-    "Əyləncə",
-    "Alış-veriş",
-    "Səyahət",
-    "Fitness",
-    "Təhsil"
-];
+import { getCategoriesAsync } from '../../redux/slices/categorySlice';
 
 const sortOptions = [
     "Ən Populyar",
@@ -33,32 +22,23 @@ const AllServices = () => {
     const dispatch = useDispatch();
     const { coupons, isLoading, error, count } = useSelector(state => state.coupon);
     const { regions } = useSelector(state => state.region);
+    const { categories } = useSelector(state => state.category);
 
-    console.log(coupons);
-
-    const [selectedCategory, setSelectedCategory] = useState(categoryOptions[0]);
-    const [selectedRegion, setSelectedRegion] = useState("Bütün regionlar");
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedRegion, setSelectedRegion] = useState('all');
     const [selectedSort, setSelectedSort] = useState(sortOptions[0]);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         dispatch(getRegionsAsync());
+        dispatch(getCategoriesAsync());
     }, [dispatch]);
-
-    const handleRegion = () => {
-        dispatch(getCouponsAsync({
-            offset: (currentPage - 1) * ITEMS_PER_PAGE,
-
-        }))
-    }
-
-    const getBackendCategory = () => selectedCategory === "Bütün kateqoriyalar" ? "" : selectedCategory;
-    const getBackendRegion = () => selectedRegion === "Bütün regionlar" ? "" : selectedRegion;
 
     useEffect(() => {
         dispatch(getCouponsAsync({
             offset: (currentPage - 1) * ITEMS_PER_PAGE,
-            // shop_region: getBackendRegion(),
+            category: selectedCategory === 'all' ? '' : selectedCategory,
+            shop_region: selectedRegion === 'all' ? '' : selectedRegion,
         }));
     }, [dispatch, currentPage, selectedCategory, selectedRegion]);
 
@@ -116,8 +96,9 @@ const AllServices = () => {
                             value={selectedCategory}
                             onChange={e => setSelectedCategory(e.target.value)}
                         >
-                            {categoryOptions.map(opt => (
-                                <option key={opt}>{opt}</option>
+                            <option value="all">Bütün kateqoriyalar</option>
+                            {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
                             ))}
                         </select>
                         <select
@@ -125,9 +106,9 @@ const AllServices = () => {
                             value={selectedRegion}
                             onChange={e => setSelectedRegion(e.target.value)}
                         >
-                            <option key="all">Bütün regionlar</option>
+                            <option value="all">Bütün regionlar</option>
                             {regions.map(region => (
-                                <option key={region.id}>{region.name}</option>
+                                <option key={region.id} value={region.id}>{region.name}</option>
                             ))}
                         </select>
                         <select

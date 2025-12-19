@@ -5,7 +5,10 @@ import banner3 from "../images/banner-3.webp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getPremiumCouponsAsync } from "../../redux/slices/premiumCouponSlice";
+import { addToCartAsync, fetchCartAsync } from "../../redux/slices/cartSlice";
+import { buyNowAsync } from "../../redux/slices/ordersSlice";
 
 const offers = [
     {
@@ -52,7 +55,9 @@ const offers = [
 const PremiumBannerSlider = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { premiumCoupons } = useSelector((state) => state.premiumCoupon);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const len = premiumCoupons?.length || 0;
     console.log(premiumCoupons);
     console.log(len);
@@ -160,10 +165,46 @@ const PremiumBannerSlider = () => {
                                         {saved > 0 && <span className="text-red-600 text-xs ml-auto">{saved.toFixed(2)} ₼ qənaət</span>}
                                     </div>
                                     <div className="flex flex-col md:flex-row gap-2 mt-6 md:mt-10 mb-2 sm:mt-2 xs:mt-1">
-                                        <button className="flex-4 border text-xs hover:bg-[#FFF283] hover:text-black border-[#FFF283] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FAD800] sm:text-[11px] xs:text-[10px]">
+                                        <button
+                                            className="flex-4 border text-xs hover:bg-[#FFF283] hover:text-black border-[#FFF283] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FAD800] sm:text-[11px] xs:text-[10px]"
+                                            onClick={() => {
+                                                if (premium?.coupon?.id) {
+                                                    dispatch(addToCartAsync({ couponId: premium.coupon.id, quantity: 1 }));
+                                                }
+                                            }}
+                                        >
                                             <FiShoppingCart size={16} /> <span className="text-[12px] sm:text-[11px] xs:text-[10px]">Səbətə əlavə et</span>
                                         </button>
-                                        <button className="flex-1 bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]">
+                                        <button
+                                            className="flex-1 bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]"
+                                            onClick={async () => {
+                                                // Login olmayıbsa: kart ödənişi səhifəsinə yönləndir
+                                                if (!isLoggedIn) {
+                                                    navigate('/card-payment');
+                                                    return;
+                                                }
+
+                                                try {
+                                                    if (!premium?.coupon?.id) return;
+                                                    const action = await dispatch(
+                                                        buyNowAsync({ couponId: premium.coupon.id, quantity: 1 }),
+                                                    );
+
+                                                    if (buyNowAsync.fulfilled.match(action)) {
+                                                        const { status } = action.payload || {};
+
+                                                        if (status === 'paid_full') {
+                                                            await dispatch(fetchCartAsync());
+                                                            navigate('/coupons');
+                                                        } else {
+                                                            navigate('/card-payment', { state: action.payload });
+                                                        }
+                                                    }
+                                                } catch {
+                                                    // Xətalar notification-larda göstərilir
+                                                }
+                                            }}
+                                        >
                                             <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">İndi al</span>
                                         </button>
                                     </div>

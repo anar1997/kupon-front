@@ -16,6 +16,8 @@ import myTransactionReducer from './slices/myTransactionSlice';
 import meStatsReducer from './slices/meStatsSlice';
 import myReferralsReducer from './slices/myReferalsSlice';
 import cartReducer from './slices/cartSlice';
+import myCouponsReducer from './slices/myCouponsSlice';
+import ordersReducer from './slices/ordersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +37,8 @@ export const store = configureStore({
     myTransaction: myTransactionReducer,
     meStats: meStatsReducer,
     myReferrals: myReferralsReducer,
+    myCoupons: myCouponsReducer,
     cart: cartReducer,
+    orders: ordersReducer,
   }
 });

@@ -31,7 +31,6 @@ const ServiceDetail = () => {
         if (!selectedCoupon?.category) return;
         dispatch(getCouponsAsync({
             offset: (similarPage - 1) * SIMILAR_PER_PAGE,
-            category: "",
             shop_region: "",
             category: selectedCoupon.category,
         }));

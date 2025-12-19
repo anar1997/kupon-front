@@ -16,7 +16,13 @@ export const getCouponsAsync = createAsyncThunk(
             name__icontains = ''
         } = merged;
 
-        const url = `/coupons/?limit=10&offset=${offset}&category=${category || ""}&shop_region=${shop_region || ""}&service=${service || ""}&search=${search || ""}&name__icontains=${name__icontains || ""}`;
+        // Backend filter paramları: category (PK), shop__region (PK)
+        const url = `/coupons/?limit=10&offset=${offset}` +
+            `&category=${category || ""}` +
+            `&shop__region=${shop_region || ""}` +
+            `&service=${service || ""}` +
+            `&search=${search || ""}` +
+            `&name__icontains=${name__icontains || ""}`;
 
         try {
             const response = await axios.get(url);

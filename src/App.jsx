@@ -15,6 +15,8 @@ import AcceptRequest from './pages/connection/AcceptRequest';
 import ScrollToTop from './components/ScroolTop';
 import ChangePassword from './components/profile/tenzim/changePassword';
 import IncreaseBalans from './components/profile/increaseBalans/IncreaseBalans';
+import CardPayment from './pages/cardPayment/CardPayment';
+import MyCouponDetail from './pages/customerCoupons/MyCouponDetail';
 
 function App() {
   return (
@@ -31,7 +33,9 @@ function App() {
           <Route path='/profile-m' element={<><Layout /><Profile /><Footer /></>}/>
           <Route path='/profile' element={<><Layout /><ManuelTest /><Footer /></>}/>
           <Route path="/coupons" element={<><Layout /><Coupons /><Footer /></>} />
+          <Route path="/my-coupons/:id" element={<><Layout /><MyCouponDetail /><Footer /></>} />
           <Route path="/increase-balans" element={<><Layout /><IncreaseBalans /><Footer /></>} />
+          <Route path="/card-payment" element={<><Layout /><CardPayment /><Footer /></>} />
           <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />
           <Route path="/accept-request" element={<><Layout /><AcceptRequest /><Footer /></>} />
           <Route path="/profile/tenzim/change-password" element={<><Layout /><ChangePassword /><Footer /></>} />
