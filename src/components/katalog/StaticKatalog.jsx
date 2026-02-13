@@ -41,7 +41,7 @@ const StaticKatalog = ({ categoryData }) => {
 
     return (
         <div
-            className="py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative max-h-[70vh]"
+            className="py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative"
             onMouseLeave={() => {
                 setHoveredIdx(null);
                 setHoveredCat(null);

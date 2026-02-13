@@ -5,7 +5,7 @@ import axios from 'axios';
 // is set on the frontend side.
 
 const instance = axios.create({
-    baseURL: 'http://localhost:8005/api/',
+    baseURL: 'https://kuponum.work.gd/api',
     headers: {
         'Content-Type': 'application/json',
     },

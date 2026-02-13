@@ -27,6 +27,8 @@ const CardElement = ({
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const { isLoading: isCartLoading } = useSelector((state) => state.cart);
+    console.log(isCartLoading);
 
     const handleBuyNow = async (e) => {
         e.stopPropagation();
@@ -108,14 +110,16 @@ const CardElement = ({
                 </div>
                 <div className="flex gap-2 mt-auto mb-2 sm:mb-3 flex-col sm:flex-row">
                     <button
-                        className="w-full border text-xs sm:text-[11px] xs:text-[10px] hover:bg-[#FFF283] hover:text-black border-[#FFCC00] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FFCC00]"
+                        className="w-full border text-xs sm:text-[11px] xs:text-[10px] hover:bg-[#FFF283] hover:text-black border-[#FFCC00] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FFCC00] disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={e => {
                             e.stopPropagation();
+                            // ✅ Login kontrolu olmadan direkt əlavə et
                             dispatch(addToCartAsync({ couponId: id, quantity: 1 }));
                         }}
+                        disabled={isCartLoading}
                     >
                         <FiShoppingCart size={16} />
-                        Səbət
+                        {isCartLoading ? "Əlavə olunur..." : "Səbət"}
                     </button>
                     <button
                         className="w-full bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]"
