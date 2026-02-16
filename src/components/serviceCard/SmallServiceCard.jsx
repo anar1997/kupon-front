@@ -26,7 +26,8 @@ const SmallServiceCard = ({
     const dispatch = useDispatch();
 
     const handleClick = () => {
-        navigate(`/service/${slug || id}`);
+        const key = slug || id;
+        navigate(`/service/${encodeURIComponent(String(key))}`);
     };
 
     return (

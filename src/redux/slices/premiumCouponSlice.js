@@ -3,7 +3,7 @@ import axios from '../axios';
 
 export const getPremiumCouponsAsync = createAsyncThunk('getPremiumCouponsAsync', async (data) => {
     try {
-        const response = await axios.get('coupons/premium-offers/')
+        const response = await axios.get('/products/premium-offers/')
         return response.data;
     } catch (error) {
         throw { 'message': error.response.data.detail };

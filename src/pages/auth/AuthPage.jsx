@@ -209,7 +209,6 @@ const AuthPage = () => {
       {/* Register Box */}
       <div className="form-box register flex items-center justify-center">
         <form onSubmit={formikReg.handleSubmit} className="w-full max-w-xs mx-auto bg-white">
-          <h1 className="text-lg font-bold mb-4 text-center">Qeydiyyat</h1>
 
           {/* Başarı mesajı */}
           {successMsg && !isLogin && (

@@ -4,7 +4,6 @@ import irsad from '../images/irsad.svg';
 import { FiSearch, FiBell, FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMeAsync, logoutAsync } from '../../redux/slices/authSlice';
-import { getBalansAsync } from '../../redux/slices/balansSlice';
 import { getCouponsAsync } from '../../redux/slices/couponSlice';
 import { logout } from '../../redux/slices/authSlice';
 import { fetchCartAsync } from '../../redux/slices/cartSlice';
@@ -14,12 +13,7 @@ function Header() {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState(""); // Yeni state
   const me = useSelector(state => state.auth.me)
-  const { current_balance } = useSelector(state => state.balans);
   const cartItemsCount = useSelector(state => state.cart.itemsCount);
-  console.log(current_balance);
-  useEffect(() => {
-    dispatch(getBalansAsync());
-  }, [dispatch]);
 
 
   const search = () => {
@@ -40,7 +34,6 @@ function Header() {
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const user = {
     name: `${me.first_name} ${me.last_name}`,
-    balance: current_balance,
     notifications: 3,
   };
 
@@ -106,8 +99,13 @@ function Header() {
               <div className='flex gap-2'>
                 <div className="flex flex-col items-start">
                   <span className="font-medium text-xs text-gray-800">{user.name}</span>
-                  <span className="text-xs text-[#FAD800] font-semibold">{user.balance} AZN</span>
                 </div>
+                <button
+                  onClick={() => navigate('/seller')}
+                  className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold"
+                >
+                  Satıcı paneli
+                </button>
                 <button onClick={() => handleLogout()} className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold">
                   Çıxış
                 </button>

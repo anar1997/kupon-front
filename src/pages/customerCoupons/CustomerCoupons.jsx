@@ -15,7 +15,7 @@ const CustomerCoupons = () => {
       {/* İçerik Alanı */}
       <div className="flex flex-col xl:mx-24 sm:mx-10 mx-6 lg:flex-row xl:flex-row items-start justify-between pt-5 pb-3 gap-5">
         {/* Sol Kısım - Banner (AutoSlider) */}
-        <div className='relative z-10 hidden xl:block xl:w-[20%]'>
+        <div className='relative z-10 hidden xl:block xl:w-[20%] sticky top-5 self-start'>
           <StaticKatalog categoryData={categoryData} />
         </div>
         

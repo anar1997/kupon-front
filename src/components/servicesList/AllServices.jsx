@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import CardElement from '../serviceCard/CardElement'
+import Pagination from "../pagination/Pagination";
 import banner3 from "../images/banner-3.webp";
 import { CiFilter } from "react-icons/ci";
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,24 +44,60 @@ const AllServices = () => {
     }, [dispatch, currentPage, selectedCategory, selectedRegion]);
 
     const mappedCoupons = coupons.map(coupon => ({
+        // Backend semantics:
+        // - price: original price
+        // - discount: final (discounted) price the customer pays
+        // Frontend card expects: price=final, oldPrice=original, saved=(original-final), discountPercent=% off
+        ...(() => {
+            const original = Number(coupon?.price || 0);
+            const final = Number(coupon?.discount || 0);
+            const hasDiscount = original > 0 && final > 0 && final < original;
+            const displayPrice = hasDiscount ? final : original;
+            const saved = hasDiscount ? (original - final) : 0;
+            const discountPercent = hasDiscount ? Math.round((saved / original) * 100) : 0;
+            return {
+                _original: original,
+                _final: final,
+                _displayPrice: displayPrice,
+                _saved: saved,
+                _discountPercent: discountPercent,
+            };
+        })(),
         id: coupon.id,
         slug: coupon.slug, // ✅ SLUG əlavə edildi
         title: coupon.name,
-        image: coupon.shop?.images?.[0]?.image || banner3, // əgər coupon.images varsa, onu istifadə edə bilərsən
-        isVip: coupon.is_active,
-        isPremium: false,
-        discountPercent: coupon.discount,
-        oldPrice: Number(coupon.price) + Number(coupon.discount),
-        price: Number(coupon.price),
-        saved: coupon.discount,
+        image: coupon.images?.[0]?.image || coupon.shop?.images?.[0]?.image || banner3,
+        isVip: Boolean(coupon.is_vip),
+        isPremium: Boolean(coupon.is_premium),
+        discountPercent: (() => {
+            const original = Number(coupon?.price || 0);
+            const final = Number(coupon?.discount || 0);
+            if (original > 0 && final > 0 && final < original) {
+                return Math.round(((original - final) / original) * 100);
+            }
+            return 0;
+        })(),
+        oldPrice: Number(coupon?.price || 0),
+        price: (() => {
+            const original = Number(coupon?.price || 0);
+            const final = Number(coupon?.discount || 0);
+            return original > 0 && final > 0 && final < original ? final : original;
+        })(),
+        saved: (() => {
+            const original = Number(coupon?.price || 0);
+            const final = Number(coupon?.discount || 0);
+            return original > 0 && final > 0 && final < original ? (original - final) : 0;
+        })(),
         duration: coupon.start_date && coupon.end_date
             ? `${Math.ceil((new Date(coupon.end_date) - new Date(coupon.start_date)) / (1000 * 60 * 60 * 24))} gün`
             : "",
         rating: 4.5,
         ratingCount: 10,
-        category: coupon.category || "Təhsil",
+        category: coupon.category_name || (coupon.category ? `#${coupon.category}` : "Təhsil"),
         location: coupon.shop?.region?.name || "Bakı",
         region: coupon.shop?.region?.name || "Bakı",
+        shopName: coupon.shop?.name || "",
+        shopPhone: coupon.shop?.phone || "",
     }));
 
     let sorted = [...mappedCoupons];
@@ -147,33 +184,14 @@ const AllServices = () => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
-                        <button
-                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
-                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                            disabled={currentPage === 1}
-                        >
-                            &lt;
-                        </button>
-                        {Array.from({ length: totalPages }).map((_, idx) => (
-                            <button
-                                key={idx}
-                                className={`px-2 sm:px-3 py-1 rounded border text-xs sm:text-sm ${currentPage === idx + 1 ? 'bg-yellow-200 font-bold' : 'bg-white'}`}
-                                onClick={() => setCurrentPage(idx + 1)}
-                            >
-                                {idx + 1}
-                            </button>
-                        ))}
-                        <button
-                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
-                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                            disabled={currentPage === totalPages}
-                        >
-                            &gt;
-                        </button>
-                    </div>
-                )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onChange={setCurrentPage}
+                        siblingCount={1}
+                        boundaryCount={1}
+                        className="mt-6"
+                    />
             </div>
         </div>
     )

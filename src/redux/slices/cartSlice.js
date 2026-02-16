@@ -15,7 +15,8 @@ export const addToCartAsync = createAsyncThunk(
   'cart/addToCart',
   async ({ couponId, quantity = 1 }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await axios.post('/cart/items/', { coupon: couponId, quantity });
+      // Backend expects `product` field (marketplace/products model).
+      const response = await axios.post('/cart/items/', { product: couponId, quantity });
       const detail = response.data?.detail || 'Məhsul səbətə əlavə olundu.';
       notifySuccess('Səbət', detail);
       await dispatch(fetchCartAsync());
@@ -101,7 +102,14 @@ const cartSlice = createSlice({
         state.error = null;
         const data = action.payload || {};
         state.id = data.id || null;
-        state.items = data.items || [];
+
+        // Normalize backend shape:
+        // - Backend returns `items[].product`
+        // - Frontend historically uses `items[].coupon`
+        state.items = (data.items || []).map((it) => ({
+          ...it,
+          coupon: it.coupon ?? it.product,
+        }));
         state.itemsCount = data.items_count || 0;
         state.totalAmount = data.total_amount || 0;
       })

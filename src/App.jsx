@@ -13,10 +13,11 @@ import Coupons from './components/profile/Coupons/Coupons';
 import Connection from './pages/connection/Connection';
 import AcceptRequest from './pages/connection/AcceptRequest';
 import ScrollToTop from './components/ScroolTop';
-import ChangePassword from './components/profile/tenzim/changePassword';
+import ChangePassword from './components/profile/settings/ChangePassword';
 import IncreaseBalans from './components/profile/increaseBalans/IncreaseBalans';
 import CardPayment from './pages/cardPayment/CardPayment';
 import MyCouponDetail from './pages/customerCoupons/MyCouponDetail';
+import SellerDashboard from './pages/seller/SellerDashboard';
 
 function App() {
   return (
@@ -30,15 +31,16 @@ function App() {
           <Route path="/service/:slug" element={<><Layout /><ServiceDetail /><Footer /></>} />
           <Route path="/my-cart" element={<><Layout /><CartPage /><Footer /></>} />
           <Route path="/services/:serviceName" element={<><Layout /><ServicePaginationPage /><Footer /></>} /> {/* ✅ */}
-          <Route path='/profile-m' element={<><Layout /><Profile /><Footer /></>}/>
+          <Route path='/profile-m' element={<><Layout /><ManuelTest /><Footer /></>}/>
           <Route path='/profile' element={<><Layout /><ManuelTest /><Footer /></>}/>
           <Route path="/coupons" element={<><Layout /><Coupons /><Footer /></>} />
           <Route path="/my-coupons/:id" element={<><Layout /><MyCouponDetail /><Footer /></>} />
+          <Route path="/seller" element={<><Layout /><SellerDashboard /><Footer /></>} />
           <Route path="/increase-balans" element={<><Layout /><IncreaseBalans /><Footer /></>} />
           <Route path="/card-payment" element={<><Layout /><CardPayment /><Footer /></>} />
           <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />
           <Route path="/accept-request" element={<><Layout /><AcceptRequest /><Footer /></>} />
-          <Route path="/profile/tenzim/change-password" element={<><Layout /><ChangePassword /><Footer /></>} />
+          <Route path="/profile/settings/change-password" element={<><Layout /><ChangePassword /><Footer /></>} />
         </Routes>
       </div>
     </Router>

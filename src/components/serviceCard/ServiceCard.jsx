@@ -6,6 +6,7 @@ import { addToCartAsync } from '../../redux/slices/cartSlice';
 
 const ServiceCard = ({
     id,
+    slug,
     image,
     name,
     price,
@@ -24,7 +25,10 @@ const ServiceCard = ({
     return (
         <div
             className="w-72 group flex-shrink-0 transform transition duration-300 hover:shadow-xl hover:scale-[1.03] rounded-lg cursor-pointer"
-            onClick={() => navigate(`/service/${id}`)}
+            onClick={() => {
+                const key = slug || id;
+                navigate(`/service/${encodeURIComponent(String(key))}`);
+            }}
         >
             <div className="bg-white rounded-t-2xl shadow-md p-4 flex flex-col h-[460px]">
                 <img

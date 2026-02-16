@@ -3,13 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiPlus, FiMinus, FiTag, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCartAsync, updateCartItemAsync, clearCartAsync, removeCartItemAsync } from '../../redux/slices/cartSlice';
-import { createOrderFromCartAsync } from '../../redux/slices/ordersSlice';
+import { notifyError, notifySuccess } from "../../utils/notify";
+import { normalizePhoneForWhatsApp, buildWhatsAppUrl, buildShopOrderMessage } from "../../utils/whatsapp";
 import placeholder from "../../components/images/placeholder.jpg";
 
 const CartPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { items, totalAmount, itemsCount } = useSelector(state => state.cart);
+    const me = useSelector(state => state.auth.me);
 
     const handleIncrease = (item) => {
         dispatch(updateCartItemAsync({ id: item.id, quantity: item.quantity + 1 }));
@@ -32,18 +34,79 @@ const CartPage = () => {
     const totalServices = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const [showConfirm, setShowConfirm] = React.useState(false);
+    const [showWhatsappCheckout, setShowWhatsappCheckout] = React.useState(false);
+    const [whatsappShopOrders, setWhatsappShopOrders] = React.useState([]);
+
 
     const handleCheckout = async () => {
-        try {
-            const action = await dispatch(createOrderFromCartAsync());
-            if (createOrderFromCartAsync.fulfilled.match(action)) {
-                // Sifariş uğurludursa, səbəti yenilə və kuponlara yönləndir
-                dispatch(fetchCartAsync());
-                navigate('/coupons');
-            }
-        } catch (e) {
-            // Xətalar notify içində göstərilir
+        if (!items?.length) {
+            notifyError("Səbət", "Səbət boşdur.");
+            return;
         }
+
+        // Group by shop
+        const shopMap = new Map();
+        for (const item of items) {
+            const product = item?.coupon;
+            const shop = product?.shop;
+            const shopId = shop?.id;
+            if (!shopId) continue;
+
+            const entry = shopMap.get(shopId) || {
+                shopId,
+                shopName: shop?.name || "Mağaza",
+                shopPhoneRaw: shop?.phone || "",
+                shopAddress: shop?.address || "",
+                shopMapUrl: shop?.google_map_url || "",
+                items: [],
+            };
+
+            entry.items.push({
+                id: item.id,
+                quantity: item.quantity,
+                name: product?.name || "Məhsul",
+                unitPrice: Number(product?.discount ?? product?.price ?? 0),
+                slug: product?.slug,
+            });
+
+            shopMap.set(shopId, entry);
+        }
+
+        const customerName = me?.first_name || me?.name || "";
+        const customerPhone = me?.phone || "";
+
+        const orders = Array.from(shopMap.values()).map((s) => {
+            const phoneDigits = normalizePhoneForWhatsApp(s.shopPhoneRaw);
+            const lines = s.items.map((it) => {
+                const lineTotal = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0);
+                const unit = (Number(it.unitPrice) || 0).toFixed(2);
+                return `- ${it.name} x${it.quantity} ( ${unit} ₼ ) = ${lineTotal.toFixed(2)} ₼`;
+            });
+            const total = s.items.reduce((sum, it) => sum + (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0), 0);
+            const text = buildShopOrderMessage({
+                shopName: s.shopName,
+                lines,
+                total,
+                customerName,
+                customerPhone,
+            });
+            return {
+                ...s,
+                phoneDigits,
+                total,
+                message: text,
+                whatsappUrl: phoneDigits ? buildWhatsAppUrl(phoneDigits, text) : null,
+            };
+        });
+
+        if (!orders.length) {
+            notifyError("Sifariş", "Səbətdə mağaza məlumatı tapılmadı.");
+            return;
+        }
+
+        setWhatsappShopOrders(orders);
+        setShowWhatsappCheckout(true);
+        notifySuccess("Sifariş", "Satıcı ilə WhatsApp üzərindən əlaqə üçün hazırdır.");
     };
 
     useEffect(() => {
@@ -89,7 +152,7 @@ const CartPage = () => {
                             const coupon = item.coupon;
                             const price = Number(coupon?.price || 0);
                             const discounted = Number(coupon?.discount || 0);
-                            const image = coupon?.shop?.images?.[0]?.image || placeholder;
+                            const image = coupon?.images?.[0]?.image || coupon?.shop?.images?.[0]?.image || placeholder;
                             const name = coupon?.name || '';
                             const discountPercent = price > 0 ? Math.round(((price - discounted) / price) * 100) : 0;
                             return (
@@ -220,6 +283,72 @@ const CartPage = () => {
                                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
                             >
                                 Xeyr
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* WhatsApp Checkout Modal */}
+            {showWhatsappCheckout && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                    <div className="bg-white rounded-xl shadow-lg p-6 w-[92vw] max-w-2xl">
+                        <h3 className="text-lg font-semibold mb-2">Satıcı ilə WhatsApp-da əlaqə</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Ödəniş yoxdur. Sifariş detallarını satıcıya WhatsApp ilə göndərəcəksiniz.
+                        </p>
+
+                        <div className="space-y-3 max-h-[55vh] overflow-auto">
+                            {whatsappShopOrders.map((o) => (
+                                <div key={o.shopId} className="border rounded-lg p-3">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <div>
+                                            <div className="font-semibold">{o.shopName}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {o.shopAddress ? o.shopAddress : ""}
+                                                {o.shopAddress && o.shopMapUrl ? " • " : ""}
+                                                {o.shopMapUrl ? (
+                                                    <a className="text-blue-600 hover:underline" href={o.shopMapUrl} target="_blank" rel="noreferrer">
+                                                        Xəritə
+                                                    </a>
+                                                ) : null}
+                                            </div>
+                                        </div>
+
+                                        {o.whatsappUrl ? (
+                                            <a
+                                                className="bg-[#25D366] text-white px-4 py-2 rounded-lg font-semibold text-sm text-center"
+                                                href={o.whatsappUrl}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                WhatsApp-a yaz
+                                            </a>
+                                        ) : (
+                                            <div className="text-xs text-red-600">
+                                                Mağazanın WhatsApp nömrəsi yoxdur
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="mt-2 text-sm text-gray-700">
+                                        <div className="font-medium">Cəmi: {Number(o.total || 0).toFixed(2)} ₼</div>
+                                        <ul className="list-disc ml-5 mt-1">
+                                            {o.items.map((it) => (
+                                                <li key={it.id}>{it.name} x{it.quantity}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-5">
+                            <button
+                                onClick={() => setShowWhatsappCheckout(false)}
+                                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
+                            >
+                                Bağla
                             </button>
                         </div>
                     </div>

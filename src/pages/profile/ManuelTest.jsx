@@ -1,33 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import ProfileAbout from '../../components/profile/profileAbout/ProfileAbout'
-import Balans from '../../components/profile/balans/Balans'
 import Referal from '../../components/profile/referal/Referal'
-import Tenzim from '../../components/profile/tenzim/Tenzim'
+import Settings from '../../components/profile/settings/Settings'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getMeAsync } from '../../redux/slices/authSlice'
-import { getMeStatsAsync } from '../../redux/slices/meStatsSlice'
-import { getBalansAsync } from '../../redux/slices/balansSlice'
 
 const ManuelTest = () => {
     const [activeTab, setActiveTab] = useState('profil')
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const me = useSelector(state => state.auth.me);
-    const { meStats, loading } = useSelector(state => state.meStats);
-    const { current_balance } = useSelector(state => state.balans);
 
     const fullName = me
         ? `${me.first_name || ''} ${me.last_name || ''}`.trim() || me.email
         : 'İstifadəçi';
     const email = me?.email || '';
     const avatarInitial = (me?.first_name || me?.email || 'A').charAt(0).toUpperCase();
-    const membershipLabel = me?.is_guest ? 'Qonaq istifadəçi' : 'Premium Üzv';
+    const membershipLabel = me?.is_guest ? 'Qonaq istifadəçi' : 'İstifadəçi';
 
     useEffect(() => {
         dispatch(getMeAsync());
-        dispatch(getMeStatsAsync());
-        dispatch(getBalansAsync());
     }, [dispatch]);
 
 
@@ -54,41 +47,22 @@ const ManuelTest = () => {
                     <div className="text-gray-500 text-xs sm:text-xs">{email}</div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 mt-2 justify-center sm:justify-start">
                         <span className="bg-[#FAD800] text-black text-xs px-2 py-1 rounded">{membershipLabel}</span>
-                        <span className="flex items-center gap-1 font-semibold text-[#FAD800] text-sm">
-                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><text x="12" y="16" textAnchor="middle" fontSize="12" fill="currentColor">₼</text></svg>
-                            {current_balance} ₼
-                        </span>
                     </div>
                 </div>
                 {/* Actions */}
                 <div className="flex flex-row sm:flex-col gap-2 mt-4 sm:mt-0 justify-center sm:justify-end">
                     <button
                         className="bg-white border border-gray-300 rounded px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium"
-                        onClick={() => navigate('/coupons')}
+                        onClick={() => navigate('/seller')}
                     >
-                        Kuponlarım
+                        Satıcı paneli
                     </button>
                     <button
                         className="bg-[#FAD800] text-black rounded px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium flex items-center gap-1"
-                        onClick={() => navigate('/increase-balans')}
+                        onClick={() => navigate('/my-cart')}
                     >
-                        <span className="text-lg font-bold">+</span> Balans
+                        Səbətim
                     </button>
-                </div>
-            </div>
-            {/* Stats */}
-            <div className="w-full flex flex-col 367:flex-row justify-between gap-6">
-                <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#FAD800] font-bold"> {loading ? '...' : meStats?.total_coupons || 0}</div>
-                    <div className="text-gray-500 text-xs mt-2">Alınmış Kupon</div>
-                </div>
-                <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#4CAF50] font-bold">{loading ? '...' : meStats?.total_savings || 0} ₼</div>
-                    <div className="text-gray-500 text-xs mt-2">Qənaət</div>
-                </div>
-                <div className="flex-1 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-                    <div className="text-xl text-[#FF9800] font-bold">{loading ? '...' : meStats?.total_referrals || 0}</div>
-                    <div className="text-gray-500 text-xs mt-2">Dəvət Edilən</div>
                 </div>
             </div>
             {/* Tabs */}
@@ -102,30 +76,23 @@ const ManuelTest = () => {
                             Profil
                         </button>
                         <button
-                            className={`flex-1 py-1 text-xs rounded-full font-medium ${activeTab === 'balans' ? 'bg-white text-black shadow' : 'text-black'}`}
-                            onClick={() => setActiveTab('balans')}
-                        >
-                            Balans
-                        </button>
-                        <button
                             className={`flex-1 py-1 text-xs rounded-full font-medium ${activeTab === 'referal' ? 'bg-white text-black shadow' : 'text-black'}`}
                             onClick={() => setActiveTab('referal')}
                         >
                             Referal
                         </button>
                         <button
-                            className={`flex-1 py-1 text-xs rounded-full font-medium ${activeTab === 'tenzim' ? 'bg-white text-black shadow' : 'text-black'}`}
-                            onClick={() => setActiveTab('tenzim')}
+                            className={`flex-1 py-1 text-xs rounded-full font-medium ${activeTab === 'settings' ? 'bg-white text-black shadow' : 'text-black'}`}
+                            onClick={() => setActiveTab('settings')}
                         >
-                            Tənzimlər
+                            Settings
                         </button>
                     </div>
                 </div>
                 {/* Tab Content */}
                 {activeTab === 'profil' && <ProfileAbout />}
-                {activeTab === 'balans' && <Balans />}
                 {activeTab === 'referal' && <Referal />}
-                {activeTab === 'tenzim' && <Tenzim />}
+                {activeTab === 'settings' && <Settings />}
             </div>
         </div>
     )

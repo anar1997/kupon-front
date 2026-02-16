@@ -41,7 +41,7 @@ const StaticKatalog = ({ categoryData }) => {
 
     return (
         <div
-            className="py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative"
+            className="py-4 rounded-xl border-2 border-gray-200 flex flex-col gap-1 relative max-h-[calc(100vh-140px)] overflow-visible min-h-0"
             onMouseLeave={() => {
                 setHoveredIdx(null);
                 setHoveredCat(null);
@@ -56,7 +56,7 @@ const StaticKatalog = ({ categoryData }) => {
                 }}>
                 Bütün Kateqoriyalar
             </button>
-            <ul className="flex flex-col gap-1 pr-1 overflow-y-auto">
+            <ul className="flex flex-col flex-1 min-h-0 gap-1 pr-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 {categories.map((cat, idx) => (
                     <div
                         key={cat.id ?? idx}

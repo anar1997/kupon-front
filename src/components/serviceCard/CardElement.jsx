@@ -4,7 +4,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCartAsync, fetchCartAsync } from '../../redux/slices/cartSlice';
-import { buyNowAsync } from '../../redux/slices/ordersSlice';
+import { normalizePhoneForWhatsApp, buildWhatsAppUrl } from '../../utils/whatsapp';
 
 const CardElement = ({
     id,
@@ -22,46 +22,31 @@ const CardElement = ({
     rating,
     ratingCount,
     region,
-    category
+    category,
+    shopName,
+    shopPhone,
 }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const { isLoading: isCartLoading } = useSelector((state) => state.cart);
     console.log(isCartLoading);
 
     const handleBuyNow = async (e) => {
         e.stopPropagation();
 
-        // Login olmayıbsa: kart ödənişi səhifəsinə yönləndir
-        if (!isLoggedIn) {
-            navigate('/card-payment');
-            return;
-        }
-
-        try {
-            const action = await dispatch(buyNowAsync({ couponId: id, quantity: 1 }));
-            if (buyNowAsync.fulfilled.match(action)) {
-                const { status } = action.payload || {};
-
-                if (status === 'paid_full') {
-                    // Hamısı balansdan ödənib
-                    await dispatch(fetchCartAsync());
-                    navigate('/coupons');
-                } else {
-                    // mixed və ya card_only: kart ödənişi səhifəsinə yönləndir
-                    navigate('/card-payment', { state: action.payload });
-                }
-            }
-        } catch {
-            // Xətalar notification-larda göstərilir
+        const phoneDigits = normalizePhoneForWhatsApp(shopPhone);
+        const safeSlug = encodeURIComponent(String(slug || ''));
+        const text = `Salam! ${shopName || 'Mağaza'} üçün elanla maraqlanıram.\nMəhsul: ${title}\nLink: ${window.location.origin}/service/${safeSlug}`;
+        const url = buildWhatsAppUrl(phoneDigits, text);
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
     };
 
     return (
         <div
             className="min-w-0 bg-white rounded-2xl shadow border transform transition duration-300 hover:shadow-xl hover:scale-[1.03] cursor-pointer flex flex-col h-full"
-            onClick={() => navigate(`/service/${slug}`)} // 👈 slug ilə yönləndirmə
+            onClick={() => navigate(`/service/${encodeURIComponent(String(slug || ''))}`)} // 👈 slug ilə yönləndirmə
         >
             <div className="relative rounded-t-2xl overflow-hidden h-40 sm:h-48 bg-gray-100 flex items-center justify-center min-w-0">
                 <img
@@ -88,7 +73,9 @@ const CardElement = ({
                     <span className="mr-2 truncate">📍 {location}</span>
                     <span className="mx-2 hidden sm:inline">|</span>
                     <span>{duration}</span>
-                    <span className='ml-2'>kategoriya: {category}</span>
+                    {category && (
+                        <span className='ml-2'>Kateqoriya: {category}</span>
+                    )}
                     {region && (
                         <>
                             <span className="mx-2 hidden sm:inline">|</span>
@@ -104,9 +91,13 @@ const CardElement = ({
                 <div className="flex items-end gap-1 mb-6 sm:mb-10">
                     <div className='flex flex-col'>
                         <span className="text-xl font-bold text-[#FFD600] sm:text-lg xs:text-base">{price} ₼</span>
-                        <span className="line-through text-gray-400 text-xs sm:text-[11px] xs:text-[10px]">{Number(oldPrice).toFixed(2)} ₼</span>
+                        {Number(oldPrice) > Number(price) && (
+                            <span className="line-through text-gray-400 text-xs sm:text-[11px] xs:text-[10px]">{Number(oldPrice).toFixed(2)} ₼</span>
+                        )}
                     </div>
-                    <span className="text-red-600 font-semibold text-sm sm:text-xs xs:text-[10px] ml-auto">{saved} ₼ qənaət</span>
+                    {Number(saved) > 0 && (
+                        <span className="text-red-600 font-semibold text-sm sm:text-xs xs:text-[10px] ml-auto">{Number(saved).toFixed(2)} ₼ qənaət</span>
+                    )}
                 </div>
                 <div className="flex gap-2 mt-auto mb-2 sm:mb-3 flex-col sm:flex-row">
                     <button
@@ -125,7 +116,7 @@ const CardElement = ({
                         className="w-full bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]"
                         onClick={handleBuyNow}
                     >
-                        <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">İndi al</span>
+                        <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">WhatsApp</span>
                     </button>
                 </div>
             </div>

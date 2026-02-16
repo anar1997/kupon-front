@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getPremiumCouponsAsync } from "../../redux/slices/premiumCouponSlice";
 import { addToCartAsync, fetchCartAsync } from "../../redux/slices/cartSlice";
-import { buyNowAsync } from "../../redux/slices/ordersSlice";
+import { normalizePhoneForWhatsApp, buildWhatsAppUrl } from "../../utils/whatsapp";
 
 const offers = [
     {
@@ -114,11 +114,14 @@ const PremiumBannerSlider = () => {
                     }}
                 >
                     {premiumCoupons.map((premium, idx) => {
-                        const priceNum = Number(premium?.coupon?.price) || 0;
-                        const discountNum = Number(premium?.coupon?.discount) || 0;
-                        const oldPrice = priceNum + discountNum;
-                        const discountPct = oldPrice ? Math.round((discountNum / oldPrice) * 100) : 0;
-                        const saved = discountNum;
+                        const product = premium?.product;
+                        const priceNum = Number(product?.price) || 0;
+                        const discountNum = Number(product?.discount) || 0;
+                        const hasDiscount = priceNum > 0 && discountNum > 0 && discountNum < priceNum;
+                        const oldPrice = priceNum;
+                        const finalPrice = hasDiscount ? discountNum : priceNum;
+                        const saved = hasDiscount ? (priceNum - discountNum) : 0;
+                        const discountPct = hasDiscount ? Math.round((saved / priceNum) * 100) : 0;
                         const startMs = +new Date(premium?.start_time);
                         const endMs = +new Date(premium?.end_time);
                         const durationText = formatDuration(endMs - startMs);
@@ -131,8 +134,8 @@ const PremiumBannerSlider = () => {
                             >
                                 <div className="relative rounded-xl overflow-hidden mb-4">
                                     <img
-                                        src={premium?.coupon?.shop?.images?.[0]?.image || banner3}
-                                        alt={premium?.coupon?.shop?.name || ""}
+                                        src={product?.images?.[0]?.image || product?.shop?.images?.[0]?.image || banner3}
+                                        alt={product?.shop?.name || ""}
                                         className="w-full max-h-64 md:max-h-64 lg:h-44"
                                     />
                                     <span className="absolute top-2 left-2 bg-[#FF9800] text-white text-[10px] px-2 py-1 rounded font-medium shadow z-20">
@@ -148,28 +151,28 @@ const PremiumBannerSlider = () => {
                                 <div className="pb-4 flex-1 w-full">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="text-base font-semibold text-center flex-1 sm:text-sm xs:text-xs">
-                                            {premium?.coupon?.name}
+                                            {product?.name}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 text-gray-500 text-xs mb-2 sm:text-[11px] xs:text-[10px]">
                                         <span>📍</span>
-                                        <span>{premium?.coupon?.shop?.region?.name || ""}</span>
+                                        <span>{product?.shop?.region?.name || ""}</span>
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2 mb-2 sm:gap-1">
                                         <div className="flex items-center gap-1 text-yellow-500 text-xs">{"★".repeat(5)}</div>
                                         <span className="ml-2 text-xs text-gray-500 sm:ml-1 xs:ml-0">⏱ {durationText}</span>
                                     </div>
                                     <div className="flex flex-wrap items-end gap-1 mb-2 sm:gap-0">
-                                        <span className="text-xl font-bold text-[#FAD800]">{priceNum.toFixed(2)} ₼</span>
-                                        {oldPrice > 0 && <span className="line-through text-xs text-gray-400">{oldPrice.toFixed(2)} ₼</span>}
+                                        <span className="text-xl font-bold text-[#FAD800]">{finalPrice.toFixed(2)} ₼</span>
+                                        {hasDiscount && <span className="line-through text-xs text-gray-400">{oldPrice.toFixed(2)} ₼</span>}
                                         {saved > 0 && <span className="text-red-600 text-xs ml-auto">{saved.toFixed(2)} ₼ qənaət</span>}
                                     </div>
                                     <div className="flex flex-col md:flex-row gap-2 mt-6 md:mt-10 mb-2 sm:mt-2 xs:mt-1">
                                         <button
                                             className="flex-4 border text-xs hover:bg-[#FFF283] hover:text-black border-[#FFF283] rounded-lg px-2 py-2 flex items-center justify-center gap-2 font-semibold text-[#FAD800] sm:text-[11px] xs:text-[10px]"
                                             onClick={() => {
-                                                if (premium?.coupon?.id) {
-                                                    dispatch(addToCartAsync({ couponId: premium.coupon.id, quantity: 1 }));
+                                                if (product?.id) {
+                                                    dispatch(addToCartAsync({ couponId: product.id, quantity: 1 }));
                                                 }
                                             }}
                                         >
@@ -177,35 +180,16 @@ const PremiumBannerSlider = () => {
                                         </button>
                                         <button
                                             className="flex-1 bg-[#FFF283] rounded-lg font-medium px-2 py-2 sm:text-[11px] xs:text-[10px]"
-                                            onClick={async () => {
-                                                // Login olmayıbsa: kart ödənişi səhifəsinə yönləndir
-                                                if (!isLoggedIn) {
-                                                    navigate('/card-payment');
-                                                    return;
-                                                }
-
-                                                try {
-                                                    if (!premium?.coupon?.id) return;
-                                                    const action = await dispatch(
-                                                        buyNowAsync({ couponId: premium.coupon.id, quantity: 1 }),
-                                                    );
-
-                                                    if (buyNowAsync.fulfilled.match(action)) {
-                                                        const { status } = action.payload || {};
-
-                                                        if (status === 'paid_full') {
-                                                            await dispatch(fetchCartAsync());
-                                                            navigate('/coupons');
-                                                        } else {
-                                                            navigate('/card-payment', { state: action.payload });
-                                                        }
-                                                    }
-                                                } catch {
-                                                    // Xətalar notification-larda göstərilir
-                                                }
+                                            onClick={() => {
+                                                const shopName = product?.shop?.name || 'Mağaza';
+                                                const phoneDigits = normalizePhoneForWhatsApp(product?.shop?.phone);
+                                                const link = product?.slug ? `${window.location.origin}/service/${encodeURIComponent(String(product.slug))}` : window.location.origin;
+                                                const text = `Salam! ${shopName} üçün elanla maraqlanıram.\nMəhsul: ${product?.name || ''}\nLink: ${link}`;
+                                                const url = buildWhatsAppUrl(phoneDigits, text);
+                                                if (url) window.open(url, '_blank', 'noopener,noreferrer');
                                             }}
                                         >
-                                            <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">İndi al</span>
+                                            <span className="text-[12px] text-black sm:text-[11px] xs:text-[10px]">WhatsApp</span>
                                         </button>
                                     </div>
                                 </div>

@@ -5,6 +5,9 @@ import banner3 from "../../components/images/banner-3.webp";
 import CardElement from "../../components/serviceCard/CardElement"; // ✅ Eklendi
 import { useDispatch, useSelector } from "react-redux";
 import { getCouponBySlugAsync, getCouponsAsync } from "../../redux/slices/couponSlice";
+import { addToCartAsync } from "../../redux/slices/cartSlice";
+import { normalizePhoneForWhatsApp, buildWhatsAppUrl } from "../../utils/whatsapp";
+import Pagination from "../../components/pagination/Pagination";
 
 const ServiceDetail = () => {
     const dispatch = useDispatch();
@@ -64,21 +67,38 @@ const ServiceDetail = () => {
             id: coupon.id,
             slug: coupon.slug,
             title: coupon.name,
-            image: coupon.shop?.images?.[0]?.image || banner3,
-            isVip: coupon.is_active,
-            isPremium: false,
-            discountPercent: coupon.discount,
-            oldPrice: Number(coupon.price) + Number(coupon.discount),
-            price: Number(coupon.price),
-            saved: coupon.discount,
+            image: coupon.images?.[0]?.image || coupon.shop?.images?.[0]?.image || banner3,
+            isVip: Boolean(coupon.is_vip),
+            isPremium: Boolean(coupon.is_premium),
+            discountPercent: (() => {
+                const original = Number(coupon?.price || 0);
+                const final = Number(coupon?.discount || 0);
+                if (original > 0 && final > 0 && final < original) {
+                    return Math.round(((original - final) / original) * 100);
+                }
+                return 0;
+            })(),
+            oldPrice: Number(coupon?.price || 0),
+            price: (() => {
+                const original = Number(coupon?.price || 0);
+                const final = Number(coupon?.discount || 0);
+                return original > 0 && final > 0 && final < original ? final : original;
+            })(),
+            saved: (() => {
+                const original = Number(coupon?.price || 0);
+                const final = Number(coupon?.discount || 0);
+                return original > 0 && final > 0 && final < original ? (original - final) : 0;
+            })(),
             duration: coupon.start_date && coupon.end_date
                 ? `${Math.ceil((new Date(coupon.end_date) - new Date(coupon.start_date)) / (1000 * 60 * 60 * 24))} gün`
                 : "",
             rating: 4.5,
             ratingCount: 10,
-            category: coupon.category || "Təhsil",
+            category: coupon.category_name || (coupon.category ? `#${coupon.category}` : "Təhsil"),
             location: coupon.shop?.region?.name || "Bakı",
             region: coupon.shop?.region?.name || "Bakı",
+            shopName: coupon.shop?.name || "",
+            shopPhone: coupon.shop?.phone || "",
         }))
 
     // Basit sıralama: en yüksek indirim    
@@ -103,17 +123,27 @@ const ServiceDetail = () => {
         end_date,
     } = selectedCoupon;
 
+    const categoryLabel = selectedCoupon?.category_name || (category ? `#${category}` : '');
+
     const priceNum = parseFloat(price) || 0;
     const discountNum = parseFloat(discount) || 0;
-    const hasDiscount = discountNum > 0 && priceNum > 0;
-    const discountedPrice = hasDiscount ? priceNum - discountNum : priceNum;
+    // Backend semantics: `discount` is the final price.
+    const hasDiscount = discountNum > 0 && priceNum > 0 && discountNum < priceNum;
+    const discountedPrice = hasDiscount ? discountNum : priceNum;
+    const savedAmount = hasDiscount ? (priceNum - discountNum) : 0;
 
     const handleAddToCart = () => {
-        alert("Səbətə əlavə edildi");
+        dispatch(addToCartAsync({ couponId: selectedCoupon.id, quantity: 1 }));
     };
 
     const handleBuyNow = () => {
-        alert("Alış-verişə yönləndirildi");
+        const shopName = selectedCoupon?.shop?.name || 'Mağaza';
+        const phoneDigits = normalizePhoneForWhatsApp(selectedCoupon?.shop?.phone);
+        const text = `Salam! ${shopName} üçün elanla maraqlanıram.\nMəhsul: ${selectedCoupon?.name || ''}\nLink: ${window.location.href}`;
+        const url = buildWhatsAppUrl(phoneDigits, text);
+        if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
     };
 
     return (
@@ -121,7 +151,7 @@ const ServiceDetail = () => {
             {/* Breadcrumb */}
             <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}
-                <Link to="#" className="hover:underline">{category}</Link> &gt;{" "}
+                <Link to="#" className="hover:underline">{categoryLabel}</Link> &gt;{" "}
                 <span className="font-semibold text-black">{name}</span>
             </div>
 
@@ -137,6 +167,24 @@ const ServiceDetail = () => {
                             />
                         </div>
                     </div>
+
+                    {Array.isArray(selectedCoupon?.images) && selectedCoupon.images.length > 1 && (
+                        <div className="mt-3 flex gap-2 overflow-auto">
+                            {selectedCoupon.images
+                                .map((img) => img?.image || img)
+                                .filter(Boolean)
+                                .map((src, idx) => (
+                                    <button
+                                        key={`${src}-${idx}`}
+                                        type="button"
+                                        onClick={() => setMainImage(src)}
+                                        className={`border rounded-lg p-1 bg-white ${src === mainImage ? 'border-yellow-400' : 'border-gray-200'}`}
+                                    >
+                                        <img src={src} alt={`thumb-${idx}`} className="h-16 w-16 object-cover rounded" />
+                                    </button>
+                                ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="bg-white rounded-xl shadow flex flex-col p-4 sm:p-8">
@@ -151,7 +199,7 @@ const ServiceDetail = () => {
                                     {priceNum.toFixed(2)} ₼
                                 </p>
                                 <p className="text-green-600 font-semibold">
-                                    -{discountNum.toFixed(2)} ₼ endirim
+                                    -{savedAmount.toFixed(2)} ₼ endirim
                                 </p>
                             </>
                         ) : (
@@ -182,7 +230,7 @@ const ServiceDetail = () => {
                                 onClick={handleBuyNow}
                                 className="bg-slate-200 text-black px-4 py-2 rounded hover:bg-slate-300"
                             >
-                                İndi Al
+                                WhatsApp
                             </button>
                         </div>
                     </div>
@@ -207,31 +255,14 @@ const ServiceDetail = () => {
                 </div>
 
                 {totalPages > 1 && (
-                    <div className="flex justify-center mt-6 sm:mt-8 gap-1 sm:gap-2">
-                        <button
-                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
-                            onClick={() => setSimilarPage(p => Math.max(1, p - 1))}
-                            disabled={similarPage === 1}
-                        >
-                            &lt;
-                        </button>
-                        {Array.from({ length: totalPages }).map((_, idx) => (
-                            <button
-                                key={idx}
-                                className={`px-2 sm:px-3 py-1 rounded border text-xs sm:text-sm ${similarPage === idx + 1 ? 'bg-yellow-200 font-bold' : 'bg-white'}`}
-                                onClick={() => setSimilarPage(idx + 1)}
-                            >
-                                {idx + 1}
-                            </button>
-                        ))}
-                        <button
-                            className="px-2 sm:px-3 py-1 rounded border bg-white disabled:opacity-50 text-xs sm:text-sm"
-                            onClick={() => setSimilarPage(p => Math.min(totalPages, p + 1))}
-                            disabled={similarPage === totalPages}
-                        >
-                            &gt;
-                        </button>
-                    </div>
+                    <Pagination
+                        currentPage={similarPage}
+                        totalPages={totalPages}
+                        onChange={setSimilarPage}
+                        siblingCount={1}
+                        boundaryCount={1}
+                        className="mt-6"
+                    />
                 )}
             </div>
         </div>

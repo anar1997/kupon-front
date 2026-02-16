@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ServiceCard from "../../components/serviceCard/ServiceCard";
 import mobile from "../../components/images/mobile.webp";
+import Pagination from "../../components/pagination/Pagination";
 
 const allServices = [
   { id: 1, name: "Stomatoloq", image: mobile, price: 100, discountPercent: 15, duration: "30", isVip: true },
@@ -151,20 +152,14 @@ const ServicePaginationPage = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-8 space-x-2">
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-4 py-2 border rounded ${currentPage === i + 1
-                ? "bg-black text-white"
-                : "bg-white text-black hover:bg-gray-100"
-              }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+      <Pagination
+        className="mt-8"
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onChange={setCurrentPage}
+        siblingCount={1}
+        boundaryCount={1}
+      />
     </div>
   );
 };

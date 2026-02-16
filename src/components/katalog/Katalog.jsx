@@ -17,8 +17,6 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
   const { categories, isLoading, error } = useSelector(state => state.category);
   const dispatch = useDispatch();
 
-  console.log(categories);
-
   const handleCategory = (categoryId) => {
     dispatch(getCouponsAsync({
       category: categoryId,
@@ -161,7 +159,7 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
 
           {/* Kategoriler Menü (Dikey) */}
           {isOpen && (
-            <div className="absolute top-[77px] sm:top-12 left-0 z-50 bg-white shadow-md xl:mx-24 sm:mx-10 mx-6 pl-3 py-4 w-80 h-[500px]">
+            <div className="absolute top-[77px] sm:top-12 left-0 z-50 bg-white shadow-md xl:mx-24 sm:mx-10 mx-6 pl-3 py-4 w-80 max-h-[75vh] xl:h-[500px]">
               <h1 className='px-4 mb-3 mt-2 font-black'>Kateqoriyalar</h1>
               <ul className="pr-2 space-y-1 max-h-[440px] overflow-y-auto">
                 {categories.map((category, index) => {
@@ -170,57 +168,143 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
                     <li
                       key={index}
                       className={`px-0 cursor-pointer ${isOpenCat ? "text-red-600" : "hover:text-red-600"}`}
-                      onClick={() => {
-                        setOpenCategoryIndex(prev => prev === index ? null : index);
-                      }}
                     >
-                      <div className="flex items-center mb-1">
-                        <img className='w-8 h-8  object-contain' src={category.icon} alt="" />
-                        <span>{category.name}</span>
-                      </div>
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-between mb-1 pr-2"
+                        onClick={() => {
+                          setOpenCategoryIndex(prev => (prev === index ? null : index));
+                        }}
+                      >
+                        <span className="flex items-center gap-2">
+                          <img className='w-8 h-8 object-contain' src={category.icon} alt={category.name} />
+                          <span>{category.name}</span>
+                        </span>
+                        <span className={`text-gray-400 transition-transform ${isOpenCat ? "rotate-90" : ""}`}>›</span>
+                      </button>
 
                       {isOpenCat && (
-                        <div className="absolute left-0 xl:left-full pt-4 w-80 top-0 bg-white xl:py-4 xl:px-12 border-l-4 xl:max-w-[66vw] xl:w-[70vw] h-[500px] overflow-y-auto z-40 shadow-md">
-                          <h1 className="text-2xl font-bold justify-center px-4 flex items-center gap-2" onClick={() => {
-                            const el = document.getElementById('customer-coupons');
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                            handleCategory(category.id);
-                            onOpenCategory();
-                          }}>
-                            {category.name}
-                          </h1>
-                          <ul className="grid grid-cols-1 gap-2 p-4 w-full xl:grid-cols-4 sm:grid-cols-2">
-                            {category?.subcategories.map((subcategory, subIndex) => (
-                              <li key={subIndex} className="py-1 cursor-pointer">
-                                <strong className="block mb-2" onClick={() => {
-                                  const el = document.getElementById('customer-coupons');
-                                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                  handleCategory(subcategory.id);
-                                  onOpenCategory();
-                                }}>{subcategory.name}</strong>
-                                <ul>
-                                  {(subcategory?.services || []).length === 0 && (
-                                    <li className="text-xs text-gray-400">Xidmət yoxdur</li>
-                                  )}
-                                  {(subcategory?.services || []).map((service) => (
-                                    <li
-                                      key={service.id ?? service.name}
-                                      className="text-sm text-gray-600 hover:text-green-500"
-                                      onClick={() => {
-                                        const el = document.getElementById('customer-coupons');
-                                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                        handleService(service.id);
-                                        onOpenCategory();
-                                      }}
-                                    >
-                                      {service.name}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                        <>
+                          {/* Mobile / tablet: inline accordion (no absolute flyout) */}
+                          <div className="xl:hidden pl-10 pr-3 pb-3 text-black">
+                            <button
+                              type="button"
+                              className="text-sm font-semibold underline underline-offset-2"
+                              onClick={() => {
+                                const el = document.getElementById('customer-coupons');
+                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                handleCategory(category.id);
+                                onOpenCategory();
+                                setOpenCategoryIndex(null);
+                              }}
+                            >
+                              {category.name} (hamısı)
+                            </button>
+
+                            <div className="mt-3 space-y-3 max-h-[45vh] overflow-y-auto">
+                              {(category?.subcategories || []).length === 0 && (
+                                <div className="text-xs text-gray-400">Alt kateqoriya yoxdur</div>
+                              )}
+                              {(category?.subcategories || []).map((subcategory, subIndex) => (
+                                <div key={subIndex} className="border-l-2 border-gray-100 pl-3">
+                                  <button
+                                    type="button"
+                                    className="block text-sm font-bold text-gray-800"
+                                    onClick={() => {
+                                      const el = document.getElementById('customer-coupons');
+                                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                      handleCategory(subcategory.id);
+                                      onOpenCategory();
+                                      setOpenCategoryIndex(null);
+                                    }}
+                                  >
+                                    {subcategory.name}
+                                  </button>
+                                  <ul className="mt-1 space-y-1">
+                                    {(subcategory?.services || []).length === 0 && (
+                                      <li className="text-xs text-gray-400">Xidmət yoxdur</li>
+                                    )}
+                                    {(subcategory?.services || []).map((service) => (
+                                      <li key={service.id ?? service.name}>
+                                        <button
+                                          type="button"
+                                          className="text-sm text-gray-600 hover:text-green-600"
+                                          onClick={() => {
+                                            const el = document.getElementById('customer-coupons');
+                                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                            handleService(service.id);
+                                            onOpenCategory();
+                                            setOpenCategoryIndex(null);
+                                          }}
+                                        >
+                                          {service.name}
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Desktop (xl+): flyout panel on the right */}
+                          <div className="hidden xl:block absolute left-full pt-4 w-[70vw] top-0 bg-white py-4 px-12 border-l-4 max-w-[66vw] h-[500px] overflow-y-auto z-40 shadow-md">
+                            <button
+                              type="button"
+                              className="text-2xl font-bold justify-center px-4 flex items-center gap-2 w-full"
+                              onClick={() => {
+                                const el = document.getElementById('customer-coupons');
+                                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                handleCategory(category.id);
+                                onOpenCategory();
+                                setOpenCategoryIndex(null);
+                              }}
+                            >
+                              {category.name}
+                            </button>
+                            <ul className="grid grid-cols-4 gap-6 p-4 w-full">
+                              {(category?.subcategories || []).map((subcategory, subIndex) => (
+                                <li key={subIndex} className="py-1">
+                                  <button
+                                    type="button"
+                                    className="block mb-2 font-bold text-left hover:text-red-600"
+                                    onClick={() => {
+                                      const el = document.getElementById('customer-coupons');
+                                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                      handleCategory(subcategory.id);
+                                      onOpenCategory();
+                                      setOpenCategoryIndex(null);
+                                    }}
+                                  >
+                                    {subcategory.name}
+                                  </button>
+                                  <ul className="space-y-1">
+                                    {(subcategory?.services || []).length === 0 && (
+                                      <li className="text-xs text-gray-400">Xidmət yoxdur</li>
+                                    )}
+                                    {(subcategory?.services || []).map((service) => (
+                                      <li key={service.id ?? service.name}>
+                                        <button
+                                          type="button"
+                                          className="text-sm text-gray-600 hover:text-green-600 text-left"
+                                          onClick={() => {
+                                            const el = document.getElementById('customer-coupons');
+                                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                            handleService(service.id);
+                                            onOpenCategory();
+                                            setOpenCategoryIndex(null);
+                                          }}
+                                        >
+                                          {service.name}
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </>
                       )}
                     </li>
                   );

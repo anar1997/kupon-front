@@ -3,7 +3,7 @@ import axios from '../axios';
 
 export const getCategoriesAsync = createAsyncThunk('getCategoriesAsync', async (data) => {
     try {
-        const response = await axios.get('/coupons/categories/?parent__isnull=true');
+        const response = await axios.get('/products/categories/?parent__isnull=true');
         return response.data;
     } catch (error) {
         throw { 'message': error.response.data.detail };
@@ -12,7 +12,7 @@ export const getCategoriesAsync = createAsyncThunk('getCategoriesAsync', async (
 
 export const getChildCategoriesAsync = createAsyncThunk('getChildCategoriesAsync', async (parentId) => {
     try {
-        const response = await axios.get(`/coupons/categories/?parent=${parentId}`);
+        const response = await axios.get(`/products/categories/?parent=${parentId}`);
         return response.data;
     } catch (error) {
         throw { 'message': error.response.data.detail };

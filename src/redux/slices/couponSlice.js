@@ -17,7 +17,8 @@ export const getCouponsAsync = createAsyncThunk(
         } = merged;
 
         // Backend filter paramları: category (PK), shop__region (PK)
-        const url = `/coupons/?limit=10&offset=${offset}` +
+        // Backend artık ecommerce kimi `products` endpointini istifadə edir.
+        const url = `/products/?limit=10&offset=${offset}` +
             `&category=${category || ""}` +
             `&shop__region=${shop_region || ""}` +
             `&service=${service || ""}` +
@@ -37,7 +38,8 @@ export const getCouponBySlugAsync = createAsyncThunk(
     'getCouponBySlugAsync',
     async (slug) => {
         try {
-            const response = await axios.get(`/coupons/${slug}/`);
+            const safe = encodeURIComponent(String(slug));
+            const response = await axios.get(`/products/${safe}/`);
             return response.data;
         } catch (error) {
             throw { message: error.response?.data?.detail || "Xəta baş verdi" };
