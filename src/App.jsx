@@ -18,6 +18,7 @@ import IncreaseBalans from './components/profile/increaseBalans/IncreaseBalans';
 import CardPayment from './pages/cardPayment/CardPayment';
 import MyCouponDetail from './pages/customerCoupons/MyCouponDetail';
 import SellerDashboard from './pages/seller/SellerDashboard';
+import SellerApply from './pages/seller/SellerApply';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/coupons" element={<><Layout /><Coupons /><Footer /></>} />
           <Route path="/my-coupons/:id" element={<><Layout /><MyCouponDetail /><Footer /></>} />
           <Route path="/seller" element={<><Layout /><SellerDashboard /><Footer /></>} />
+          <Route path="/seller-apply" element={<><Layout /><SellerApply /><Footer /></>} />
           <Route path="/increase-balans" element={<><Layout /><IncreaseBalans /><Footer /></>} />
           <Route path="/card-payment" element={<><Layout /><CardPayment /><Footer /></>} />
           <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />

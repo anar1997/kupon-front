@@ -7,6 +7,7 @@ import { getMeAsync, logoutAsync } from '../../redux/slices/authSlice';
 import { getCouponsAsync } from '../../redux/slices/couponSlice';
 import { logout } from '../../redux/slices/authSlice';
 import { fetchCartAsync } from '../../redux/slices/cartSlice';
+import axios from '../../redux/axios';
 
 function Header() {
   const navigate = useNavigate();
@@ -14,6 +15,9 @@ function Header() {
   const [searchQuery, setSearchQuery] = useState(""); // Yeni state
   const me = useSelector(state => state.auth.me)
   const cartItemsCount = useSelector(state => state.cart.itemsCount);
+
+  const [myShop, setMyShop] = useState(null);
+  const [myShopLoading, setMyShopLoading] = useState(false);
 
 
   const search = () => {
@@ -46,6 +50,26 @@ function Header() {
     dispatch(getMeAsync());
     dispatch(fetchCartAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    const loadMyShop = async () => {
+      if (!isLoggedIn) {
+        setMyShop(null);
+        return;
+      }
+      setMyShopLoading(true);
+      try {
+        const res = await axios.get('/shops/mine/');
+        setMyShop(res.data);
+      } catch (e) {
+        // No shop yet or not authorized.
+        setMyShop(null);
+      } finally {
+        setMyShopLoading(false);
+      }
+    };
+    loadMyShop();
+  }, [isLoggedIn]);
 
   return (
     <header className="bg-white shadow-md relative z-50">
@@ -100,12 +124,22 @@ function Header() {
                 <div className="flex flex-col items-start">
                   <span className="font-medium text-xs text-gray-800">{user.name}</span>
                 </div>
-                <button
-                  onClick={() => navigate('/seller')}
-                  className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold"
-                >
-                  Satıcı paneli
-                </button>
+                {myShop?.is_active ? (
+                  <button
+                    onClick={() => navigate('/seller')}
+                    className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold"
+                  >
+                    Satıcı paneli
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/seller-apply')}
+                    disabled={myShopLoading}
+                    className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold disabled:opacity-60"
+                  >
+                    Satıcı ol
+                  </button>
+                )}
                 <button onClick={() => handleLogout()} className="border text-xs items-center border-gray-300 rounded-md px-2 py-1 bg-white hover:bg-gray-100 font-semibold">
                   Çıxış
                 </button>
