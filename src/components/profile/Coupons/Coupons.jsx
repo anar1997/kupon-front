@@ -119,7 +119,7 @@ const Coupons = () => {
                             <rect x="4" y="7" width="16" height="13" rx="2" />
                             <path d="M8 3v4M16 3v4" />
                         </svg>
-                        <div className="text-lg sm:text-xl font-bold mt-6 mb-2">Kupon tapılmadı</div>
+                        <div className="text-lg sm:text-xl font-bold mt-6 mb-2">Məhsul tapılmadı</div>
                         <div className="text-gray-500 mb-6 text-xs sm:text-base">Bu kateqoriyada hələ kuponunuz yoxdur.</div>
                         <button className="bg-black text-white rounded px-4 sm:px-6 py-2 font-semibold text-xs sm:text-base">Kupon Almağa Başlayın</button>
                     </div>

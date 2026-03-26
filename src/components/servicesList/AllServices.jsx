@@ -175,7 +175,7 @@ const AllServices = () => {
                     ) : error ? (
                         <div className="col-span-4 text-center text-red-500">{error}</div>
                     ) : sorted.length === 0 ? (
-                        <div className="col-span-4 text-center text-gray-400">Kupon tapılmadı</div>
+                        <div className="col-span-4 text-center text-gray-400">Məhsul tapılmadı</div>
                     ) : (
                         sorted.map((service) => (
                             <CardElement key={service.id} {...service} />

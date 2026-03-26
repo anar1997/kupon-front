@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PartnerIconsBanner from "../../components/banner/PartnerIconsBanner";
 import ServicesList from "../../components/servicesList/ServicesList";
 import AutoSlider from "../../components/banner/AutoSLider";
 import PremiumBannerSlider from "../../components/banner/PremiumBanner";
@@ -35,10 +34,6 @@ const CustomerCoupons = () => {
         <AllServices/>
       </div>
 
-      {/* Partner Hizmet İkonları Banner */}
-      <div className="pt-2 pb-14">
-        <PartnerIconsBanner />
-      </div>
     </div>
   );
 };

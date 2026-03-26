@@ -19,6 +19,7 @@ import CardPayment from './pages/cardPayment/CardPayment';
 import MyCouponDetail from './pages/customerCoupons/MyCouponDetail';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import SellerApply from './pages/seller/SellerApply';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
@@ -32,17 +33,17 @@ function App() {
           <Route path="/service/:slug" element={<><Layout /><ServiceDetail /><Footer /></>} />
           <Route path="/my-cart" element={<><Layout /><CartPage /><Footer /></>} />
           <Route path="/services/:serviceName" element={<><Layout /><ServicePaginationPage /><Footer /></>} /> {/* ✅ */}
-          <Route path='/profile-m' element={<><Layout /><ManuelTest /><Footer /></>}/>
-          <Route path='/profile' element={<><Layout /><ManuelTest /><Footer /></>}/>
-          <Route path="/coupons" element={<><Layout /><Coupons /><Footer /></>} />
-          <Route path="/my-coupons/:id" element={<><Layout /><MyCouponDetail /><Footer /></>} />
-          <Route path="/seller" element={<><Layout /><SellerDashboard /><Footer /></>} />
-          <Route path="/seller-apply" element={<><Layout /><SellerApply /><Footer /></>} />
-          <Route path="/increase-balans" element={<><Layout /><IncreaseBalans /><Footer /></>} />
-          <Route path="/card-payment" element={<><Layout /><CardPayment /><Footer /></>} />
-          <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />
-          <Route path="/accept-request" element={<><Layout /><AcceptRequest /><Footer /></>} />
-          <Route path="/profile/settings/change-password" element={<><Layout /><ChangePassword /><Footer /></>} />
+          <Route path='/profile-m' element={<PrivateRoute><Layout /><ManuelTest /><Footer /></PrivateRoute>}/>
+          <Route path='/profile' element={<PrivateRoute><Layout /><ManuelTest /><Footer /></PrivateRoute>}/>
+          <Route path="/coupons" element={<PrivateRoute><Layout /><Coupons /><Footer /></PrivateRoute>} />
+          <Route path="/my-coupons/:id" element={<PrivateRoute><Layout /><MyCouponDetail /><Footer /></PrivateRoute>} />
+          <Route path="/seller" element={<PrivateRoute><Layout /><SellerDashboard /><Footer /></PrivateRoute>} />
+          <Route path="/seller-apply" element={<PrivateRoute><Layout /><SellerApply /><Footer /></PrivateRoute>} />
+          <Route path="/increase-balans" element={<PrivateRoute><Layout /><IncreaseBalans /><Footer /></PrivateRoute>} />
+          <Route path="/card-payment" element={<PrivateRoute><Layout /><CardPayment /><Footer /></PrivateRoute>} />
+          <Route path="/connection" element={<PrivateRoute><Layout /><Connection /><Footer /></PrivateRoute>} />
+          <Route path="/accept-request" element={<PrivateRoute><Layout /><AcceptRequest /><Footer /></PrivateRoute>} />
+          <Route path="/profile/settings/change-password" element={<PrivateRoute><Layout /><ChangePassword /><Footer /></PrivateRoute>} />
         </Routes>
       </div>
     </Router>

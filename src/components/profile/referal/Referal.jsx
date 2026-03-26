@@ -7,7 +7,8 @@ const Referal = () => {
   const dispatch = useDispatch();
   const me = useSelector(state => state.auth.me)
   const  { myReferrals, loading, error } = useSelector(state => state.myReferrals);
-  console.log(myReferrals);
+  const BONUS_PER_REFERRAL = 25;
+  const totalBonus = myReferrals.length * BONUS_PER_REFERRAL;
   useEffect(() => {
     dispatch(getMeAsync());
     dispatch(getMyReferralsAsync());
@@ -40,9 +41,9 @@ const Referal = () => {
           </div>
         </div>
         <div className="text-center">
-          <div className="text-xl font-bold text-[#FFF283]">3</div>
+          <div className="text-xl font-bold text-[#FFF283]">{myReferrals.length}</div>
           <div className="text-gray-500 text-xs">Dəvət Edilən Dostlar</div>
-          <div className="text-green-600 text-xs font-normal mt-1 mb-4">75 ₼ qazanılıb</div>
+          <div className="text-green-600 text-xs font-normal mt-1 mb-4">{totalBonus} ₼ qazanılıb</div>
         </div>
       </div>
       {/* Referal Statistikalar */}

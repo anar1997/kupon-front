@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiPlus, FiMinus, FiTag, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCartAsync, updateCartItemAsync, clearCartAsync, removeCartItemAsync } from '../../redux/slices/cartSlice';
+import { createWhatsAppOrderAsync } from '../../redux/slices/ordersSlice';
 import { notifyError, notifySuccess } from "../../utils/notify";
 import { normalizePhoneForWhatsApp, buildWhatsAppUrl, buildShopOrderMessage } from "../../utils/whatsapp";
 import placeholder from "../../components/images/placeholder.jpg";
@@ -36,15 +37,9 @@ const CartPage = () => {
     const [showConfirm, setShowConfirm] = React.useState(false);
     const [showWhatsappCheckout, setShowWhatsappCheckout] = React.useState(false);
     const [whatsappShopOrders, setWhatsappShopOrders] = React.useState([]);
+    const [isCheckingOut, setIsCheckingOut] = React.useState(false);
 
-
-    const handleCheckout = async () => {
-        if (!items?.length) {
-            notifyError("Səbət", "Səbət boşdur.");
-            return;
-        }
-
-        // Group by shop
+    const buildShopOrders = () => {
         const shopMap = new Map();
         for (const item of items) {
             const product = item?.coupon;
@@ -75,21 +70,17 @@ const CartPage = () => {
         const customerName = me?.first_name || me?.name || "";
         const customerPhone = me?.phone || "";
 
-        const orders = Array.from(shopMap.values()).map((s) => {
+        return Array.from(shopMap.values()).map((s) => {
             const phoneDigits = normalizePhoneForWhatsApp(s.shopPhoneRaw);
             const lines = s.items.map((it) => {
                 const lineTotal = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0);
                 const unit = (Number(it.unitPrice) || 0).toFixed(2);
                 return `- ${it.name} x${it.quantity} ( ${unit} ₼ ) = ${lineTotal.toFixed(2)} ₼`;
             });
-            const total = s.items.reduce((sum, it) => sum + (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0), 0);
-            const text = buildShopOrderMessage({
-                shopName: s.shopName,
-                lines,
-                total,
-                customerName,
-                customerPhone,
-            });
+            const total = s.items.reduce(
+                (sum, it) => sum + (Number(it.unitPrice) || 0) * (Number(it.quantity) || 0), 0
+            );
+            const text = buildShopOrderMessage({ shopName: s.shopName, lines, total, customerName, customerPhone });
             return {
                 ...s,
                 phoneDigits,
@@ -98,15 +89,34 @@ const CartPage = () => {
                 whatsappUrl: phoneDigits ? buildWhatsAppUrl(phoneDigits, text) : null,
             };
         });
+    };
 
+    const handleCheckout = async () => {
+        if (!items?.length) {
+            notifyError("Səbət", "Səbət boşdur.");
+            return;
+        }
+
+        const orders = buildShopOrders();
         if (!orders.length) {
             notifyError("Sifariş", "Səbətdə mağaza məlumatı tapılmadı.");
             return;
         }
 
+        // Giriş etmiş istifadəçi üçün sifarişi backend-ə qeydə al
+        if (me) {
+            setIsCheckingOut(true);
+            try {
+                await dispatch(createWhatsAppOrderAsync()).unwrap();
+            } catch {
+                // Xəta notifikasiyası slice-da idarə olunur; modal hər halda açılır
+            } finally {
+                setIsCheckingOut(false);
+            }
+        }
+
         setWhatsappShopOrders(orders);
         setShowWhatsappCheckout(true);
-        notifySuccess("Sifariş", "Satıcı ilə WhatsApp üzərindən əlaqə üçün hazırdır.");
     };
 
     useEffect(() => {
@@ -252,9 +262,10 @@ const CartPage = () => {
                         {/* Sifarişi tamamla */}
                         <button
                             onClick={handleCheckout}
-                            className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2"
+                            disabled={isCheckingOut}
+                            className="w-full bg-[#FFEB3B] hover:bg-yellow-300 transition rounded-lg py-3 font-semibold text-black text-xs lg:text-base mb-2 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            Sifarişi Tamamla
+                            {isCheckingOut ? "Yüklənir..." : "Sifarişi Tamamla"}
                         </button>
                         <div className="text-center text-xs text-gray-400 mt-2">
                             Ödəniş təhlükəsiz şəkildə həyata keçirilir

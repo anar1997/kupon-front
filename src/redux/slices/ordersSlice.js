@@ -2,6 +2,19 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../axios';
 import { notifySuccess, notifyError, extractErrorMessage } from '../../utils/notify';
 
+export const createWhatsAppOrderAsync = createAsyncThunk(
+  'orders/createFromWhatsApp',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post('/orders/create-from-whatsapp/');
+      return response.data.order;
+    } catch (error) {
+      const message = extractErrorMessage(error, 'Sifariş qeydə alınarkən xəta baş verdi!');
+      return rejectWithValue({ message });
+    }
+  }
+);
+
 export const createOrderFromCartAsync = createAsyncThunk(
   'orders/createFromCart',
   async (_, { rejectWithValue }) => {
@@ -59,6 +72,7 @@ export const buyNowAsync = createAsyncThunk(
 
 const initialState = {
   isCreating: false,
+  isCreatingWhatsApp: false,
   lastOrder: null,
   error: null,
 };
@@ -69,6 +83,19 @@ const ordersSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(createWhatsAppOrderAsync.pending, (state) => {
+        state.isCreatingWhatsApp = true;
+        state.error = null;
+      })
+      .addCase(createWhatsAppOrderAsync.fulfilled, (state, action) => {
+        state.isCreatingWhatsApp = false;
+        state.lastOrder = action.payload;
+        state.error = null;
+      })
+      .addCase(createWhatsAppOrderAsync.rejected, (state, action) => {
+        state.isCreatingWhatsApp = false;
+        state.error = action.payload?.message || 'Sifariş qeydə alınarkən xəta baş verdi!';
+      })
       .addCase(createOrderFromCartAsync.pending, (state) => {
         state.isCreating = true;
         state.error = null;
