@@ -29,7 +29,6 @@ const CardElement = ({
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isLoading: isCartLoading } = useSelector((state) => state.cart);
-    console.log(isCartLoading);
 
     const handleBuyNow = async (e) => {
         e.stopPropagation();
@@ -60,7 +59,7 @@ const CardElement = ({
                 {isPremium && (
                     <span className="absolute top-8 sm:top-10 left-2 bg-[#FF9800] text-white text-[10px] sm:text-xs px-2 py-1 rounded font-medium shadow">Premium</span>
                 )}
-                {discountPercent && (
+                {discountPercent > 0 && (
                     <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 sm:px-3 py-1 rounded font-bold shadow">
                         -{discountPercent}%
                     </span>
@@ -83,14 +82,14 @@ const CardElement = ({
                         </>
                     )}
                 </div>
-                <div className="flex items-center mb-2">
+                {/* <div className="flex items-center mb-2">
                     <span className="text-yellow-400 mr-1 text-xs sm:text-[11px] xs:text-[10px]">★★★★★</span>
                     <span className="font-semibold text-xs sm:text-[11px] xs:text-[10px] text-black mr-1">{rating}</span>
                     <span className="text-gray-500 text-xs sm:text-[11px] xs:text-[10px]">({ratingCount})</span>
-                </div>
+                </div> */}
                 <div className="flex items-end gap-1 mb-6 sm:mb-10">
                     <div className='flex flex-col'>
-                        <span className="text-xl font-bold text-[#FFD600] sm:text-lg xs:text-base">{price} ₼</span>
+                        <span className="text-xl font-bold text-[#FFD600] sm:text-lg xs:text-base">{Number(price).toFixed(2)} ₼</span>
                         {Number(oldPrice) > Number(price) && (
                             <span className="line-through text-gray-400 text-xs sm:text-[11px] xs:text-[10px]">{Number(oldPrice).toFixed(2)} ₼</span>
                         )}

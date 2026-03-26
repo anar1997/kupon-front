@@ -219,6 +219,23 @@ const ServiceDetail = () => {
                         </p>
                         <p className="text-sm sm:text-md text-slate-700">{description}</p>
 
+                        {/* Product Attributes */}
+                        {selectedCoupon.attributes?.length > 0 && (
+                            <div className="mt-2">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Xüsusiyyətlər</h4>
+                                <table className="w-full text-sm border-collapse">
+                                    <tbody>
+                                        {selectedCoupon.attributes.map((attr) => (
+                                            <tr key={attr.id} className="border-b last:border-0">
+                                                <td className="py-1.5 pr-4 text-gray-500 font-medium w-1/3">{attr.name}</td>
+                                                <td className="py-1.5 text-gray-800">{attr.value}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                             <button
                                 onClick={handleAddToCart}

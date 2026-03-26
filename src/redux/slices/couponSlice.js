@@ -13,17 +13,19 @@ export const getCouponsAsync = createAsyncThunk(
             shop_region = '',
             service = '',
             search = '',
-            name__icontains = ''
+            ordering = '',
         } = merged;
 
-        // Backend filter paramları: category (PK), shop__region (PK)
-        // Backend artık ecommerce kimi `products` endpointini istifadə edir.
-        const url = `/products/?limit=10&offset=${offset}` +
-            `&category=${category || ""}` +
-            `&shop__region=${shop_region || ""}` +
-            `&service=${service || ""}` +
-            `&search=${search || ""}` +
-            `&name__icontains=${name__icontains || ""}`;
+        const params = new URLSearchParams();
+        params.set('limit', '10');
+        params.set('offset', String(offset));
+        if (category)    params.set('category', category);
+        if (shop_region) params.set('shop__region', shop_region);
+        if (service)     params.set('service', service);
+        if (search)      params.set('search', search);
+        if (ordering)    params.set('ordering', ordering);
+
+        const url = `/products/?${params.toString()}`;
 
         try {
             const response = await axios.get(url);
@@ -96,7 +98,6 @@ const couponSlice = createSlice({
             .addCase(getCouponBySlugAsync.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.selectedCoupon = action.payload;
-                console.log(action);
             })
             .addCase(getCouponBySlugAsync.rejected, (state, action) => {
                 state.isLoading = false;

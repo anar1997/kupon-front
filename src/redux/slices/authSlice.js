@@ -89,6 +89,7 @@ export const logoutAsync = createAsyncThunk('logoutAsync', async (_, { rejectWit
 });
 
 const initialState = {
+  isInitializing: true,  // true until the first getMeAsync completes
   isLoading: false,
   isLoggedIn: false,
   me: "",
@@ -136,14 +137,14 @@ const authSlice = createSlice({
         state.me = action.payload;
         state.isLoggedIn = true;
         state.isLoading = false;
+        state.isInitializing = false;
         state.error = null;
-        console.log(action);
       })
       .addCase(getMeAsync.rejected, (state, action) => {
         state.isLoggedIn = false;
         state.isLoading = false;
+        state.isInitializing = false;
         state.error = action.payload?.message || state.error;
-        console.log(action);
       })
       .addCase(getMeAsync.pending, (state) => {
         state.isLoading = true;

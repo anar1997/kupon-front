@@ -45,6 +45,11 @@ const SellerDashboard = () => {
   const [stockEdits, setStockEdits] = useState({});
   const [stockSaving, setStockSaving] = useState({});
 
+  // Attribute editing: { [productSlug]: [{name, value}, ...] }
+  const [attrEdits, setAttrEdits] = useState({});
+  const [attrOpen, setAttrOpen] = useState(null);   // slug of the product whose attr panel is open
+  const [attrSaving, setAttrSaving] = useState({});  // { [productSlug]: bool }
+
   // WhatsApp orders
   const [whatsappOrders, setWhatsappOrders] = useState([]);
   const [whatsappLoading, setWhatsappLoading] = useState(false);
@@ -221,6 +226,62 @@ const SellerDashboard = () => {
       notifyError('Stok xətası', extractErrorMessage(err, 'Stok yenilənmədi!'));
     } finally {
       setStockSaving((s) => ({ ...s, [product.slug]: false }));
+    }
+  };
+
+  const openAttrEditor = (product) => {
+    setAttrOpen(product.slug);
+    // Initialize with the current attributes from the loaded product data
+    setAttrEdits((prev) => ({
+      ...prev,
+      [product.slug]: (product.attributes || []).map((a) => ({ name: a.name, value: a.value })),
+    }));
+  };
+
+  const closeAttrEditor = (slug) => {
+    setAttrOpen(null);
+    setAttrEdits((prev) => { const copy = { ...prev }; delete copy[slug]; return copy; });
+  };
+
+  const handleAttrChange = (slug, idx, field, val) => {
+    setAttrEdits((prev) => {
+      const list = [...(prev[slug] || [])];
+      list[idx] = { ...list[idx], [field]: val };
+      return { ...prev, [slug]: list };
+    });
+  };
+
+  const handleAttrAdd = (slug) => {
+    setAttrEdits((prev) => ({
+      ...prev,
+      [slug]: [...(prev[slug] || []), { name: '', value: '' }],
+    }));
+  };
+
+  const handleAttrRemove = (slug, idx) => {
+    setAttrEdits((prev) => {
+      const list = [...(prev[slug] || [])];
+      list.splice(idx, 1);
+      return { ...prev, [slug]: list };
+    });
+  };
+
+  const handleAttrSave = async (product) => {
+    const slug = product.slug;
+    const attrs = (attrEdits[slug] || []).filter((a) => a.name.trim() && a.value.trim());
+    setAttrSaving((s) => ({ ...s, [slug]: true }));
+    try {
+      const res = await axios.post(`/products/${slug}/set-attributes/`, { attributes: attrs });
+      notifySuccess('Xüsusiyyətlər', 'Xüsusiyyətlər yadda saxlanıldı.');
+      // Update the product in local state so UI reflects saved data immediately
+      setProducts((prev) =>
+        prev.map((p) => p.slug === slug ? { ...p, attributes: res.data.attributes } : p)
+      );
+      closeAttrEditor(slug);
+    } catch (err) {
+      notifyError('Xüsusiyyət xətası', extractErrorMessage(err, 'Yadda saxlanılmadı!'));
+    } finally {
+      setAttrSaving((s) => ({ ...s, [slug]: false }));
     }
   };
 
@@ -581,6 +642,69 @@ const SellerDashboard = () => {
                   </div>
                   <div className="mt-2 text-xs text-gray-600">
                     Şəkil sayı: {Array.isArray(p.images) ? p.images.length : 0}
+                  </div>
+
+                  {/* Attributes */}
+                  <div className="mt-3 border-t pt-2">
+                    {attrOpen === p.slug ? (
+                      <div>
+                        <div className="text-xs font-semibold text-gray-700 mb-2">Xüsusiyyətlər</div>
+                        {(attrEdits[p.slug] || []).map((attr, idx) => (
+                          <div key={idx} className="flex gap-1 mb-1">
+                            <input
+                              className="border rounded px-2 py-1 text-xs flex-1"
+                              placeholder="Ad (məs. Rəng)"
+                              value={attr.name}
+                              onChange={(e) => handleAttrChange(p.slug, idx, 'name', e.target.value)}
+                            />
+                            <input
+                              className="border rounded px-2 py-1 text-xs flex-1"
+                              placeholder="Dəyər (məs. Qırmızı)"
+                              value={attr.value}
+                              onChange={(e) => handleAttrChange(p.slug, idx, 'value', e.target.value)}
+                            />
+                            <button
+                              onClick={() => handleAttrRemove(p.slug, idx)}
+                              className="text-red-400 hover:text-red-600 px-1 text-sm"
+                              title="Sil"
+                            >×</button>
+                          </div>
+                        ))}
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            onClick={() => handleAttrAdd(p.slug)}
+                            className="text-xs text-blue-600 hover:underline"
+                          >+ Yeni xüsusiyyət</button>
+                          <button
+                            onClick={() => handleAttrSave(p)}
+                            disabled={attrSaving[p.slug]}
+                            className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded disabled:opacity-60 ml-auto"
+                          >{attrSaving[p.slug] ? '...' : 'Yadda saxla'}</button>
+                          <button
+                            onClick={() => closeAttrEditor(p.slug)}
+                            className="text-xs text-gray-500 hover:underline"
+                          >Bağla</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        {(p.attributes || []).length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-1">
+                            {(p.attributes || []).map((a) => (
+                              <span key={a.id} className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">
+                                {a.name}: {a.value}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => openAttrEditor(p)}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          {(p.attributes || []).length > 0 ? 'Xüsusiyyətləri redaktə et' : '+ Xüsusiyyət əlavə et'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
