@@ -8,6 +8,8 @@ import { getCouponBySlugAsync, getCouponsAsync } from "../../redux/slices/coupon
 import { addToCartAsync } from "../../redux/slices/cartSlice";
 import { normalizePhoneForWhatsApp, buildWhatsAppUrl } from "../../utils/whatsapp";
 import Pagination from "../../components/pagination/Pagination";
+import SEOMeta from "../../components/SEOMeta";
+import ProductJsonLd from "../../components/ProductJsonLd";
 
 const ServiceDetail = () => {
     const dispatch = useDispatch();
@@ -146,8 +148,21 @@ const ServiceDetail = () => {
         }
     };
 
+    const couponImage = selectedCoupon.images?.[0]?.image || selectedCoupon.shop?.images?.[0]?.image;
+    const metaDescription = description
+        ? `${description.slice(0, 140)}…`
+        : `${name} — ${hasDiscount ? `${discountedPrice.toFixed(2)} ₼ (${Math.round(((priceNum - discountNum) / priceNum) * 100)}% endirim)` : `${priceNum.toFixed(2)} ₼`}. Kuponum-da əldə et.`;
+
     return (
         <div className="bg-slate-100 xl:px-24 sm:px-10 px-6 p-4 min-h-screen">
+            <SEOMeta
+                title={name}
+                description={metaDescription}
+                image={couponImage}
+                url={`https://kuponum.az/service/${slug}`}
+                type="product"
+            />
+            <ProductJsonLd product={selectedCoupon} slug={slug} />
             {/* Breadcrumb */}
             <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-4">
                 <Link to="/" className="hover:underline">Ana Səhifə</Link> &gt;{" "}

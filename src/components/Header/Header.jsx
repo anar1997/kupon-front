@@ -157,7 +157,7 @@ function Header() {
                     className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-yellow-50 transition text-left"
                   >
                     {img ? (
-                      <img src={img} alt="" className="w-9 h-9 rounded object-cover shrink-0" />
+                      <img src={img} alt={s.name} className="w-9 h-9 rounded object-cover shrink-0" />
                     ) : (
                       <div className="w-9 h-9 rounded bg-gray-100 shrink-0 flex items-center justify-center">
                         <FiSearch size={14} className="text-gray-300" />

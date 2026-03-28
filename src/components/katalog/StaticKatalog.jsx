@@ -71,7 +71,7 @@ const StaticKatalog = ({ categoryData }) => {
                 ${hoveredIdx === idx ? 'bg-[#FFF281] shadow font-semibold' : 'hover:bg-[#FFFBEA]'}
               `}
                         >
-                            <img className='w-8 h-8  object-contain' src={cat.icon || '/category-placeholder.png'} alt="" onError={e => { e.target.style.display = 'none'; }} />
+                            <img className='w-8 h-8  object-contain' src={cat.icon || '/category-placeholder.png'} alt={cat.name} onError={e => { e.target.style.display = 'none'; }} />
                             <span onClick={() => {
                                 const el = document.getElementById('customer-coupons');
                                 if (el) el.scrollIntoView({ behavior: 'smooth' });

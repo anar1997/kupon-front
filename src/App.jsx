@@ -21,8 +21,13 @@ import MyCouponDetail from './pages/customerCoupons/MyCouponDetail';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import SellerApply from './pages/seller/SellerApply';
 import PrivateRoute from './components/PrivateRoute';
+import AboutPage from './pages/static/AboutPage';
+import RulesPage from './pages/static/RulesPage';
+import TermsPage from './pages/static/TermsPage';
+import CookiePage from './pages/static/CookiePage';
 import { getMeAsync } from './redux/slices/authSlice';
 import { fetchCartAsync } from './redux/slices/cartSlice';
+import { fetchSiteSettingsAsync } from './redux/slices/siteSettingsSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -33,6 +38,7 @@ function App() {
   useEffect(() => {
     dispatch(getMeAsync());
     dispatch(fetchCartAsync());
+    dispatch(fetchSiteSettingsAsync());
   }, [dispatch]);
 
   return (
@@ -56,6 +62,10 @@ function App() {
           <Route path="/card-payment" element={<PrivateRoute><Layout /><CardPayment /><Footer /></PrivateRoute>} />
           <Route path="/connection" element={<><Layout /><Connection /><Footer /></>} />
           <Route path="/accept-request" element={<><Layout /><AcceptRequest /><Footer /></>} />
+          <Route path="/about" element={<><Layout /><AboutPage /><Footer /></>} />
+          <Route path="/rules" element={<><Layout /><RulesPage /><Footer /></>} />
+          <Route path="/terms" element={<><Layout /><TermsPage /><Footer /></>} />
+          <Route path="/cookie-policy" element={<><Layout /><CookiePage /><Footer /></>} />
           <Route path="/profile/settings/change-password" element={<PrivateRoute><Layout /><ChangePassword /><Footer /></PrivateRoute>} />
         </Routes>
       </div>

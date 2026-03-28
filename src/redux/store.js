@@ -18,6 +18,7 @@ import myReferralsReducer from './slices/myReferalsSlice';
 import cartReducer from './slices/cartSlice';
 import myCouponsReducer from './slices/myCouponsSlice';
 import ordersReducer from './slices/ordersSlice';
+import siteSettingsReducer from './slices/siteSettingsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -40,5 +41,6 @@ export const store = configureStore({
     myCoupons: myCouponsReducer,
     cart: cartReducer,
     orders: ordersReducer,
+    siteSettings: siteSettingsReducer,
   }
 });

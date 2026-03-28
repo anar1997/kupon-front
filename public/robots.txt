@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Admin və API botlara açıq olmasın
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth
+Disallow: /profile
+Disallow: /profile/
+Disallow: /seller
+Disallow: /seller/
+Disallow: /my-cart
+Disallow: /increase-balans
+Disallow: /card-payment
+
+# Sitemap-ın yeri (növbəti addımda yaradacağıq)
+Sitemap: https://kuponum.az/sitemap.xml

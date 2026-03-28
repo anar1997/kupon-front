@@ -17,9 +17,7 @@ const AuthPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const regions = useSelector(state => state.region.regions);
-  console.log(regions);
   const { error, successMsg, isLoading } = useSelector(state => state.auth);
-  console.log(error);
 
   useEffect(() => {
     dispatch(getRegionsAsync());
@@ -104,7 +102,19 @@ const AuthPage = () => {
   };
 
   return (
+    <div className="auth-page-bg">
     <div className={`container ${!isLogin ? 'active' : ''}`}>
+      {/* Mobile tab switcher — only visible on small screens */}
+      <div className="mobile-tabs">
+        <button
+          className={isLogin ? 'active' : ''}
+          onClick={() => { setIsLogin(true); dispatch(clearAuthMessages()); }}
+        >Daxil ol</button>
+        <button
+          className={!isLogin ? 'active' : ''}
+          onClick={() => { setIsLogin(false); dispatch(clearAuthMessages()); }}
+        >Qeydiyyat</button>
+      </div>
       {/* Login Box */}
       <div className="form-box login">
         <form action="#" onSubmit={formik.handleSubmit}>
@@ -223,7 +233,7 @@ const AuthPage = () => {
               {typeof error === 'object' ? JSON.stringify(error) : error}
             </div>
           )}
-          <div className="flex gap-2 mb-2 mt-10">
+          <div className="flex gap-2 mb-2 sm:mt-10">
             <div className="w-1/2">
               <label className="block text-xs font-medium text-gray-700 text-left">Ad</label>
               <div className="relative">
@@ -423,6 +433,7 @@ const AuthPage = () => {
           <button className="btn login-btn" onClick={toggleAuth}>Daxil ol</button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

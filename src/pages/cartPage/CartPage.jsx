@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiPlus, FiMinus, FiTag, FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiMinus, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCartAsync, updateCartItemAsync, clearCartAsync, removeCartItemAsync } from '../../redux/slices/cartSlice';
 import { createWhatsAppOrderAsync } from '../../redux/slices/ordersSlice';
@@ -213,17 +213,6 @@ const CartPage = () => {
                     {/* Sağ Kısım - c-1.png dizaynı */}
                     <div className="bg-white p-4 sm:p-6 rounded-2xl shadow h-fit border">
                         <h3 className="text-base sm:text-lg font-semibold mb-4">Sifariş Xülasəsi</h3>
-                        {/* Promo kod */}
-                        <div className="flex flex-col xl:flex-row gap-2 mb-4">
-                            <input
-                                type="text"
-                                placeholder="Promo kod daxil edin"
-                                className="flex-1 border rounded-lg px-3 py-2 bg-gray-50 outline-none text-xs sm:text-sm"
-                            />
-                            <button className="flex items-center gap-1 border px-3 sm:px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition text-gray-700 text-xs sm:text-sm">
-                                <FiTag /> Təsdiq
-                            </button>
-                        </div>
                         <hr className="my-3" />
                         {/* Alt cəmi və endirim */}
                         <div className="flex justify-between mb-2 text-gray-700 text-xs lg:text-base">

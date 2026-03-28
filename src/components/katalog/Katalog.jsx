@@ -97,6 +97,7 @@ const Katalog = ({ onOpenCategory, isOpen, onCategoryHover, hoveredCategory }) =
             <button
               className="lg:flex hidden md:block items-center gap-2 text-xs font-semibold text-gray-800 hover:text-black transition"
               onClick={() => {
+                navigate("/about");
                 if (isOpen) onOpenCategory();
               }}
               style={{ minHeight: "40px" }}

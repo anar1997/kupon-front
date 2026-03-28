@@ -5,12 +5,18 @@ import PremiumBannerSlider from "../../components/banner/PremiumBanner";
 import AllServices from "../../components/servicesList/AllServices";
 import StaticKatalog from "../../components/katalog/StaticKatalog";
 import categoryData from "../../components/data/CategoryData";
+import SEOMeta from "../../components/SEOMeta";
 
 
 const CustomerCoupons = () => {
 
   return (
     <div className="bg-[#F9FAFB]">
+      <SEOMeta
+        title="Bakının ən yaxşı kuponları"
+        description="Bakı şəhərinin ən yaxşı kupon və endirimlərini bir araya gətirən platform. Sağlamlıq, gözəllik, yemək, əyləncə və daha çox sahədə ən sərfəli təkliflər."
+        url="https://kuponum.az/"
+      />
       {/* İçerik Alanı */}
       <div className="flex flex-col xl:mx-24 sm:mx-10 mx-6 lg:flex-row xl:flex-row items-start justify-between pt-5 pb-3 gap-5">
         {/* Sol Kısım - Banner (AutoSlider) */}

@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { clearSupportMessages, postSupportAsync } from "../../redux/slices/supportSlice";
 import validations from "./validation";
+import SEOMeta from "../../components/SEOMeta";
+
 
 const Connection = () => {
     const [loading, setLoading] = useState(false);
@@ -15,6 +17,7 @@ const Connection = () => {
     let successMessage = useSelector((state) => state.support.successMessage);
     let error = useSelector((state) => state.support.error);
     let isLoading = useSelector((state) => state.support.isLoading);
+    const { phone, whatsapp, email, address, working_hours } = useSelector((state) => state.siteSettings);
 
     const formik = useFormik({
         initialValues: {
@@ -81,6 +84,11 @@ const Connection = () => {
 
     return (
         <div className="bg-[#FAFBFC] xl:px-24 sm:px-10 px-6 min-h-screen py-8">
+            <SEOMeta
+                title="Bizimlə Əlaqə"
+                description="Suallarınız, təklifləriniz və ya şikayətləriniz üçün bizimlə əlaqə saxlayın. 24 saat ərzində cavab veririk."
+                url="https://kuponum.az/connection"
+            />
             {/* Breadcrumb */}
             <div className="w-full">
                 <div className="text-sm text-gray-600 mb-4">
@@ -284,36 +292,43 @@ const Connection = () => {
                 <div className="w-full lg:w-[400px] flex flex-col gap-6">
                     <div className="bg-white rounded-2xl shadow border p-6">
                         <div className="text-lg font-semibold mb-4">Əlaqə Məlumatları</div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📞</span>
-                            <div>
-                                <div className="font-medium text-sm">Telefon</div>
-                                <div className="text-gray-700 text-sm">+994 12 555 55 55</div>
-                                <span className="text-xs text-gray-500">24/7 Dəstək</span>
+                        {phone && (
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📞</span>
+                                <div>
+                                    <div className="font-medium text-sm">Telefon</div>
+                                    <div className="text-gray-700 text-sm">{phone}</div>
+                                    <span className="text-xs text-gray-500">24/7 Dəstək</span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📧</span>
-                            <div>
-                                <div className="font-medium text-sm">Email</div>
-                                <div className="text-gray-700 text-sm">info@kuponum.az</div>
+                        )}
+                        {email && (
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📧</span>
+                                <div>
+                                    <div className="font-medium text-sm">Email</div>
+                                    <div className="text-gray-700 text-sm">{email}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📍</span>
-                            <div>
-                                <div className="font-medium text-sm">Ünvan</div>
-                                <div className="text-gray-700 text-sm">Nizami küç. 203, Bakı şəhəri</div>
+                        )}
+                        {address && (
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">📍</span>
+                                <div>
+                                    <div className="font-medium text-sm">Ünvan</div>
+                                    <div className="text-gray-700 text-sm">{address}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">⏰</span>
-                            <div>
-                                <div className="font-medium text-sm">İş Saatları</div>
-                                <div className="text-gray-700 text-sm">B.e - Cümə: 09:00 - 18:00</div>
-                                <div className="text-gray-500 text-sm">Şənbə: 10:00 - 16:00</div>
+                        )}
+                        {working_hours && (
+                            <div className="flex items-center gap-3">
+                                <span className="bg-yellow-200 rounded-full p-2 text-yellow-600 text-sm">⏰</span>
+                                <div>
+                                    <div className="font-medium text-sm">İş Saatları</div>
+                                    <div className="text-gray-700 text-sm">{working_hours}</div>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                     {/* FAQ */}
                     <div className="bg-white rounded-2xl shadow border p-6">
@@ -342,14 +357,26 @@ const Connection = () => {
                     </div>
                     <div className="bg-yellow-50 rounded-2xl p-6">
                         <div className="font-semibold mb-4">Tez Əlaqə</div>
-                        <button className="w-full flex items-center gap-2 border border-yellow-200 rounded-lg px-4 py-3 mb-3 bg-white hover:bg-yellow-100 transition font-medium text-gray-700">
-                            <span className="text-xl">📞</span>
-                            İndi Zəng Et
-                        </button>
-                        <button className="w-full flex items-center gap-2 border border-yellow-200 rounded-lg px-4 py-3 bg-white hover:bg-yellow-100 transition font-medium text-gray-700">
-                            <span className="text-xl">📧</span>
-                            Email Göndər
-                        </button>
+                        {(phone || whatsapp) && (
+                            <a
+                                href={whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : `tel:${phone}`}
+                                target={whatsapp ? "_blank" : undefined}
+                                rel="noreferrer"
+                                className="w-full flex items-center gap-2 border border-yellow-200 rounded-lg px-4 py-3 mb-3 bg-white hover:bg-yellow-100 transition font-medium text-gray-700"
+                            >
+                                <span className="text-xl">📞</span>
+                                İndi Zəng Et
+                            </a>
+                        )}
+                        {email && (
+                            <a
+                                href={`mailto:${email}`}
+                                className="w-full flex items-center gap-2 border border-yellow-200 rounded-lg px-4 py-3 bg-white hover:bg-yellow-100 transition font-medium text-gray-700"
+                            >
+                                <span className="text-xl">📧</span>
+                                Email Göndər
+                            </a>
+                        )}
                     </div>
                 </div>
             </div>

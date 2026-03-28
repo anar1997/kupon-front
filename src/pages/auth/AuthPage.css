@@ -170,6 +170,97 @@
     right: 0;
 }
 
+/* ── Mobile tab switcher (hidden on desktop) ── */
+.mobile-tabs {
+    display: none;
+}
+
+/* ── Mobile layout ── */
+@media (max-width: 640px) {
+    .auth-page-bg {
+        min-height: 100dvh;
+        background: #f8f8f8;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .container {
+        position: static;
+        transform: none;
+        top: auto;
+        left: auto;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Hide the animated toggle panel on mobile */
+    .toggle-box {
+        display: none;
+    }
+
+    /* Tab switcher */
+    .mobile-tabs {
+        display: flex;
+        width: 100%;
+        background: #fff;
+        border-bottom: 2px solid #f0f0f0;
+        flex-shrink: 0;
+    }
+
+    .mobile-tabs button {
+        flex: 1;
+        padding: 14px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #999;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mobile-tabs button.active {
+        color: #111;
+        border-bottom-color: #ffcc00;
+    }
+
+    /* Both form boxes: full width, relative, stacked */
+    .form-box {
+        position: static;
+        width: 100%;
+        height: auto;
+        padding: 28px 24px 40px;
+        visibility: visible !important;
+    }
+
+    /* Show/hide forms via active class instead of slide animation */
+    .form-box.login {
+        display: flex;
+    }
+
+    .container.active .form-box.login {
+        display: none;
+    }
+
+    .form-box.register {
+        display: none;
+    }
+
+    .container.active .form-box.register {
+        display: flex;
+    }
+}
+
 @media (max-width: 768px) {
     .container h1 {
         font-size: 28px;
